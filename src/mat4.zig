@@ -1,4 +1,7 @@
-const math = @import("std").math;
+const std = @import("std");
+const warn = std.debug.warn;
+const math = std.math;
+const testing = std.testing;
 const root = @import("main.zig");
 usingnamespace @import("vec4.zig");
 usingnamespace @import("vec3.zig");
@@ -8,7 +11,7 @@ pub const mat4 = Mat4(f32);
 /// A column-major 4x4 matrix.
 /// Note: Column-major means accessing data like m.data[COLUMN][ROW].
 pub fn Mat4(comptime T: type) type {
-    if (@TypeOf(T) != f32 and @TypeOf(T) != f64) {
+    if (T != f32 and T != f64) {
         @compileError("Mat4 not implemented for " ++ @typeName(T));
     }
 
@@ -33,9 +36,19 @@ pub fn Mat4(comptime T: type) type {
             return @ptrCast(*const T, &mat.data);
         }
 
-        pub fn copy(src: *Self) Self {
-            var dest = src;
-            return dest;
+        pub fn isEq(left: *const Self, right: *const Self) bool {
+            var col: usize = 0;
+            var row: usize = 0;
+
+            while (col < 4) : (col += 1) {
+                while (row < 4) : (row += 1) {
+                    if (left.data[col][row] != right.data[col][row]) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         pub fn multByVec4(mat: Self, v: Vec4(T)) Vec4(T) {
@@ -61,10 +74,17 @@ pub fn Mat4(comptime T: type) type {
             return mat;
         }
 
+        /// Make a translation between the given matrix and the given axis.
         pub fn translate(mat: Self, axis: Vec3(T)) Self {
             var trans_mat = Self.from_translate(&axis);
             return Self.mult(trans_mat, mat);
         }
+
+        /// Get translation Vec3 from current matrix.
+        pub fn get_translation(self: *const Self) Vec3(T) {
+            return Vec3(T).new(self.data[3][0], self.data[3][1], self.data[3][2]);
+        }
+
 
         /// Construct a 4x4 matrix from given axis and angle (in degrees).
         pub fn from_rotation(angle_in_degrees: T, axis: Vec3(T)) Self {
@@ -96,7 +116,7 @@ pub fn Mat4(comptime T: type) type {
             return Self.mult(rotation_mat, mat);
         }
 
-        pub fn from_scale(axis: Vec3(T)) Self {
+        pub fn from_scale(axis: *const Vec3(T)) Self {
             var mat = Self.identity();
 
             mat.data[0][0] = axis.x;
@@ -107,7 +127,7 @@ pub fn Mat4(comptime T: type) type {
         }
 
         pub fn scale(mat: Self, axis: Vec3(T)) Self {
-            var scale_mat = Self.from_scale(axis);
+            var scale_mat = Self.from_scale(&axis);
             return Self.mult(scale_mat, mat);
         }
 
@@ -156,10 +176,6 @@ pub fn Mat4(comptime T: type) type {
             mat.data[3][3] = 1.0;
 
             return mat;
-        }
-
-        pub fn get_translation(self: *const Self) Vec3(T) {
-            return Vec3(T).new(self.data[3][0], self.data[3][1], self.data[3][2]);
         }
 
         pub fn mult(left: Self, right: Self) Self {
@@ -257,4 +273,81 @@ pub fn Mat4(comptime T: type) type {
             warn("\n", .{});
         }
     };
+}
+
+test "zalgebra.Mat4.isEq" {
+    const mat_0 = mat4.identity();
+    const mat_1 = mat4.identity();
+    const mat_2 = mat4{
+        .data = .{
+            .{ 0., 0., 0., 0. },
+            .{ 0., 0., 0., 0. },
+            .{ 0., 0., 0., 0. },
+            .{ 0., 0., 0., 0. },
+        },
+    };
+
+    testing.expectEqual(mat4.isEq(&mat_0, &mat_1), true);
+    testing.expectEqual(mat4.isEq(&mat_0, &mat_2), false);
+}
+
+test "zalgebra.Mat4.fromTranslate" {
+    const mat4_trans = mat4.from_translate(&vec3.new(2, 3, 4));
+
+    testing.expectEqual(mat4.isEq(&mat4_trans, &mat4{
+        .data = .{
+            .{ 1., 0., 0., 0. },
+            .{ 0., 1., 0., 0. },
+            .{ 0., 0., 1., 0. },
+            .{ 2., 3., 4., 1. },
+        },
+    }), true);
+}
+
+test "zalgebra.Mat4.translate" {
+    const base = mat4.from_translate(&vec3.new(2, 3, 2));
+    const result = mat4.translate(base, vec3.new(2, 3, 4));
+
+    testing.expectEqual(mat4.isEq(&result, &mat4{
+        .data = .{
+            .{ 1., 0., 0., 0. },
+            .{ 0., 1., 0., 0. },
+            .{ 0., 0., 1., 0. },
+            .{ 4., 9., 8., 1. },
+        },
+    }), true);
+}
+
+test "zalgebra.Mat4.get_translation" {
+    const base = mat4.from_translate(&vec3.new(2, 3, 2));
+    const result = mat4.get_translation(&base);
+
+    testing.expectEqual(vec3.isEq(&result, &vec3.new(2, 3, 2)), true);
+}
+
+test "zalgebra.Mat4.fromScale" {
+    const mat4_scale = mat4.from_scale(&vec3.new(2, 3, 4));
+
+    testing.expectEqual(mat4.isEq(&mat4_scale, &mat4{
+        .data = .{
+            .{ 2., 0., 0., 0. },
+            .{ 0., 3., 0., 0. },
+            .{ 0., 0., 4., 0. },
+            .{ 0., 0., 0., 1. },
+        },
+    }), true);
+}
+
+test "zalgebra.Mat4.scale" {
+    const base = mat4.from_scale(&vec3.new(2, 3, 4));
+    const result = mat4.scale(base, vec3.new(2, 2, 2));
+
+    testing.expectEqual(mat4.isEq(&result, &mat4{
+        .data = .{
+            .{ 4., 0., 0., 0. },
+            .{ 0., 6., 0., 0. },
+            .{ 0., 0., 4., 0. },
+            .{ 0., 0., 0., 1. },
+        },
+    }), true);
 }

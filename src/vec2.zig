@@ -5,7 +5,7 @@ pub const vec2 = Vec2(f32);
 
 /// A 2 dimensional vector.
 pub fn Vec2(comptime T: type) type {
-    if (@TypeOf(T) != f32 and @TypeOf(T) != f64) {
+    if (T != f32 and T != f64) {
         @compileError("Vec2 not implemented for " ++ @typeName(T));
     }
 
