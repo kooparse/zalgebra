@@ -5,6 +5,10 @@ pub const vec4 = Vec4(f32);
 
 /// A 4 dimensional vector.
 pub fn Vec4(comptime T: type) type {
+    if (@TypeOf(T) != f32 and @TypeOf(T) != f64) {
+        @compileError("Vec4 not implemented for " ++ @typeName(T));
+    }
+
     return packed struct {
         x: T,
         y: T,

@@ -8,6 +8,10 @@ pub const mat4 = Mat4(f32);
 /// A column-major 4x4 matrix.
 /// Note: Column-major means accessing data like m.data[COLUMN][ROW].
 pub fn Mat4(comptime T: type) type {
+    if (@TypeOf(T) != f32 and @TypeOf(T) != f64) {
+        @compileError("Mat4 not implemented for " ++ @typeName(T));
+    }
+
     return struct {
         data: [4][4]T,
 
