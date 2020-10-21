@@ -1,6 +1,16 @@
 # zalgebra
 A linear algebra library written in Zig for real-time computer graphics.
 
+
+## Current progress
+- [x] vec2
+- [x] vec3
+- [x] vec4
+- [ ] mat3
+- [x] mat4 (still need tests)
+- [ ] quaternion
+
+
 ## Documentation
 
 ### Vectors
@@ -47,10 +57,8 @@ to_radians | Convert degrees to radians.
 to_degrees | Convert radians to degrees.
 
 
-## Current progress
-- [x] vec2
-- [x] vec3
-- [x] vec4
-- [ ] mat3
-- [x] mat4 (still need tests)
-- [ ] quaternion
+## Contributing to the project
+
+Don’t be shy about shooting any questions you may have. If you are a beginner/junior, don’t hesitate, I will always encourage you. It’s a safe place here. Also, I would be very happy to receive any kind of pull requests, you will have (at least) some feedback/guidance rapidly.
+
+Behind screens, there are human beings, living any sort of story. So be always kind and respectful, because we all sheer to learn new things.
