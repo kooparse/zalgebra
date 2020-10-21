@@ -38,7 +38,7 @@ pub fn Vec4(comptime T: type) type {
             return Self.new(self.x / l, self.y / l, self.z / l, self.w / l);
         }
 
-        pub fn isEq(left: Self, right: Self) bool {
+        pub fn is_eq(left: Self, right: Self) bool {
             return left.x == right.x and left.y == right.y and left.z == right.z and left.w == right.w;
         }
 
@@ -73,12 +73,12 @@ test "zalgebra.Vec4.init" {
     testing.expectEqual(_vec_0.w, 4.7);
 }
 
-test "zalgebra.Vec4.isEq" {
+test "zalgebra.Vec4.is_eq" {
     var _vec_0 = vec4.new(1., 2., 3., 4.);
     var _vec_1 = vec4.new(1., 2., 3., 4.);
     var _vec_2 = vec4.new(1., 2., 3., 5.);
-    testing.expectEqual(vec4.isEq(_vec_0, _vec_1), true);
-    testing.expectEqual(vec4.isEq(_vec_0, _vec_2), false);
+    testing.expectEqual(vec4.is_eq(_vec_0, _vec_1), true);
+    testing.expectEqual(vec4.is_eq(_vec_0, _vec_2), false);
 }
 
 test "zalgebra.Vec4.length" {
@@ -88,24 +88,24 @@ test "zalgebra.Vec4.length" {
 
 test "zalgebra.Vec4.normalize" {
     var _vec_0 = vec4.new(1.5, 2.6, 3.7, 4.0);
-    testing.expectEqual(vec4.isEq(_vec_0.norm(), vec4.new(0.241121411, 0.417943745, 0.594766139, 0.642990410)), true);
+    testing.expectEqual(vec4.is_eq(_vec_0.norm(), vec4.new(0.241121411, 0.417943745, 0.594766139, 0.642990410)), true);
 }
 
 test "zalgebra.Vec4.sub" {
     var _vec_0 = vec4.new(1., 2., 3., 6.);
     var _vec_1 = vec4.new(2., 2., 3., 5.);
-    testing.expectEqual(vec4.isEq(vec4.sub(_vec_0, _vec_1), vec4.new(-1., 0., 0., 1.)), true);
+    testing.expectEqual(vec4.is_eq(vec4.sub(_vec_0, _vec_1), vec4.new(-1., 0., 0., 1.)), true);
 }
 
 test "zalgebra.Vec4.add" {
     var _vec_0 = vec4.new(1., 2., 3., 5.);
     var _vec_1 = vec4.new(2., 2., 3., 6.);
-    testing.expectEqual(vec4.isEq(vec4.add(_vec_0, _vec_1), vec4.new(3., 4., 6., 11.)), true);
+    testing.expectEqual(vec4.is_eq(vec4.add(_vec_0, _vec_1), vec4.new(3., 4., 6., 11.)), true);
 }
 
 test "zalgebra.Vec4.scale" {
     var _vec_0 = vec4.new(1., 2., 3., 4.);
-    testing.expectEqual(vec4.isEq(vec4.scale(_vec_0, 5.), vec4.new(5., 10., 15., 20.)), true);
+    testing.expectEqual(vec4.is_eq(vec4.scale(_vec_0, 5.), vec4.new(5., 10., 15., 20.)), true);
 }
 
 test "zalgebra.Vec4.dot" {

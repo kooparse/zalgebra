@@ -36,7 +36,7 @@ pub fn Mat4(comptime T: type) type {
             return @ptrCast(*const T, &mat.data);
         }
 
-        pub fn isEq(left: *const Self, right: *const Self) bool {
+        pub fn is_eq(left: *const Self, right: *const Self) bool {
             var col: usize = 0;
             var row: usize = 0;
 
@@ -51,7 +51,7 @@ pub fn Mat4(comptime T: type) type {
             return true;
         }
 
-        pub fn multByVec4(mat: Self, v: Vec4(T)) Vec4(T) {
+        pub fn mult_by_vec4(mat: Self, v: Vec4(T)) Vec4(T) {
             var result: Vec4(T) = undefined;
 
             result.x = (mat.data[0][0] * v.x) + (mat.data[1][0] * v.y) + (mat.data[2][0] * v.z) + (mat.data[3][0] * v.w);
@@ -275,7 +275,7 @@ pub fn Mat4(comptime T: type) type {
     };
 }
 
-test "zalgebra.Mat4.isEq" {
+test "zalgebra.Mat4.is_eq" {
     const mat_0 = mat4.identity();
     const mat_1 = mat4.identity();
     const mat_2 = mat4{
@@ -287,14 +287,14 @@ test "zalgebra.Mat4.isEq" {
         },
     };
 
-    testing.expectEqual(mat4.isEq(&mat_0, &mat_1), true);
-    testing.expectEqual(mat4.isEq(&mat_0, &mat_2), false);
+    testing.expectEqual(mat4.is_eq(&mat_0, &mat_1), true);
+    testing.expectEqual(mat4.is_eq(&mat_0, &mat_2), false);
 }
 
-test "zalgebra.Mat4.fromTranslate" {
+test "zalgebra.Mat4.from_translate" {
     const mat4_trans = mat4.from_translate(&vec3.new(2, 3, 4));
 
-    testing.expectEqual(mat4.isEq(&mat4_trans, &mat4{
+    testing.expectEqual(mat4.is_eq(&mat4_trans, &mat4{
         .data = .{
             .{ 1., 0., 0., 0. },
             .{ 0., 1., 0., 0. },
@@ -308,7 +308,7 @@ test "zalgebra.Mat4.translate" {
     const base = mat4.from_translate(&vec3.new(2, 3, 2));
     const result = mat4.translate(base, vec3.new(2, 3, 4));
 
-    testing.expectEqual(mat4.isEq(&result, &mat4{
+    testing.expectEqual(mat4.is_eq(&result, &mat4{
         .data = .{
             .{ 1., 0., 0., 0. },
             .{ 0., 1., 0., 0. },
@@ -322,13 +322,13 @@ test "zalgebra.Mat4.get_translation" {
     const base = mat4.from_translate(&vec3.new(2, 3, 2));
     const result = mat4.get_translation(&base);
 
-    testing.expectEqual(vec3.isEq(&result, &vec3.new(2, 3, 2)), true);
+    testing.expectEqual(vec3.is_eq(&result, &vec3.new(2, 3, 2)), true);
 }
 
-test "zalgebra.Mat4.fromScale" {
+test "zalgebra.Mat4.from_scale" {
     const mat4_scale = mat4.from_scale(&vec3.new(2, 3, 4));
 
-    testing.expectEqual(mat4.isEq(&mat4_scale, &mat4{
+    testing.expectEqual(mat4.is_eq(&mat4_scale, &mat4{
         .data = .{
             .{ 2., 0., 0., 0. },
             .{ 0., 3., 0., 0. },
@@ -342,7 +342,7 @@ test "zalgebra.Mat4.scale" {
     const base = mat4.from_scale(&vec3.new(2, 3, 4));
     const result = mat4.scale(base, vec3.new(2, 2, 2));
 
-    testing.expectEqual(mat4.isEq(&result, &mat4{
+    testing.expectEqual(mat4.is_eq(&result, &mat4{
         .data = .{
             .{ 4., 0., 0., 0. },
             .{ 0., 6., 0., 0. },

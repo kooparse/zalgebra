@@ -35,7 +35,7 @@ pub fn Vec2(comptime T: type) type {
             return Self.new(self.x / l, self.y / l);
         }
 
-        pub fn isEq(left: Self, right: Self) bool {
+        pub fn is_eq(left: Self, right: Self) bool {
             return left.x == right.x and left.y == right.y;
         }
 
@@ -68,12 +68,12 @@ test "zalgebra.Vec2.init" {
     testing.expectEqual(_vec_0.y, 2.6);
 }
 
-test "zalgebra.Vec2.isEq" {
+test "zalgebra.Vec2.is_eq" {
     var _vec_0 = vec2.new(1., 2.);
     var _vec_1 = vec2.new(1., 2.);
     var _vec_2 = vec2.new(1.5, 2.);
-    testing.expectEqual(vec2.isEq(_vec_0, _vec_1), true);
-    testing.expectEqual(vec2.isEq(_vec_0, _vec_2), false);
+    testing.expectEqual(vec2.is_eq(_vec_0, _vec_1), true);
+    testing.expectEqual(vec2.is_eq(_vec_0, _vec_2), false);
 }
 
 test "zalgebra.Vec2.length" {
@@ -83,24 +83,24 @@ test "zalgebra.Vec2.length" {
 
 test "zalgebra.Vec2.normalize" {
     var _vec_0 = vec2.new(1.5, 2.6);
-    testing.expectEqual(vec2.isEq(_vec_0.norm(), vec2.new(0.499722480, 0.866185605)), true);
+    testing.expectEqual(vec2.is_eq(_vec_0.norm(), vec2.new(0.499722480, 0.866185605)), true);
 }
 
 test "zalgebra.Vec2.sub" {
     var _vec_0 = vec2.new(1., 2.);
     var _vec_1 = vec2.new(2., 2.);
-    testing.expectEqual(vec2.isEq(vec2.sub(_vec_0, _vec_1), vec2.new(-1., 0.)), true);
+    testing.expectEqual(vec2.is_eq(vec2.sub(_vec_0, _vec_1), vec2.new(-1., 0.)), true);
 }
 
 test "zalgebra.Vec2.add" {
     var _vec_0 = vec2.new(1., 2.);
     var _vec_1 = vec2.new(2., 2.);
-    testing.expectEqual(vec2.isEq(vec2.add(_vec_0, _vec_1), vec2.new(3., 4.)), true);
+    testing.expectEqual(vec2.is_eq(vec2.add(_vec_0, _vec_1), vec2.new(3., 4.)), true);
 }
 
 test "zalgebra.Vec2.scale" {
     var _vec_0 = vec2.new(1., 2.);
-    testing.expectEqual(vec2.isEq(vec2.scale(_vec_0, 5.), vec2.new(5., 10.)), true);
+    testing.expectEqual(vec2.is_eq(vec2.scale(_vec_0, 5.), vec2.new(5., 10.)), true);
 }
 
 test "zalgebra.Vec2.dot" {
