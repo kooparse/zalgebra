@@ -12,6 +12,18 @@ A linear algebra library written in Zig for real-time computer graphics.
 
 ## Documentation
 
+### Aliases
+
+Type | Description
+------------ | -------------
+vec2 | Two dimensional vector for `f32`.
+vec3 | Three dimensional vector for `f32`.
+vec4 | Four dimensional vector for `f32`.
+mat4 | 4x4 matrix for `f32`.
+perspective | Perspective function for `f32` 4x4 mat4
+orthographic | Orthographic function for `f32` 4x4 mat4.
+look_at | LookAt function for `f32` 4x4 mat4.
+
 ### Vectors
 
 Methods | Description
