@@ -96,6 +96,7 @@ add | Construct quaternion resulting from the addition of two given ones
 mult | Construct quaternion resulting from the multiplication of two given ones
 scale | Construct quaternion resulting from the multiplication of all components of the given quat
 dot | Return the dot product between two quaternions
+to_mat4 | Convert given quat to rotation 4x4 matrix
 from_euler_angles | Construct quaternion from Euler angles
 
 
