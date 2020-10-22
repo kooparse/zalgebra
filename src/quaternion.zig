@@ -1,10 +1,12 @@
 const std = @import("std");
+const assert = std.debug.assert;
 const math = std.math;
 const root = @import("main.zig");
 usingnamespace @import("vec3.zig");
 usingnamespace @import("vec4.zig");
 
 pub const quat = Quaternion(f32);
+pub const quat_f64 = Quaternion(f64);
 
 /// A Quaternion for 3D rotations.
 pub fn Quaternion(comptime T: type) type {
@@ -57,6 +59,8 @@ pub fn Quaternion(comptime T: type) type {
 
         pub fn norm(self: *const Self) T {
             const l = length(self);
+            assert(l != 0);
+
             return Self.new(self.w / l, self.x / l, self.y / l, self.z / l);
         }
 
@@ -105,14 +109,18 @@ pub fn Quaternion(comptime T: type) type {
             return result;
         }
 
+        /// Return the dot product between two quaternion.
         pub fn dot(left: *const Self, right: *const Self) T {
             return (left.x * right.x) + (left.y * right.y) + (left.z * right.z) + (left.w * right.w);
         }
 
-        pub fn from_euler_angles(angle: T, axis: *const Vec3(T)) Self {
-            const rot_sin = math.sin(angle / 2.0);
+        /// Convert Euler angles to quaternion.
+        pub fn from_euler_angles(degrees: T, axis: *const Vec3(T)) Self {
+            const radians = root.to_radians(degrees);
+
+            const rot_sin = math.sin(radians / 2.0);
             const quat_axis = axis.norm().scale();
-            const w = math.cos(angle / 2.0);
+            const w = math.cos(radians / 2.0);
 
             return Self.from_vec3(w, quat_axis);
         }

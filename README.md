@@ -32,10 +32,15 @@ pub fn main () void {
 Type | Description
 ------------ | -------------
 vec2 | Two dimensional vector for `f32`
+vec2_f64 | Two dimensional vector for `f64`
 vec3 | Three dimensional vector for `f32`
+vec3_f64 | Three dimensional vector for `f64`
 vec4 | Four dimensional vector for `f32`
+vec4_f64 | Four dimensional vector for `f64`
 mat4 | 4x4 matrix for `f32`
+mat4_f64 | 4x4 matrix for `f64`
 quat | Quaternion for `f32`
+quat_f64 | Quaternion for `f64`
 perspective | Perspective function for `f32` 4x4 mat4
 orthographic | Orthographic function for `f32` 4x4 mat4
 look_at | LookAt function for `f32` 4x4 mat4

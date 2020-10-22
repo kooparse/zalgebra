@@ -7,6 +7,7 @@ usingnamespace @import("vec4.zig");
 usingnamespace @import("vec3.zig");
 
 pub const mat4 = Mat4(f32);
+pub const mat4_f64 = Mat4(f64);
 pub const perspective = mat4.perspective;
 pub const orthographic = mat4.orthographic;
 pub const look_at = mat4.look_at;

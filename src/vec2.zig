@@ -2,6 +2,7 @@ const math = @import("std").math;
 const testing = @import("std").testing;
 
 pub const vec2 = Vec2(f32);
+pub const vec2_f64 = Vec2(f64);
 
 /// A 2 dimensional vector.
 pub fn Vec2(comptime T: type) type {
