@@ -1,5 +1,7 @@
-const math = @import("std").math;
-const testing = @import("std").testing;
+const std = @import("std");
+const root = @import("main.zig");
+const math = std.math;
+const testing = std.testing;
 
 pub const vec3 = Vec3(f32);
 pub const vec64 = Vec3(f64);
@@ -26,8 +28,18 @@ pub fn Vec3(comptime T: type) type {
             };
         }
 
-        pub fn zeros() Self {
+        pub fn zero() Self {
             return Self.new(0., 0., 0.);
+        }
+
+        pub fn up() Self {
+            return Self.new(0., 1., 0.);
+        }
+
+        /// Return the angle in degrees between two vectors.
+        pub fn get_angle(left: *const Self, right: *const Self) T {
+            const dot_product = Self.dot(left.norm(), right.norm());
+            return root.to_degrees(math.acos(dot_product));
         }
 
         /// Compute the length (magnitude) of given vector |a|.
@@ -82,6 +94,17 @@ test "zalgebra.Vec3.init" {
     testing.expectEqual(_vec_0.x, 1.5);
     testing.expectEqual(_vec_0.y, 2.6);
     testing.expectEqual(_vec_0.z, 3.7);
+}
+
+test "zalgebra.Vec3.get_angle" {
+    var _vec_0 = vec3.new(1., 0., 0.);
+    var _vec_1 = vec3.up();
+    var _vec_2 = vec3.new(-1., 0., 0.);
+    var _vec_3 = vec3.new(1., 1., 0.);
+
+    testing.expectEqual(vec3.get_angle(&_vec_0, &_vec_1), 90.);
+    testing.expectEqual(vec3.get_angle(&_vec_0, &_vec_2), 180.);
+    testing.expectEqual(vec3.get_angle(&_vec_0, &_vec_3), 45.);
 }
 
 test "zalgebra.Vec3.is_eq" {

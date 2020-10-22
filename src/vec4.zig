@@ -28,6 +28,10 @@ pub fn Vec4(comptime T: type) type {
             };
         }
 
+        pub fn zero() Self {
+            return Self.new(0., 0., 0., 0.);
+        }
+
         /// Compute the length (magnitude) of given vector |a|.
         pub fn length(self: Self) T {
             return math.sqrt((self.x * self.x) + (self.y * self.y) + (self.z * self.z) + (self.w * self.w));

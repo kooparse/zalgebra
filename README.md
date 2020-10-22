@@ -50,7 +50,9 @@ look_at | LookAt function for `f32` 4x4 mat4
 Methods | Description
 ------------ | -------------
 new | Construct a vector from 2-4 given components
-zeros | A vector with all components equals to zero
+zero | A vector with all components equals to zero
+up | A vector with `y` component to one (only for vec2 and vec3)
+get_angle | Return angle in degrees between two vectors (only for vec2 and vec3)
 length | Return the magnitude of the current vector
 norm | Construct a new normalized vector based on the given one
 is_eq | Return `true` if two vectors are equals
