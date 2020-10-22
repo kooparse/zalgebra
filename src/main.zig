@@ -8,6 +8,7 @@ pub usingnamespace @import("vec2.zig");
 pub usingnamespace @import("vec3.zig");
 pub usingnamespace @import("vec4.zig");
 pub usingnamespace @import("mat4.zig");
+pub usingnamespace @import("quaternion.zig");
 
 /// Convert degrees to radians.
 pub fn to_radians(degrees: anytype) @TypeOf(degrees) {

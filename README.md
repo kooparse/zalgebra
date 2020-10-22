@@ -7,7 +7,7 @@ Linear algebra library written in Zig for games and real-time computer graphics.
 - [x] vec3
 - [x] vec4
 - [x] mat4 (need more tests)
-- [ ] quaternion
+- [ ] quaternion (almost there)
 
 ## Examples
 
@@ -35,6 +35,7 @@ vec2 | Two dimensional vector for `f32`
 vec3 | Three dimensional vector for `f32`
 vec4 | Four dimensional vector for `f32`
 mat4 | 4x4 matrix for `f32`
+quat | Quaternion for `f32`
 perspective | Perspective function for `f32` 4x4 mat4
 orthographic | Orthographic function for `f32` 4x4 mat4
 look_at | LookAt function for `f32` 4x4 mat4
@@ -75,6 +76,23 @@ look_at | Construct a right-handed look_at matrix from given position (eye) and 
 mult | Multiply two matrices
 inv | Inverse the given matrix
 fmt | Display the matrix components for debug purpose
+
+### Quaternions
+Methods | Description
+------------ | -------------
+new| Construct new quat from given floats
+from_vec4 | Construct quaternion from vec4
+from_vec3 | Construct quaternion from vec3
+is_eq | Return `true` if two quaternions are equal
+norm | Normalize given quaternion
+length | Return the magniture of the given quaternion
+sub | Construct quaternion resulting from the subtraction of two given ones
+add | Construct quaternion resulting from the addition of two given ones
+mult | Construct quaternion resulting from the multiplication of two given ones
+scale | Construct quaternion resulting from the multiplication of all components of the given quat
+dot | Return the dot product between two quaternions
+from_euler_angles | Construct quaternion from Euler angles
+
 
 ### Utilities
 
