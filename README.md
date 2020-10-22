@@ -1,14 +1,6 @@
 # zalgebra
 Linear algebra library written in Zig for games and real-time computer graphics.
 
-
-## Current progress
-- [x] vec2
-- [x] vec3
-- [x] vec4
-- [x] mat4 (need more tests)
-- [ ] quaternion (almost there)
-
 ## Examples
 
 ```zig
@@ -118,4 +110,4 @@ Behind screens, there are human beings, living any sort of story. So be always k
 
 
 ## Thanks
-This project is inspired by [Handmade Math](https://github.com/HandmadeMath/Handmade-Math) and [nalgebra](https://nalgebra.org/).
+This project is inspired by [Handmade Math](https://github.com/HandmadeMath/Handmade-Math), [nalgebra](https://nalgebra.org/) and [Unity](https://unity.com/).
