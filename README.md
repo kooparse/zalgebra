@@ -1,5 +1,5 @@
 # zalgebra
-A linear algebra library written in Zig for real-time computer graphics.
+Linear algebra library written in Zig for games and real-time computer graphics.
 
 
 ## Current progress
