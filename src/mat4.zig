@@ -7,6 +7,8 @@ usingnamespace @import("vec4.zig");
 usingnamespace @import("vec3.zig");
 
 pub const mat4 = Mat4(f32);
+pub const perspective = mat4.perspective;
+pub const look_at = mat4.look_at;
 
 /// A column-major 4x4 matrix.
 /// Note: Column-major means accessing data like m.data[COLUMN][ROW].
@@ -84,7 +86,6 @@ pub fn Mat4(comptime T: type) type {
         pub fn get_translation(self: *const Self) Vec3(T) {
             return Vec3(T).new(self.data[3][0], self.data[3][1], self.data[3][2]);
         }
-
 
         /// Construct a 4x4 matrix from given axis and angle (in degrees).
         pub fn from_rotation(angle_in_degrees: T, axis: Vec3(T)) Self {
