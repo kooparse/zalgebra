@@ -8,6 +8,7 @@ usingnamespace @import("vec3.zig");
 
 pub const mat4 = Mat4(f32);
 pub const perspective = mat4.perspective;
+pub const orthographic = mat4.orthographic;
 pub const look_at = mat4.look_at;
 
 /// A column-major 4x4 matrix.
@@ -135,16 +136,32 @@ pub fn Mat4(comptime T: type) type {
         /// Construct a perspective 4x4 matrix.
         /// Note: Field of view is given in degrees.
         /// Also for more details https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml.
-        pub fn perspective(fovy_in_degrees: T, aspect_ratio: T, near: T, far: T) Self {
+        pub fn perspective(fovy_in_degrees: T, aspect_ratio: T, z_near: T, z_far: T) Self {
             var mat: Self = undefined;
 
             const f = 1.0 / math.tan(fovy_in_degrees * 0.5);
 
             mat.data[0][0] = f / aspect_ratio;
             mat.data[1][1] = f;
-            mat.data[2][2] = (near + far) / (near - far);
+            mat.data[2][2] = (z_near + z_far) / (z_near - z_far);
             mat.data[2][3] = -1;
-            mat.data[3][2] = 2 * far * near / (near - far);
+            mat.data[3][2] = 2 * z_far * z_near / (z_near - z_far);
+
+            return mat;
+        }
+
+        /// Construct an orthographic 4x4 matrix.
+        pub fn orthographic(left: T, right: T, bottom: T, top: T, z_near: T, z_far: T) Self {
+            var mat: Self = undefined;
+
+            mat.data[0][0] = 2.0 / (right - left);
+            mat.data[1][1] = 2.0 / (top - bottom);
+            mat.data[2][2] = 2.0 / (z_near - z_far);
+            mat.data[3][3] = 1.0;
+
+            mat.data[3][0] = (left + right) / (left - right);
+            mat.data[3][1] = (bottom + top) / (bottom - top);
+            mat.data[3][2] = (z_far + z_near) / (z_near - z_far);
 
             return mat;
         }

@@ -6,7 +6,7 @@ A linear algebra library written in Zig for real-time computer graphics.
 - [x] vec2
 - [x] vec3
 - [x] vec4
-- [x] mat4 (still need tests)
+- [x] mat4 (need more tests)
 - [ ] quaternion
 
 
@@ -42,7 +42,8 @@ from_rotate | Construct a rotation matrix from identity matrix.
 rotate | Construct a rotation from the given matrix according to given axis (vec3).
 from_scale | Construct a scale matrix from identity matrix.
 scale | Construct a scale from the given matrix according to given axis (vec3).
-perspective | Construct a perspective matrix from given fovy, aspect ratio, min/max inputs.
+perspective | Construct a perspective matrix from given fovy, aspect ratio, near/far inputs.
+orthographic| Construct an orthographic matrix from given left, right, bottom, top, near/far inputs.
 look_at | Construct a right-handed look_at matrix from given position (eye) and target.
 mult | Multiply two matrices.
 inv | Inverse the given matrix.
