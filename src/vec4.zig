@@ -8,7 +8,7 @@ pub const vec4_f64 = Vec4(f64);
 
 /// A 4 dimensional vector.
 pub fn Vec4(comptime T: type) type {
-    if (T != f32 and T != f64) {
+    if (@typeInfo(T) != .Float) {
         @compileError("Vec4 not implemented for " ++ @typeName(T));
     }
 

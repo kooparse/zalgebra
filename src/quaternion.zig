@@ -10,7 +10,7 @@ pub const quat_f64 = Quaternion(f64);
 
 /// A Quaternion for 3D rotations.
 pub fn Quaternion(comptime T: type) type {
-    if (T != f32 and T != f64) {
+    if (@typeInfo(T) != .Float) {
         @compileError("Quaternion not implemented for " ++ @typeName(T));
     }
 

@@ -15,7 +15,7 @@ pub const look_at = mat4.look_at;
 /// A column-major 4x4 matrix.
 /// Note: Column-major means accessing data like m.data[COLUMN][ROW].
 pub fn Mat4(comptime T: type) type {
-    if (T != f32 and T != f64) {
+    if (@typeInfo(T) != .Float) {
         @compileError("Mat4 not implemented for " ++ @typeName(T));
     }
 

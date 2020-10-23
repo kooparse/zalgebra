@@ -8,7 +8,7 @@ pub const vec2_f64 = Vec2(f64);
 
 /// A 2 dimensional vector.
 pub fn Vec2(comptime T: type) type {
-    if (T != f32 and T != f64) {
+    if (@typeInfo(T) != .Float) {
         @compileError("Vec2 not implemented for " ++ @typeName(T));
     }
 

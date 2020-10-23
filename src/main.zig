@@ -14,8 +14,8 @@ pub usingnamespace @import("quaternion.zig");
 pub fn to_radians(degrees: anytype) @TypeOf(degrees) {
     const T = @TypeOf(degrees);
 
-    return switch (T) {
-        f32, f64 => degrees * (math.pi / 180.0),
+    return switch (@typeInfo(T)) {
+        .Float => degrees * (math.pi / 180.0),
         else => @compileError("Radians not implemented for " ++ @typeName(T)),
     };
 }
@@ -24,8 +24,8 @@ pub fn to_radians(degrees: anytype) @TypeOf(degrees) {
 pub fn to_degrees(radians: anytype) @TypeOf(radians) {
     const T = @TypeOf(radians);
 
-    return switch (T) {
-        f32, f64 => radians * (180.0 / math.pi),
+    return switch (@typeInfo(T)) {
+        .Float => radians * (180.0 / math.pi),
         else => @compileError("Degrees not implemented for " ++ @typeName(T)),
     };
 }
@@ -33,11 +33,10 @@ pub fn to_degrees(radians: anytype) @TypeOf(radians) {
 /// Linear interpolation between two floats.
 /// `t` is used to interpolate between `from` and `to`.
 pub fn lerp(comptime T: type, from: T, to: T, t: T) T {
-    if (T != f32 and T != f64) {
-        @compileError("Lerp not implemented for " ++ @typeName(T));
-    }
-
-    return (1 - t) * from + t * to;
+    return switch (@typeInfo(T)) {
+        .Float => (1 - t) * from + t * to,
+        else => @compileError("Lerp not implemented for " ++ @typeName(T)),
+    };
 }
 
 test "zalgebra.to_radians" {

@@ -8,7 +8,7 @@ pub const vec64 = Vec3(f64);
 
 /// A 3 dimensional vector.
 pub fn Vec3(comptime T: type) type {
-    if (T != f32 and T != f64) {
+    if (@typeInfo(T) != .Float) {
         @compileError("Vec3 not implemented for " ++ @typeName(T));
     }
 
