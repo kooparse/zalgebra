@@ -52,7 +52,8 @@ sub | Construct new vector resulting from the substraction between two vectors
 add | Construct new vector resulting from the addition between two vectors
 scale | Construct new vector after multiplying each components by the given scalar
 cross | Construct the cross product (as vector) from two vectors (only for vec3)
-dot | Return the dot product between two vector
+dot | Return the dot product between two vectors
+lerp | Linearly interpolates between two vectors
 
 ### Matrices
 Note: All matrices are column-major.
@@ -100,6 +101,7 @@ Methods | Description
 ------------ | -------------
 to_radians | Convert degrees to radians
 to_degrees | Convert radians to degrees
+lerp | Linear interpolation between two floats
 
 
 ## Contributing to the project

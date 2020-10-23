@@ -71,6 +71,13 @@ pub fn Vec2(comptime T: type) type {
         pub fn dot(left: Self, right: Self) T {
             return (left.x * right.x) + (left.y * right.y);
         }
+
+        /// Lerp between two vectors.
+        pub fn lerp(left: *const Self, right: *const Self, t: T) Self {
+            const x = root.lerp(T, left.x, right.x, t);
+            const y = root.lerp(T, left.y, right.y, t);
+            return Self.new(x, y);
+        }
     };
 }
 
@@ -132,4 +139,11 @@ test "zalgebra.Vec2.dot" {
     var _vec_1 = vec2.new(2.5, 3.45);
 
     testing.expectEqual(vec2.dot(_vec_0, _vec_1), 12.7200002);
+}
+
+test "zalgebra.Vec2.lerp" {
+    var _vec_0 = vec2.new(-10.0, 0.0);
+    var _vec_1 = vec2.new(10.0, 10.0);
+
+    testing.expectEqual(vec2.is_eq(vec2.lerp(&_vec_0, &_vec_1, 0.5), vec2.new(0.0, 5.0)), true);
 }

@@ -85,6 +85,14 @@ pub fn Vec3(comptime T: type) type {
         pub fn dot(left: Self, right: Self) T {
             return (left.x * right.x) + (left.y * right.y) + (left.z * right.z);
         }
+
+        /// Lerp between two vectors.
+        pub fn lerp(left: *const Self, right: *const Self, t: T) Self {
+            const x = root.lerp(T, left.x, right.x, t);
+            const y = root.lerp(T, left.y, right.y, t);
+            const z = root.lerp(T, left.z, right.z, t);
+            return Self.new(x, y, z);
+        }
     };
 }
 
@@ -142,13 +150,6 @@ test "zalgebra.Vec3.scale" {
     testing.expectEqual(vec3.is_eq(&vec3.scale(_vec_0, 5.), &vec3.new(5., 10., 15.)), true);
 }
 
-test "zalgebra.Vec3.dot" {
-    var _vec_0 = vec3.new(1.5, 2.6, 3.7);
-    var _vec_1 = vec3.new(2.5, 3.45, 1.0);
-
-    testing.expectEqual(vec3.dot(_vec_0, _vec_1), 16.42);
-}
-
 test "zalgebra.Vec3.cross" {
     var _vec_0 = vec3.new(1.5, 2.6, 3.7);
     var _vec_1 = vec3.new(2.5, 3.45, 1.0);
@@ -159,4 +160,18 @@ test "zalgebra.Vec3.cross" {
 
     testing.expectEqual(vec3.is_eq(&_cross_product_0, &vec3.new(0., 0., 0.)), true);
     testing.expectEqual(vec3.is_eq(&_cross_product_1, &vec3.new(-10.1650009, 7.75, -1.32499980)), true);
+}
+
+test "zalgebra.Vec3.dot" {
+    var _vec_0 = vec3.new(1.5, 2.6, 3.7);
+    var _vec_1 = vec3.new(2.5, 3.45, 1.0);
+
+    testing.expectEqual(vec3.dot(_vec_0, _vec_1), 16.42);
+}
+
+test "zalgebra.Vec3.lerp" {
+    var _vec_0 = vec3.new(-10.0, 0.0, -10.0);
+    var _vec_1 = vec3.new(10.0, 10.0, 10.0);
+
+    testing.expectEqual(vec3.is_eq(&vec3.lerp(&_vec_0, &_vec_1, 0.5), &vec3.new(0.0, 5.0, 0.0)), true);
 }
