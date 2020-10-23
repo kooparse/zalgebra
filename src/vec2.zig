@@ -48,7 +48,7 @@ pub fn Vec2(comptime T: type) type {
             return Self.new(self.x / l, self.y / l);
         }
 
-        pub fn is_eq(left: Self, right: Self) bool {
+        pub fn is_eq(left: *const Self, right: *const Self) bool {
             return left.x == right.x and left.y == right.y;
         }
 
@@ -78,6 +78,22 @@ pub fn Vec2(comptime T: type) type {
             const y = root.lerp(T, left.y, right.y, t);
             return Self.new(x, y);
         }
+
+        /// Construct a new vector from the min components between two vectors.
+        pub fn min(left: *const Self, right: *const Self) Self {
+            return Self.new(
+                math.min(left.x, right.x),
+                math.min(left.y, right.y),
+            );
+        }
+
+        /// Construct a new vector from the max components between two vectors.
+        pub fn max(left: *const Self, right: *const Self) Self {
+            return Self.new(
+                math.max(left.x, right.x),
+                math.max(left.y, right.y),
+            );
+        }
     };
 }
 
@@ -103,8 +119,8 @@ test "zalgebra.Vec2.is_eq" {
     var _vec_0 = vec2.new(1., 2.);
     var _vec_1 = vec2.new(1., 2.);
     var _vec_2 = vec2.new(1.5, 2.);
-    testing.expectEqual(vec2.is_eq(_vec_0, _vec_1), true);
-    testing.expectEqual(vec2.is_eq(_vec_0, _vec_2), false);
+    testing.expectEqual(vec2.is_eq(&_vec_0, &_vec_1), true);
+    testing.expectEqual(vec2.is_eq(&_vec_0, &_vec_2), false);
 }
 
 test "zalgebra.Vec2.length" {
@@ -114,24 +130,24 @@ test "zalgebra.Vec2.length" {
 
 test "zalgebra.Vec2.normalize" {
     var _vec_0 = vec2.new(1.5, 2.6);
-    testing.expectEqual(vec2.is_eq(_vec_0.norm(), vec2.new(0.499722480, 0.866185605)), true);
+    testing.expectEqual(vec2.is_eq(&_vec_0.norm(), &vec2.new(0.499722480, 0.866185605)), true);
 }
 
 test "zalgebra.Vec2.sub" {
     var _vec_0 = vec2.new(1., 2.);
     var _vec_1 = vec2.new(2., 2.);
-    testing.expectEqual(vec2.is_eq(vec2.sub(_vec_0, _vec_1), vec2.new(-1., 0.)), true);
+    testing.expectEqual(vec2.is_eq(&vec2.sub(_vec_0, _vec_1), &vec2.new(-1., 0.)), true);
 }
 
 test "zalgebra.Vec2.add" {
     var _vec_0 = vec2.new(1., 2.);
     var _vec_1 = vec2.new(2., 2.);
-    testing.expectEqual(vec2.is_eq(vec2.add(_vec_0, _vec_1), vec2.new(3., 4.)), true);
+    testing.expectEqual(vec2.is_eq(&vec2.add(_vec_0, _vec_1), &vec2.new(3., 4.)), true);
 }
 
 test "zalgebra.Vec2.scale" {
     var _vec_0 = vec2.new(1., 2.);
-    testing.expectEqual(vec2.is_eq(vec2.scale(_vec_0, 5.), vec2.new(5., 10.)), true);
+    testing.expectEqual(vec2.is_eq(&vec2.scale(_vec_0, 5.), &vec2.new(5., 10.)), true);
 }
 
 test "zalgebra.Vec2.dot" {
@@ -145,5 +161,19 @@ test "zalgebra.Vec2.lerp" {
     var _vec_0 = vec2.new(-10.0, 0.0);
     var _vec_1 = vec2.new(10.0, 10.0);
 
-    testing.expectEqual(vec2.is_eq(vec2.lerp(&_vec_0, &_vec_1, 0.5), vec2.new(0.0, 5.0)), true);
+    testing.expectEqual(vec2.is_eq(&vec2.lerp(&_vec_0, &_vec_1, 0.5), &vec2.new(0.0, 5.0)), true);
+}
+
+test "zalgebra.Vec2.min" {
+    var _vec_0 = vec2.new(10.0, -2.0);
+    var _vec_1 = vec2.new(-10.0, 5.0);
+
+    testing.expectEqual(vec2.is_eq(&vec2.min(&_vec_0, &_vec_1), &vec2.new(-10.0, -2.0)), true);
+}
+
+test "zalgebra.Vec2.max" {
+    var _vec_0 = vec2.new(10.0, -2.0);
+    var _vec_1 = vec2.new(-10.0, 5.0);
+
+    testing.expectEqual(vec2.is_eq(&vec2.max(&_vec_0, &_vec_1), &vec2.new(10.0, 5.0)), true);
 }

@@ -77,6 +77,26 @@ pub fn Vec4(comptime T: type) type {
             const w = root.lerp(T, left.w, right.w, t);
             return Self.new(x, y, z, w);
         }
+
+        /// Construct a new vector from the min components between two vectors.
+        pub fn min(left: *const Self, right: *const Self) Self {
+            return Self.new(
+                math.min(left.x, right.x),
+                math.min(left.y, right.y),
+                math.min(left.z, right.z),
+                math.min(left.w, right.w),
+            );
+        }
+
+        /// Construct a new vector from the max components between two vectors.
+        pub fn max(left: *const Self, right: *const Self) Self {
+            return Self.new(
+                math.max(left.x, right.x),
+                math.max(left.y, right.y),
+                math.max(left.z, right.z),
+                math.max(left.w, right.w),
+            );
+        }
     };
 }
 
@@ -136,4 +156,18 @@ test "zalgebra.Vec4.lerp" {
     var _vec_1 = vec4.new(10.0, 10.0, 10.0, 10.0);
 
     testing.expectEqual(vec4.is_eq(&vec4.lerp(&_vec_0, &_vec_1, 0.5), &vec4.new(0.0, 5.0, 0.0, 0.0)), true);
+}
+
+test "zalgebra.Vec3.min" {
+    var _vec_0 = vec4.new(10.0, -2.0, 0.0, 1.0);
+    var _vec_1 = vec4.new(-10.0, 5.0, 0.0, 1.01);
+
+    testing.expectEqual(vec4.is_eq(&vec4.min(&_vec_0, &_vec_1), &vec4.new(-10.0, -2.0, 0.0, 1.0)), true);
+}
+
+test "zalgebra.vec4.max" {
+    var _vec_0 = vec4.new(10.0, -2.0, 0.0, 1.0);
+    var _vec_1 = vec4.new(-10.0, 5.0, 0.0, 1.01);
+
+    testing.expectEqual(vec4.is_eq(&vec4.max(&_vec_0, &_vec_1), &vec4.new(10.0, 5.0, 0.0, 1.01)), true);
 }
