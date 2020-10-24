@@ -1,5 +1,5 @@
 # zalgebra
-Linear algebra library written in Zig for games and real-time computer graphics.
+Linear algebra library for games and computer graphics. The goal is to become as complete and useful as the Unity one. I'm currently using it for my projects and will continue to update it as new needs are coming. If you would like to contribute, don't hesitate! ;)
 
 ## Examples
 
