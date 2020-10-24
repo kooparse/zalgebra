@@ -10,8 +10,8 @@ const mat4 = za.mat4;
 
 pub fn main () void {
   var projection = za.perspective(45.0, 800.0 / 600.0, 0.1, 100.0);
-  var view = za.look_at(&vec3.new(0., 0., -3.), &vec3.new(0., 0., 0.), &vec3.new(0., 1., 0.));
-  var model = mat4.from_translation(&vec3.new(0.2, 0.5, 0.0));
+  var view = za.look_at(vec3.new(0., 0., -3.), vec3.new(0., 0., 0.), vec3.new(0., 1., 0.));
+  var model = mat4.from_translation(vec3.new(0.2, 0.5, 0.0));
   
   var mvp = mat4.mult(projection, view.mult(model));
 }
