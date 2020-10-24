@@ -37,7 +37,7 @@ pub fn Vec3(comptime T: type) type {
         }
 
         /// Return the angle in degrees between two vectors.
-        pub fn get_angle(left: *const Self, right: *const Self) T {
+        pub fn get_angle(left: Self, right: Self) T {
             const dot_product = Self.dot(left.norm(), right.norm());
             return root.to_degrees(math.acos(dot_product));
         }
@@ -53,7 +53,7 @@ pub fn Vec3(comptime T: type) type {
             return Self.new(self.x / l, self.y / l, self.z / l);
         }
 
-        pub fn is_eq(left: *const Self, right: *const Self) bool {
+        pub fn is_eq(left: Self, right: Self) bool {
             return left.x == right.x and left.y == right.y and left.z == right.z;
         }
 
@@ -87,7 +87,7 @@ pub fn Vec3(comptime T: type) type {
         }
 
         /// Lerp between two vectors.
-        pub fn lerp(left: *const Self, right: *const Self, t: T) Self {
+        pub fn lerp(left: Self, right: Self, t: T) Self {
             const x = root.lerp(T, left.x, right.x, t);
             const y = root.lerp(T, left.y, right.y, t);
             const z = root.lerp(T, left.z, right.z, t);
@@ -95,7 +95,7 @@ pub fn Vec3(comptime T: type) type {
         }
 
         /// Construct a new vector from the min components between two vectors.
-        pub fn min(left: *const Self, right: *const Self) Self {
+        pub fn min(left: Self, right: Self) Self {
             return Self.new(
                 math.min(left.x, right.x),
                 math.min(left.y, right.y),
@@ -104,7 +104,7 @@ pub fn Vec3(comptime T: type) type {
         }
 
         /// Construct a new vector from the max components between two vectors.
-        pub fn max(left: *const Self, right: *const Self) Self {
+        pub fn max(left: Self, right: Self) Self {
             return Self.new(
                 math.max(left.x, right.x),
                 math.max(left.y, right.y),
@@ -128,17 +128,17 @@ test "zalgebra.Vec3.get_angle" {
     var _vec_2 = vec3.new(-1., 0., 0.);
     var _vec_3 = vec3.new(1., 1., 0.);
 
-    testing.expectEqual(vec3.get_angle(&_vec_0, &_vec_1), 90.);
-    testing.expectEqual(vec3.get_angle(&_vec_0, &_vec_2), 180.);
-    testing.expectEqual(vec3.get_angle(&_vec_0, &_vec_3), 45.);
+    testing.expectEqual(vec3.get_angle(_vec_0, _vec_1), 90.);
+    testing.expectEqual(vec3.get_angle(_vec_0, _vec_2), 180.);
+    testing.expectEqual(vec3.get_angle(_vec_0, _vec_3), 45.);
 }
 
 test "zalgebra.Vec3.is_eq" {
     var _vec_0 = vec3.new(1., 2., 3.);
     var _vec_1 = vec3.new(1., 2., 3.);
     var _vec_2 = vec3.new(1.5, 2., 3.);
-    testing.expectEqual(vec3.is_eq(&_vec_0, &_vec_1), true);
-    testing.expectEqual(vec3.is_eq(&_vec_0, &_vec_2), false);
+    testing.expectEqual(vec3.is_eq(_vec_0, _vec_1), true);
+    testing.expectEqual(vec3.is_eq(_vec_0, _vec_2), false);
 }
 
 test "zalgebra.Vec3.length" {
@@ -148,24 +148,24 @@ test "zalgebra.Vec3.length" {
 
 test "zalgebra.Vec3.normalize" {
     var _vec_0 = vec3.new(1.5, 2.6, 3.7);
-    testing.expectEqual(vec3.is_eq(&_vec_0.norm(), &vec3.new(0.314831584, 0.545708060, 0.776584625)), true);
+    testing.expectEqual(vec3.is_eq(_vec_0.norm(), vec3.new(0.314831584, 0.545708060, 0.776584625)), true);
 }
 
 test "zalgebra.Vec3.sub" {
     var _vec_0 = vec3.new(1., 2., 3.);
     var _vec_1 = vec3.new(2., 2., 3.);
-    testing.expectEqual(vec3.is_eq(&vec3.sub(_vec_0, _vec_1), &vec3.new(-1., 0., 0.)), true);
+    testing.expectEqual(vec3.is_eq(vec3.sub(_vec_0, _vec_1), vec3.new(-1., 0., 0.)), true);
 }
 
 test "zalgebra.Vec3.add" {
     var _vec_0 = vec3.new(1., 2., 3.);
     var _vec_1 = vec3.new(2., 2., 3.);
-    testing.expectEqual(vec3.is_eq(&vec3.add(_vec_0, _vec_1), &vec3.new(3., 4., 6.)), true);
+    testing.expectEqual(vec3.is_eq(vec3.add(_vec_0, _vec_1), vec3.new(3., 4., 6.)), true);
 }
 
 test "zalgebra.Vec3.scale" {
     var _vec_0 = vec3.new(1., 2., 3.);
-    testing.expectEqual(vec3.is_eq(&vec3.scale(_vec_0, 5.), &vec3.new(5., 10., 15.)), true);
+    testing.expectEqual(vec3.is_eq(vec3.scale(_vec_0, 5.), vec3.new(5., 10., 15.)), true);
 }
 
 test "zalgebra.Vec3.cross" {
@@ -176,8 +176,8 @@ test "zalgebra.Vec3.cross" {
     var _cross_product_0 = vec3.cross(_vec_0, _vec_2);
     var _cross_product_1 = vec3.cross(_vec_0, _vec_1);
 
-    testing.expectEqual(vec3.is_eq(&_cross_product_0, &vec3.new(0., 0., 0.)), true);
-    testing.expectEqual(vec3.is_eq(&_cross_product_1, &vec3.new(-10.1650009, 7.75, -1.32499980)), true);
+    testing.expectEqual(vec3.is_eq(_cross_product_0, vec3.new(0., 0., 0.)), true);
+    testing.expectEqual(vec3.is_eq(_cross_product_1, vec3.new(-10.1650009, 7.75, -1.32499980)), true);
 }
 
 test "zalgebra.Vec3.dot" {
@@ -191,19 +191,19 @@ test "zalgebra.Vec3.lerp" {
     var _vec_0 = vec3.new(-10.0, 0.0, -10.0);
     var _vec_1 = vec3.new(10.0, 10.0, 10.0);
 
-    testing.expectEqual(vec3.is_eq(&vec3.lerp(&_vec_0, &_vec_1, 0.5), &vec3.new(0.0, 5.0, 0.0)), true);
+    testing.expectEqual(vec3.is_eq(vec3.lerp(_vec_0, _vec_1, 0.5), vec3.new(0.0, 5.0, 0.0)), true);
 }
 
 test "zalgebra.Vec3.min" {
     var _vec_0 = vec3.new(10.0, -2.0, 0.0);
     var _vec_1 = vec3.new(-10.0, 5.0, 0.0);
 
-    testing.expectEqual(vec3.is_eq(&vec3.min(&_vec_0, &_vec_1), &vec3.new(-10.0, -2.0, 0.0)), true);
+    testing.expectEqual(vec3.is_eq(vec3.min(_vec_0, _vec_1), vec3.new(-10.0, -2.0, 0.0)), true);
 }
 
 test "zalgebra.Vec3.max" {
     var _vec_0 = vec3.new(10.0, -2.0, 0.0);
     var _vec_1 = vec3.new(-10.0, 5.0, 0.0);
 
-    testing.expectEqual(vec3.is_eq(&vec3.max(&_vec_0, &_vec_1), &vec3.new(10.0, 5.0, 0.0)), true);
+    testing.expectEqual(vec3.is_eq(vec3.max(_vec_0, _vec_1), vec3.new(10.0, 5.0, 0.0)), true);
 }

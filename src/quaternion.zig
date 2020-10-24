@@ -32,7 +32,7 @@ pub fn Quaternion(comptime T: type) type {
             };
         }
 
-        pub fn from_vec4(components: *const Vec4(T)) Self {
+        pub fn from_vec4(components: Vec4(T)) Self {
             return .{
                 .w = components.w,
                 .x = components.x,
@@ -41,7 +41,7 @@ pub fn Quaternion(comptime T: type) type {
             };
         }
 
-        pub fn from_vec3(w: T, axis: *const Vec3(T)) Self {
+        pub fn from_vec3(w: T, axis: Vec3(T)) Self {
             return .{
                 .w = w,
                 .x = axis.x,
@@ -50,28 +50,28 @@ pub fn Quaternion(comptime T: type) type {
             };
         }
 
-        pub fn is_eq(left: *const Self, right: *const Self) bool {
+        pub fn is_eq(left: Self, right: Self) bool {
             return (left.w == right.w and
                 left.x == right.x and
                 left.y == right.y and
                 left.z == right.z);
         }
 
-        pub fn norm(self: *const Self) T {
+        pub fn norm(self: Self) T {
             const l = length(self);
             assert(l != 0);
 
             return Self.new(self.w / l, self.x / l, self.y / l, self.z / l);
         }
 
-        pub fn length(self: *const Self) T {
+        pub fn length(self: Self) T {
             return math.sqrt((self.w * self.w) +
                 (self.x * self.x) +
                 (self.y * self.y) +
                 (self.z * self.z));
         }
 
-        pub fn sub(left: *const Self, right: *const Self) Self {
+        pub fn sub(left: Self, right: Self) Self {
             return Self.new(
                 left.w - right.w,
                 left.x - right.x,
@@ -80,7 +80,7 @@ pub fn Quaternion(comptime T: type) type {
             );
         }
 
-        pub fn add(left: *const Self, right: *const Self) Self {
+        pub fn add(left: Self, right: Self) Self {
             return Self.new(
                 left.w + right.w,
                 left.x + right.x,
@@ -89,7 +89,7 @@ pub fn Quaternion(comptime T: type) type {
             );
         }
 
-        pub fn mult(left: *const Self, right: *const Self) Self {
+        pub fn mult(left: Self, right: Self) Self {
             var quat: Self = undefined;
             quat.x = (left.x * right.w) + (left.y * right.z) - (left.z * right.y) + (left.w * right.x);
             quat.y = (-left.x * right.z) + (left.y * right.w) + (left.z * right.x) + (left.w * right.y);
@@ -99,7 +99,7 @@ pub fn Quaternion(comptime T: type) type {
             return quat;
         }
 
-        pub fn scale(mat: *const Self, scalar: T) Self {
+        pub fn scale(mat: Self, scalar: T) Self {
             var result: Self = undefined;
             result.w = mat.w * scalar;
             result.x = mat.x * scalar;
@@ -110,13 +110,13 @@ pub fn Quaternion(comptime T: type) type {
         }
 
         /// Return the dot product between two quaternion.
-        pub fn dot(left: *const Self, right: *const Self) T {
+        pub fn dot(left: Self, right: Self) T {
             return (left.x * right.x) + (left.y * right.y) + (left.z * right.z) + (left.w * right.w);
         }
 
         /// Convert given quaternion to rotation 4x4 matrix.
         /// Mostly taken from https://github.com/HandmadeMath/Handmade-Math.
-        pub fn to_mat4(self: *const Self) Mat4(T) {
+        pub fn to_mat4(self: Self) Mat4(T) {
             var result: Mat4(T) = undefined;
 
             const normalized = self.norm();
@@ -154,7 +154,7 @@ pub fn Quaternion(comptime T: type) type {
         }
 
         /// Convert Euler angles to quaternion.
-        pub fn from_euler_angles(degrees: T, axis: *const Vec3(T)) Self {
+        pub fn from_euler_angles(degrees: T, axis: Vec3(T)) Self {
             const radians = root.to_radians(degrees);
 
             const rot_sin = math.sin(radians / 2.0);

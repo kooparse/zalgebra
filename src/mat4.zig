@@ -40,7 +40,7 @@ pub fn Mat4(comptime T: type) type {
             return @ptrCast(*const T, &mat.data);
         }
 
-        pub fn is_eq(left: *const Self, right: *const Self) bool {
+        pub fn is_eq(left: Self, right: Self) bool {
             var col: usize = 0;
             var row: usize = 0;
 
@@ -68,7 +68,7 @@ pub fn Mat4(comptime T: type) type {
 
         /// Construct 4x4 translation matrix by multiplying identity matrix and
         /// given translation vector.
-        pub fn from_translate(axis: *const Vec3(T)) Self {
+        pub fn from_translate(axis: Vec3(T)) Self {
             var mat = Self.identity();
 
             mat.data[3][0] = axis.x;
@@ -80,12 +80,12 @@ pub fn Mat4(comptime T: type) type {
 
         /// Make a translation between the given matrix and the given axis.
         pub fn translate(mat: Self, axis: Vec3(T)) Self {
-            var trans_mat = Self.from_translate(&axis);
+            var trans_mat = Self.from_translate(axis);
             return Self.mult(trans_mat, mat);
         }
 
         /// Get translation Vec3 from current matrix.
-        pub fn get_translation(self: *const Self) Vec3(T) {
+        pub fn get_translation(self: Self) Vec3(T) {
             return Vec3(T).new(self.data[3][0], self.data[3][1], self.data[3][2]);
         }
 
@@ -119,7 +119,7 @@ pub fn Mat4(comptime T: type) type {
             return Self.mult(rotation_mat, mat);
         }
 
-        pub fn from_scale(axis: *const Vec3(T)) Self {
+        pub fn from_scale(axis: Vec3(T)) Self {
             var mat = Self.identity();
 
             mat.data[0][0] = axis.x;
@@ -130,7 +130,7 @@ pub fn Mat4(comptime T: type) type {
         }
 
         pub fn scale(mat: Self, axis: Vec3(T)) Self {
-            var scale_mat = Self.from_scale(&axis);
+            var scale_mat = Self.from_scale(axis);
             return Self.mult(scale_mat, mat);
         }
 
@@ -306,14 +306,14 @@ test "zalgebra.Mat4.is_eq" {
         },
     };
 
-    testing.expectEqual(mat4.is_eq(&mat_0, &mat_1), true);
-    testing.expectEqual(mat4.is_eq(&mat_0, &mat_2), false);
+    testing.expectEqual(mat4.is_eq(mat_0, mat_1), true);
+    testing.expectEqual(mat4.is_eq(mat_0, mat_2), false);
 }
 
 test "zalgebra.Mat4.from_translate" {
-    const mat4_trans = mat4.from_translate(&vec3.new(2, 3, 4));
+    const mat4_trans = mat4.from_translate(vec3.new(2, 3, 4));
 
-    testing.expectEqual(mat4.is_eq(&mat4_trans, &mat4{
+    testing.expectEqual(mat4.is_eq(mat4_trans, mat4{
         .data = .{
             .{ 1., 0., 0., 0. },
             .{ 0., 1., 0., 0. },
@@ -324,10 +324,10 @@ test "zalgebra.Mat4.from_translate" {
 }
 
 test "zalgebra.Mat4.translate" {
-    const base = mat4.from_translate(&vec3.new(2, 3, 2));
+    const base = mat4.from_translate(vec3.new(2, 3, 2));
     const result = mat4.translate(base, vec3.new(2, 3, 4));
 
-    testing.expectEqual(mat4.is_eq(&result, &mat4{
+    testing.expectEqual(mat4.is_eq(result, mat4{
         .data = .{
             .{ 1., 0., 0., 0. },
             .{ 0., 1., 0., 0. },
@@ -338,16 +338,16 @@ test "zalgebra.Mat4.translate" {
 }
 
 test "zalgebra.Mat4.get_translation" {
-    const base = mat4.from_translate(&vec3.new(2, 3, 2));
-    const result = mat4.get_translation(&base);
+    const base = mat4.from_translate(vec3.new(2, 3, 2));
+    const result = mat4.get_translation(base);
 
-    testing.expectEqual(vec3.is_eq(&result, &vec3.new(2, 3, 2)), true);
+    testing.expectEqual(vec3.is_eq(result, vec3.new(2, 3, 2)), true);
 }
 
 test "zalgebra.Mat4.from_scale" {
-    const mat4_scale = mat4.from_scale(&vec3.new(2, 3, 4));
+    const mat4_scale = mat4.from_scale(vec3.new(2, 3, 4));
 
-    testing.expectEqual(mat4.is_eq(&mat4_scale, &mat4{
+    testing.expectEqual(mat4.is_eq(mat4_scale, mat4{
         .data = .{
             .{ 2., 0., 0., 0. },
             .{ 0., 3., 0., 0. },
@@ -358,10 +358,10 @@ test "zalgebra.Mat4.from_scale" {
 }
 
 test "zalgebra.Mat4.scale" {
-    const base = mat4.from_scale(&vec3.new(2, 3, 4));
+    const base = mat4.from_scale(vec3.new(2, 3, 4));
     const result = mat4.scale(base, vec3.new(2, 2, 2));
 
-    testing.expectEqual(mat4.is_eq(&result, &mat4{
+    testing.expectEqual(mat4.is_eq(result, mat4{
         .data = .{
             .{ 4., 0., 0., 0. },
             .{ 0., 6., 0., 0. },
