@@ -4,7 +4,7 @@ const math = std.math;
 const testing = std.testing;
 
 pub const vec3 = Vec3(f32);
-pub const vec64 = Vec3(f64);
+pub const vec3_f64 = Vec3(f64);
 
 /// A 3 dimensional vector.
 pub fn Vec3(comptime T: type) type {
