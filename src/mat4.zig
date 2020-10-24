@@ -241,43 +241,43 @@ pub fn Mat4(comptime T: type) type {
             c[4] = mat.data[2][1] * mat.data[3][3] - mat.data[3][1] * mat.data[2][3];
             c[5] = mat.data[2][2] * mat.data[3][3] - mat.data[3][2] * mat.data[2][3];
 
-            var idet: T = 1.0 / (s[0] * c[5] - s[1] * c[4] + s[2] * c[3] + s[3] * c[2] - s[4] * c[1] + s[5] * c[0]);
+            const determ = 1.0 / (s[0] * c[5] - s[1] * c[4] + s[2] * c[3] + s[3] * c[2] - s[4] * c[1] + s[5] * c[0]);
 
             inv_mat.data[0][0] =
-                (mat.data[1][1] * c[5] - mat.data[1][2] * c[4] + mat.data[1][3] * c[3]) * idet;
+                (mat.data[1][1] * c[5] - mat.data[1][2] * c[4] + mat.data[1][3] * c[3]) * determ;
             inv_mat.data[0][1] =
-                (-mat.data[0][1] * c[5] + mat.data[0][2] * c[4] - mat.data[0][3] * c[3]) * idet;
+                (-mat.data[0][1] * c[5] + mat.data[0][2] * c[4] - mat.data[0][3] * c[3]) * determ;
             inv_mat.data[0][2] =
-                (mat.data[3][1] * s[5] - mat.data[3][2] * s[4] + mat.data[3][3] * s[3]) * idet;
+                (mat.data[3][1] * s[5] - mat.data[3][2] * s[4] + mat.data[3][3] * s[3]) * determ;
             inv_mat.data[0][3] =
-                (-mat.data[2][1] * s[5] + mat.data[2][2] * s[4] - mat.data[2][3] * s[3]) * idet;
+                (-mat.data[2][1] * s[5] + mat.data[2][2] * s[4] - mat.data[2][3] * s[3]) * determ;
 
             inv_mat.data[1][0] =
-                (-mat.data[1][0] * c[5] + mat.data[1][2] * c[2] - mat.data[1][3] * c[1]) * idet;
+                (-mat.data[1][0] * c[5] + mat.data[1][2] * c[2] - mat.data[1][3] * c[1]) * determ;
             inv_mat.data[1][1] =
-                (mat.data[0][0] * c[5] - mat.data[0][2] * c[2] + mat.data[0][3] * c[1]) * idet;
+                (mat.data[0][0] * c[5] - mat.data[0][2] * c[2] + mat.data[0][3] * c[1]) * determ;
             inv_mat.data[1][2] =
-                (-mat.data[3][0] * s[5] + mat.data[3][2] * s[2] - mat.data[3][3] * s[1]) * idet;
+                (-mat.data[3][0] * s[5] + mat.data[3][2] * s[2] - mat.data[3][3] * s[1]) * determ;
             inv_mat.data[1][3] =
-                (mat.data[2][0] * s[5] - mat.data[2][2] * s[2] + mat.data[2][3] * s[1]) * idet;
+                (mat.data[2][0] * s[5] - mat.data[2][2] * s[2] + mat.data[2][3] * s[1]) * determ;
 
             inv_mat.data[2][0] =
-                (mat.data[1][0] * c[4] - mat.data[1][1] * c[2] + mat.data[1][3] * c[0]) * idet;
+                (mat.data[1][0] * c[4] - mat.data[1][1] * c[2] + mat.data[1][3] * c[0]) * determ;
             inv_mat.data[2][1] =
-                (-mat.data[0][0] * c[4] + mat.data[0][1] * c[2] - mat.data[0][3] * c[0]) * idet;
+                (-mat.data[0][0] * c[4] + mat.data[0][1] * c[2] - mat.data[0][3] * c[0]) * determ;
             inv_mat.data[2][2] =
-                (mat.data[3][0] * s[4] - mat.data[3][1] * s[2] + mat.data[3][3] * s[0]) * idet;
+                (mat.data[3][0] * s[4] - mat.data[3][1] * s[2] + mat.data[3][3] * s[0]) * determ;
             inv_mat.data[2][3] =
-                (-mat.data[2][0] * s[4] + mat.data[2][1] * s[2] - mat.data[2][3] * s[0]) * idet;
+                (-mat.data[2][0] * s[4] + mat.data[2][1] * s[2] - mat.data[2][3] * s[0]) * determ;
 
             inv_mat.data[3][0] =
-                (-mat.data[1][0] * c[3] + mat.data[1][1] * c[1] - mat.data[1][2] * c[0]) * idet;
+                (-mat.data[1][0] * c[3] + mat.data[1][1] * c[1] - mat.data[1][2] * c[0]) * determ;
             inv_mat.data[3][1] =
-                (mat.data[0][0] * c[3] - mat.data[0][1] * c[1] + mat.data[0][2] * c[0]) * idet;
+                (mat.data[0][0] * c[3] - mat.data[0][1] * c[1] + mat.data[0][2] * c[0]) * determ;
             inv_mat.data[3][2] =
-                (-mat.data[3][0] * s[3] + mat.data[3][1] * s[1] - mat.data[3][2] * s[0]) * idet;
+                (-mat.data[3][0] * s[3] + mat.data[3][1] * s[1] - mat.data[3][2] * s[0]) * determ;
             inv_mat.data[3][3] =
-                (mat.data[2][0] * s[3] - mat.data[2][1] * s[1] + mat.data[2][2] * s[0]) * idet;
+                (mat.data[2][0] * s[3] - mat.data[2][1] * s[1] + mat.data[2][2] * s[0]) * determ;
 
             return inv_mat;
         }
@@ -285,10 +285,10 @@ pub fn Mat4(comptime T: type) type {
         /// Display the 4x4 matrix.
         pub fn fmt(self: Self) void {
             warn("\n", .{});
-            warn("({}, {}, {}, {})\n", .{ self.data[0][0], self.data[1][0], self.data[2][0], self.data[3][0] });
-            warn("({}, {}, {}, {})\n", .{ self.data[0][1], self.data[1][1], self.data[2][1], self.data[3][1] });
-            warn("({}, {}, {}, {})\n", .{ self.data[0][2], self.data[1][2], self.data[2][2], self.data[3][2] });
-            warn("({}, {}, {}, {})\n", .{ self.data[0][3], self.data[1][3], self.data[2][3], self.data[3][3] });
+            warn("({d}, {d}, {d}, {d})\n", .{ self.data[0][0], self.data[1][0], self.data[2][0], self.data[3][0] });
+            warn("({d}, {d}, {d}, {d})\n", .{ self.data[0][1], self.data[1][1], self.data[2][1], self.data[3][1] });
+            warn("({d}, {d}, {d}, {d})\n", .{ self.data[0][2], self.data[1][2], self.data[2][2], self.data[3][2] });
+            warn("({d}, {d}, {d}, {d})\n", .{ self.data[0][3], self.data[1][3], self.data[2][3], self.data[3][3] });
             warn("\n", .{});
         }
     };
@@ -367,6 +367,26 @@ test "zalgebra.Mat4.scale" {
             .{ 0., 6., 0., 0. },
             .{ 0., 0., 4., 0. },
             .{ 0., 0., 0., 1. },
+        },
+    }), true);
+}
+
+test "zalgebra.Mat4.inv" {
+    const base: mat4 = .{
+        .data = .{
+            .{ 2., 0., 0., 4. },
+            .{ 0., 2., 0., 0. },
+            .{ 0., 0., 2., 0. },
+            .{ 4., 0., 0., 2. },
+        },
+    };
+
+    testing.expectEqual(mat4.is_eq(base.inv(), mat4{
+        .data = .{
+            .{ -0.1666666716337204, 0., 0., 0.3333333432674408 },
+            .{ 0., 0.5, 0., 0. },
+            .{ 0., 0., 0.5, 0. },
+            .{ 0.3333333432674408, 0., 0., -0.1666666716337204 },
         },
     }), true);
 }
