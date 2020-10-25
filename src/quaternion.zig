@@ -1,6 +1,7 @@
 const std = @import("std");
-const assert = std.debug.assert;
 const math = std.math;
+const testing = std.testing;
+const assert = std.debug.assert;
 const root = @import("main.zig");
 usingnamespace @import("vec3.zig");
 usingnamespace @import("vec4.zig");
@@ -32,15 +33,6 @@ pub fn Quaternion(comptime T: type) type {
             };
         }
 
-        pub fn from_vec4(components: Vec4(T)) Self {
-            return .{
-                .w = components.w,
-                .x = components.x,
-                .y = components.y,
-                .z = components.z,
-            };
-        }
-
         pub fn from_vec3(w: T, axis: Vec3(T)) Self {
             return .{
                 .w = w,
@@ -57,7 +49,7 @@ pub fn Quaternion(comptime T: type) type {
                 left.z == right.z);
         }
 
-        pub fn norm(self: Self) T {
+        pub fn norm(self: Self) Self {
             const l = length(self);
             assert(l != 0);
 
@@ -164,4 +156,38 @@ pub fn Quaternion(comptime T: type) type {
             return Self.from_vec3(w, quat_axis);
         }
     };
+}
+
+test "zalgebra.Quaternion.new" {
+    const q = quat.new(1.5, 2.6, 3.7, 4.7);
+
+    testing.expectEqual(q.w, 1.5);
+    testing.expectEqual(q.x, 2.6);
+    testing.expectEqual(q.y, 3.7);
+    testing.expectEqual(q.z, 4.7);
+}
+
+test "zalgebra.Quaternion.from_vec3" {
+    const q = quat.from_vec3(1.5, vec3.new(2.6, 3.7, 4.7));
+
+    testing.expectEqual(q.w, 1.5);
+    testing.expectEqual(q.x, 2.6);
+    testing.expectEqual(q.y, 3.7);
+    testing.expectEqual(q.z, 4.7);
+}
+
+test "zalgebra.Quaternion.from_vec3" {
+    const q1 = quat.from_vec3(1.5, vec3.new(2.6, 3.7, 4.7));
+    const q2 = quat.from_vec3(1.5, vec3.new(2.6, 3.7, 4.7));
+    const q3 = quat.from_vec3(1., vec3.new(2.6, 3.7, 4.7));
+
+    testing.expectEqual(q1.is_eq(q2), true);
+    testing.expectEqual(q1.is_eq(q3), false);
+}
+
+test "zalgebra.Quaternion.norm" {
+    const q1 = quat.from_vec3(1., vec3.new(2., 2.0, 2.0));
+    const q2 = quat.from_vec3(0.2773500978946686, vec3.new(0.5547001957893372, 0.5547001957893372, 0.5547001957893372));
+
+    testing.expectEqual(q1.norm().is_eq(q2), true);
 }

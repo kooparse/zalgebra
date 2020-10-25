@@ -87,7 +87,6 @@ fmt | Display the matrix components for debug purpose
 Methods | Description
 ------------ | -------------
 new| Construct new quat from given floats
-from_vec4 | Construct quaternion from vec4
 from_vec3 | Construct quaternion from vec3
 is_eq | Return `true` if two quaternions are equal
 norm | Normalize given quaternion
