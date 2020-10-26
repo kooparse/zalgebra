@@ -28,12 +28,44 @@ pub fn Vec3(comptime T: type) type {
             };
         }
 
+        /// Shorthand for writing vec3.new(0, 0, 0).
         pub fn zero() Self {
             return Self.new(0., 0., 0.);
         }
 
+        /// Shorthand for writing vec3.new(1, 1, 1).
+        pub fn one() Self {
+            return Self.new(1., 1., 1.);
+        }
+
+        /// Shorthand for writing vec3.new(0, 1, 0).
         pub fn up() Self {
             return Self.new(0., 1., 0.);
+        }
+
+        /// Shorthand for writing vec3.new(0, -1, 0).
+        pub fn down() Self {
+            return Self.new(0., -1., 0.);
+        }
+
+        /// Shorthand for writing vec3.new(1, 0, 0).
+        pub fn right() Self {
+            return Self.new(1., 0., 0.);
+        }
+
+        /// Shorthand for writing vec3.new(-1, 0, 0).
+        pub fn left() Self {
+            return Self.new(-1., 0., 0.);
+        }
+
+        /// Shorthand for writing vec3.new(0, 0, -1).
+        pub fn back() Self {
+            return Self.new(0., 0., -1);
+        }
+
+        /// Shorthand for writing vec3.new(0, 0, 1).
+        pub fn forward() Self {
+            return Self.new(0., 0., 1);
         }
 
         /// Return the angle in degrees between two vectors.

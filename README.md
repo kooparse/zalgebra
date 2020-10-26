@@ -45,9 +45,15 @@ look_at | LookAt function for `f32` 4x4 mat4
 
 Methods | Description
 ------------ | -------------
-new | Construct a vector from 2-4 given components
-zero | A vector with all components equals to zero
-up | A vector with `y` component to one (only for vec2 and vec3)
+new | Construct a vector from 2 to 4 components
+zero | Shorthand for `(0, 0, 0)`
+one | Shorthand for `(1, 1, 1)` (only for vec3)
+up | Shorthand for `(0, 1, 0)` (only for vec3)
+down | Shorthand for `(0, -1, 0)` (only for vec3)
+right | Shorthand for `(1, 0, 0)` (only for vec3)
+left | Shorthand for `(-1, 0, 0)` (only for vec3)
+forward | Shorthand for `(0, 0, 1)` (only for vec3)
+back | Shorthand for `(0, 0, -1)` (only for vec3)
 get_angle | Return angle in degrees between two vectors (only for vec2 and vec3)
 length | Return the magnitude of the current vector
 norm | Construct a new normalized vector based on the given one
