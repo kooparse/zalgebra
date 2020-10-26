@@ -69,8 +69,8 @@ pub fn Vec3(comptime T: type) type {
         }
 
         /// Return the angle in degrees between two vectors.
-        pub fn get_angle(left: Self, right: Self) T {
-            const dot_product = Self.dot(left.norm(), right.norm());
+        pub fn get_angle(lhs: Self, rhs: Self) T {
+            const dot_product = Self.dot(lhs.norm(), rhs.norm());
             return root.to_degrees(math.acos(dot_product));
         }
 
@@ -85,18 +85,18 @@ pub fn Vec3(comptime T: type) type {
             return Self.new(self.x / l, self.y / l, self.z / l);
         }
 
-        pub fn is_eq(left: Self, right: Self) bool {
-            return left.x == right.x and left.y == right.y and left.z == right.z;
+        pub fn is_eq(lhs: Self, rhs: Self) bool {
+            return lhs.x == rhs.x and lhs.y == rhs.y and lhs.z == rhs.z;
         }
 
         /// Substraction between two given vector.
-        pub fn sub(left: Self, right: Self) Self {
-            return Self.new(left.x - right.x, left.y - right.y, left.z - right.z);
+        pub fn sub(lhs: Self, rhs: Self) Self {
+            return Self.new(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
         }
 
         /// Addition betwen two given vector.
-        pub fn add(left: Self, right: Self) Self {
-            return Self.new(left.x + right.x, left.y + right.y, left.z + right.z);
+        pub fn add(lhs: Self, rhs: Self) Self {
+            return Self.new(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
         }
 
         /// Multiply each components by the given scalar.
@@ -105,42 +105,42 @@ pub fn Vec3(comptime T: type) type {
         }
 
         /// Compute the cross product from two vector.
-        pub fn cross(left: Self, right: Self) Self {
+        pub fn cross(lhs: Self, rhs: Self) Self {
             return Self.new(
-                (left.y * right.z) - (left.z * right.y),
-                (left.z * right.x) - (left.x * right.z),
-                (left.x * right.y) - (left.y * right.x),
+                (lhs.y * rhs.z) - (lhs.z * rhs.y),
+                (lhs.z * rhs.x) - (lhs.x * rhs.z),
+                (lhs.x * rhs.y) - (lhs.y * rhs.x),
             );
         }
 
         /// Return the dot product between two given vector.
-        pub fn dot(left: Self, right: Self) T {
-            return (left.x * right.x) + (left.y * right.y) + (left.z * right.z);
+        pub fn dot(lhs: Self, rhs: Self) T {
+            return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
         }
 
         /// Lerp between two vectors.
-        pub fn lerp(left: Self, right: Self, t: T) Self {
-            const x = root.lerp(T, left.x, right.x, t);
-            const y = root.lerp(T, left.y, right.y, t);
-            const z = root.lerp(T, left.z, right.z, t);
+        pub fn lerp(lhs: Self, rhs: Self, t: T) Self {
+            const x = root.lerp(T, lhs.x, rhs.x, t);
+            const y = root.lerp(T, lhs.y, rhs.y, t);
+            const z = root.lerp(T, lhs.z, rhs.z, t);
             return Self.new(x, y, z);
         }
 
         /// Construct a new vector from the min components between two vectors.
-        pub fn min(left: Self, right: Self) Self {
+        pub fn min(lhs: Self, rhs: Self) Self {
             return Self.new(
-                math.min(left.x, right.x),
-                math.min(left.y, right.y),
-                math.min(left.z, right.z),
+                math.min(lhs.x, rhs.x),
+                math.min(lhs.y, rhs.y),
+                math.min(lhs.z, rhs.z),
             );
         }
 
         /// Construct a new vector from the max components between two vectors.
-        pub fn max(left: Self, right: Self) Self {
+        pub fn max(lhs: Self, rhs: Self) Self {
             return Self.new(
-                math.max(left.x, right.x),
-                math.max(left.y, right.y),
-                math.max(left.z, right.z),
+                math.max(lhs.x, rhs.x),
+                math.max(lhs.y, rhs.y),
+                math.max(lhs.z, rhs.z),
             );
         }
     };
