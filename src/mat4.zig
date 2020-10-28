@@ -1,5 +1,5 @@
 const std = @import("std");
-const warn = std.debug.warn;
+const print = std.debug.print;
 const math = std.math;
 const testing = std.testing;
 const root = @import("main.zig");
@@ -85,7 +85,7 @@ pub fn Mat4(comptime T: type) type {
         }
 
         /// Get translation Vec3 from current matrix.
-        pub fn get_translation(self: Self) Vec3(T) {
+        pub fn extract_translation(self: Self) Vec3(T) {
             return Vec3(T).new(self.data[3][0], self.data[3][1], self.data[3][2]);
         }
 
@@ -132,6 +132,10 @@ pub fn Mat4(comptime T: type) type {
         pub fn scale(mat: Self, axis: Vec3(T)) Self {
             var scale_mat = Self.from_scale(axis);
             return Self.mult(scale_mat, mat);
+        }
+
+        pub fn extract_scale(mat: Self) Vec3(T) {
+            return Vec3(T).new(mat.data[0][0], mat.data[1][1], mat.data[2][2]);
         }
 
         /// Construct a perspective 4x4 matrix.
@@ -195,6 +199,30 @@ pub fn Mat4(comptime T: type) type {
             mat.data[3][3] = 1.0;
 
             return mat;
+        }
+
+        /// Construct a rotation matrix from euler angles (X * Y * Z).
+        /// Order matters because matrix multiplication are NOT commutative.
+        pub fn from_euler_angle(euler_angle: Vec3(T)) Self {
+            const x = Self.from_rotation(euler_angle.x, vec3.new(1, 0, 0));
+            const y = Self.from_rotation(euler_angle.y, vec3.new(0, 1, 0));
+            const z = Self.from_rotation(euler_angle.z, vec3.new(0, 0, 1));
+
+            return z.mult(y.mult(x));
+        }
+
+        /// This will return pitch, yaw, roll in degrees.
+        /// Taken from Mike Day at Insomniac Games (and `glm` as the same function).
+        /// For more details: https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf
+        pub fn extract_euler_angle(self: Self) Vec3(T) {
+            const thetha_x = math.atan2(T, self.data[1][2], self.data[2][2]);
+            const c2 = math.sqrt(math.pow(f32, self.data[0][0], 2) + math.pow(f32, self.data[0][1], 2));
+            const thetha_y = math.atan2(T, -self.data[0][2], math.sqrt(c2));
+            const s1 = math.sin(thetha_x);
+            const c1 = math.cos(thetha_x);
+            const thetha_z = math.atan2(T, s1 * self.data[2][0] - c1 * self.data[1][0], c1 * self.data[1][1] - s1 * self.data[2][1]);
+
+            return vec3.new(root.to_degrees(thetha_x), root.to_degrees(thetha_y), root.to_degrees(thetha_z));
         }
 
         pub fn mult(left: Self, right: Self) Self {
@@ -284,12 +312,12 @@ pub fn Mat4(comptime T: type) type {
 
         /// Display the 4x4 matrix.
         pub fn fmt(self: Self) void {
-            warn("\n", .{});
-            warn("({d}, {d}, {d}, {d})\n", .{ self.data[0][0], self.data[1][0], self.data[2][0], self.data[3][0] });
-            warn("({d}, {d}, {d}, {d})\n", .{ self.data[0][1], self.data[1][1], self.data[2][1], self.data[3][1] });
-            warn("({d}, {d}, {d}, {d})\n", .{ self.data[0][2], self.data[1][2], self.data[2][2], self.data[3][2] });
-            warn("({d}, {d}, {d}, {d})\n", .{ self.data[0][3], self.data[1][3], self.data[2][3], self.data[3][3] });
-            warn("\n", .{});
+            print("\n", .{});
+            print("({d}, {d}, {d}, {d})\n", .{ self.data[0][0], self.data[1][0], self.data[2][0], self.data[3][0] });
+            print("({d}, {d}, {d}, {d})\n", .{ self.data[0][1], self.data[1][1], self.data[2][1], self.data[3][1] });
+            print("({d}, {d}, {d}, {d})\n", .{ self.data[0][2], self.data[1][2], self.data[2][2], self.data[3][2] });
+            print("({d}, {d}, {d}, {d})\n", .{ self.data[0][3], self.data[1][3], self.data[2][3], self.data[3][3] });
+            print("\n", .{});
         }
     };
 }
@@ -337,13 +365,6 @@ test "zalgebra.Mat4.translate" {
     }), true);
 }
 
-test "zalgebra.Mat4.get_translation" {
-    const base = mat4.from_translate(vec3.new(2, 3, 2));
-    const result = mat4.get_translation(base);
-
-    testing.expectEqual(vec3.is_eq(result, vec3.new(2, 3, 2)), true);
-}
-
 test "zalgebra.Mat4.from_scale" {
     const mat4_scale = mat4.from_scale(vec3.new(2, 3, 4));
 
@@ -389,4 +410,23 @@ test "zalgebra.Mat4.inv" {
             .{ 0.3333333432674408, 0., 0., -0.1666666716337204 },
         },
     }), true);
+}
+
+test "zalgebra.Mat4.extract_translation" {
+    var base = mat4.from_translate(vec3.new(2, 3, 2));
+    base = base.translate(vec3.new(2, 3, 2));
+
+    testing.expectEqual(vec3.is_eq(base.extract_translation(), vec3.new(4, 6, 4)), true);
+}
+
+test "zalgebra.Mat4.extract_euler_angle" {
+    const lhs = mat4.from_euler_angle(vec3.new(45., 10., 20.));
+    testing.expectEqual(vec3.is_eq(lhs.extract_euler_angle(), vec3.new(45.000003814697266, 9.925271034240723, 19.999998092651367)), true);
+}
+
+test "zalgebra.Mat4.extract_scale" {
+    var base = mat4.from_scale(vec3.new(2, 4, 8));
+    base = base.scale(vec3.new(2, 4, 8));
+
+    testing.expectEqual(vec3.is_eq(base.extract_scale(), vec3.new(4, 16, 64)), true);
 }

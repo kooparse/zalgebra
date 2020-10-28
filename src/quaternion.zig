@@ -82,13 +82,13 @@ pub fn Quaternion(comptime T: type) type {
         }
 
         pub fn mult(left: Self, right: Self) Self {
-            var quat: Self = undefined;
-            quat.x = (left.x * right.w) + (left.y * right.z) - (left.z * right.y) + (left.w * right.x);
-            quat.y = (-left.x * right.z) + (left.y * right.w) + (left.z * right.x) + (left.w * right.y);
-            quat.z = (left.x * right.y) - (left.y * right.x) + (left.z * right.w) + (left.w * right.z);
-            quat.w = (-left.x * right.x) - (left.y * right.y) - (left.z * right.z) + (left.w * right.w);
+            var q: Self = undefined;
+            q.x = (left.x * right.w) + (left.y * right.z) - (left.z * right.y) + (left.w * right.x);
+            q.y = (-left.x * right.z) + (left.y * right.w) + (left.z * right.x) + (left.w * right.y);
+            q.z = (left.x * right.y) - (left.y * right.x) + (left.z * right.w) + (left.w * right.z);
+            q.w = (-left.x * right.x) - (left.y * right.y) - (left.z * right.z) + (left.w * right.w);
 
-            return quat;
+            return q;
         }
 
         pub fn scale(mat: Self, scalar: T) Self {
@@ -145,12 +145,59 @@ pub fn Quaternion(comptime T: type) type {
             return result;
         }
 
-        /// Convert Euler angles to quaternion.
-        pub fn from_euler_angles(degrees: T, axis: Vec3(T)) Self {
+        /// From Mike Day at Insomniac Games.
+        /// For more details: https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
+        pub fn from_mat4(m: Mat4(T)) Self {
+            var t: f32 = 0;
+            var result: Self = undefined;
+
+            if (m.data[2][2] < 0.0) {
+                if (m.data[0][0] > m.data[1][1]) {
+                    t = 1 + m.data[0][0] - m.data[1][1] - m.data[2][2];
+                    result = Self.new(
+                        m.data[1][2] - m.data[2][1],
+                        t,
+                        m.data[0][1] + m.data[1][0],
+                        m.data[2][0] + m.data[0][2],
+                    );
+                } else {
+                    t = 1 - m.data[0][0] + m.data[1][1] - m.data[2][2];
+                    result = Self.new(
+                        m.data[2][0] - m.data[0][2],
+                        m.data[0][1] + m.data[1][0],
+                        t,
+                        m.data[1][2] + m.data[2][1],
+                    );
+                }
+            } else {
+                if (m.data[0][0] < -m.data[1][1]) {
+                    t = 1 - m.data[0][0] - m.data[1][1] + m.data[2][2];
+                    result = Self.new(
+                        m.data[0][1] - m.data[1][0],
+                        m.data[2][0] + m.data[0][2],
+                        m.data[1][2] + m.data[2][1],
+                        t,
+                    );
+                } else {
+                    t = 1 + m.data[0][0] + m.data[1][1] + m.data[2][2];
+                    result = Self.new(
+                        t,
+                        m.data[1][2] - m.data[2][1],
+                        m.data[2][0] - m.data[0][2],
+                        m.data[0][1] - m.data[1][0],
+                    );
+                }
+            }
+
+            return Self.scale(result, 0.5 / math.sqr(t));
+        }
+
+        /// Convert Euler angle to quaternion.
+        pub fn from_euler_angle(degrees: T, axis: Vec3(T)) Self {
             const radians = root.to_radians(degrees);
 
             const rot_sin = math.sin(radians / 2.0);
-            const quat_axis = axis.norm().scale();
+            const quat_axis = axis.norm().scale(rot_sin);
             const w = math.cos(radians / 2.0);
 
             return Self.from_vec3(w, quat_axis);

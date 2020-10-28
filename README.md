@@ -82,6 +82,9 @@ from_rotate | Construct a rotation matrix from identity matrix
 rotate | Construct a rotation from the given matrix according to given axis (vec3)
 from_scale | Construct a scale matrix from identity matrix
 scale | Construct a scale from the given matrix according to given axis (vec3)
+extract_translation | Return a vector with proper translation
+extract_euler_angle | Return a vector with proper pitch/yaw/roll 
+extract_scale | Return a vector with proper scale
 perspective | Construct a perspective matrix from given fovy, aspect ratio, near/far inputs
 orthographic| Construct an orthographic matrix from given left, right, bottom, top, near/far inputs
 look_at | Construct a right-handed look_at matrix from given position (eye) and target
@@ -103,7 +106,7 @@ mult | Construct quaternion resulting from the multiplication of two given ones
 scale | Construct quaternion resulting from the multiplication of all components of the given quat
 dot | Return the dot product between two quaternions
 to_mat4 | Convert given quat to rotation 4x4 matrix
-from_euler_angles | Construct quaternion from Euler angles
+from_euler_angle | Construct quaternion from Euler angle
 
 
 ### Utilities
