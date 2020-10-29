@@ -76,14 +76,15 @@ identity | Construct an identity matrix
 get_data | Return a pointer to the inner data
 is_eq | Return `true` if two matrices are equals
 mult_by_vec4 | Multiply a given vec4 by matrix (only for mat4)
-from_translate | Construct a translation matrix from identity matrix
+from_translate | Construct a translation matrix
 translate | Construct a translation from the given matrix according to given axis (vec3)
-from_rotate | Construct a rotation matrix from identity matrix
+from_rotation | Construct a rotation matrix
+from_euler_angle | Construct a rotation matrix from pitch/yaw/roll in degrees (X * Y * Z)
 rotate | Construct a rotation from the given matrix according to given axis (vec3)
-from_scale | Construct a scale matrix from identity matrix
+from_scale | Construct a scale matrix
 scale | Construct a scale from the given matrix according to given axis (vec3)
 extract_translation | Return a vector with proper translation
-extract_euler_angle | Return a vector with proper pitch/yaw/roll 
+ectract_rotation | Return a vector with proper pitch/yaw/roll 
 extract_scale | Return a vector with proper scale
 perspective | Construct a perspective matrix from given fovy, aspect ratio, near/far inputs
 orthographic| Construct an orthographic matrix from given left, right, bottom, top, near/far inputs

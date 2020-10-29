@@ -80,7 +80,7 @@ pub fn Mat4(comptime T: type) type {
 
         /// Make a translation between the given matrix and the given axis.
         pub fn translate(mat: Self, axis: Vec3(T)) Self {
-            var trans_mat = Self.from_translate(axis);
+            const trans_mat = Self.from_translate(axis);
             return Self.mult(trans_mat, mat);
         }
 
@@ -115,8 +115,32 @@ pub fn Mat4(comptime T: type) type {
         }
 
         pub fn rotate(mat: Self, angle_in_degrees: T, axis: Vec3(T)) Self {
-            var rotation_mat = Self.from_rotation(angle_in_degrees, axis);
-            return Self.mult(rotation_mat, mat);
+            const rotation_mat = Self.from_rotation(angle_in_degrees, axis);
+            return Self.mult(mat, rotation_mat);
+        }
+
+        /// Construct a rotation matrix from euler angles (X * Y * Z).
+        /// Order matters because matrix multiplication are NOT commutative.
+        pub fn from_euler_angle(euler_angle: Vec3(T)) Self {
+            const x = Self.from_rotation(euler_angle.x, vec3.new(1, 0, 0));
+            const y = Self.from_rotation(euler_angle.y, vec3.new(0, 1, 0));
+            const z = Self.from_rotation(euler_angle.z, vec3.new(0, 0, 1));
+
+            return z.mult(y.mult(x));
+        }
+
+        /// Return the rotation as Euler angles in degrees.
+        /// Taken from Mike Day at Insomniac Games (and `glm` as the same function).
+        /// For more details: https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf
+        pub fn extract_rotation(self: Self) Vec3(T) {
+            const theta_x = math.atan2(T, self.data[1][2], self.data[2][2]);
+            const c2 = math.sqrt(math.pow(f32, self.data[0][0], 2) + math.pow(f32, self.data[0][1], 2));
+            const theta_y = math.atan2(T, -self.data[0][2], math.sqrt(c2));
+            const s1 = math.sin(theta_x);
+            const c1 = math.cos(theta_x);
+            const theta_z = math.atan2(T, s1 * self.data[2][0] - c1 * self.data[1][0], c1 * self.data[1][1] - s1 * self.data[2][1]);
+
+            return vec3.new(root.to_degrees(theta_x), root.to_degrees(theta_y), root.to_degrees(theta_z));
         }
 
         pub fn from_scale(axis: Vec3(T)) Self {
@@ -130,7 +154,7 @@ pub fn Mat4(comptime T: type) type {
         }
 
         pub fn scale(mat: Self, axis: Vec3(T)) Self {
-            var scale_mat = Self.from_scale(axis);
+            const scale_mat = Self.from_scale(axis);
             return Self.mult(scale_mat, mat);
         }
 
@@ -201,30 +225,8 @@ pub fn Mat4(comptime T: type) type {
             return mat;
         }
 
-        /// Construct a rotation matrix from euler angles (X * Y * Z).
-        /// Order matters because matrix multiplication are NOT commutative.
-        pub fn from_euler_angle(euler_angle: Vec3(T)) Self {
-            const x = Self.from_rotation(euler_angle.x, vec3.new(1, 0, 0));
-            const y = Self.from_rotation(euler_angle.y, vec3.new(0, 1, 0));
-            const z = Self.from_rotation(euler_angle.z, vec3.new(0, 0, 1));
-
-            return z.mult(y.mult(x));
-        }
-
-        /// This will return pitch, yaw, roll in degrees.
-        /// Taken from Mike Day at Insomniac Games (and `glm` as the same function).
-        /// For more details: https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf
-        pub fn extract_euler_angle(self: Self) Vec3(T) {
-            const thetha_x = math.atan2(T, self.data[1][2], self.data[2][2]);
-            const c2 = math.sqrt(math.pow(f32, self.data[0][0], 2) + math.pow(f32, self.data[0][1], 2));
-            const thetha_y = math.atan2(T, -self.data[0][2], math.sqrt(c2));
-            const s1 = math.sin(thetha_x);
-            const c1 = math.cos(thetha_x);
-            const thetha_z = math.atan2(T, s1 * self.data[2][0] - c1 * self.data[1][0], c1 * self.data[1][1] - s1 * self.data[2][1]);
-
-            return vec3.new(root.to_degrees(thetha_x), root.to_degrees(thetha_y), root.to_degrees(thetha_z));
-        }
-
+        /// Matrices multiplication.
+        /// Produce a new matrix from given two matrices.
         pub fn mult(left: Self, right: Self) Self {
             var mat = Self.identity();
             var columns: usize = 0;
@@ -419,9 +421,9 @@ test "zalgebra.Mat4.extract_translation" {
     testing.expectEqual(vec3.is_eq(base.extract_translation(), vec3.new(4, 6, 4)), true);
 }
 
-test "zalgebra.Mat4.extract_euler_angle" {
-    const lhs = mat4.from_euler_angle(vec3.new(45., 10., 20.));
-    testing.expectEqual(vec3.is_eq(lhs.extract_euler_angle(), vec3.new(45.000003814697266, 9.925271034240723, 19.999998092651367)), true);
+test "zalgebra.Mat4.extract_rotation" {
+    const lhs = mat4.from_euler_angle(vec3.new(45., -5., 20.));
+    testing.expectEqual(vec3.is_eq(lhs.extract_rotation(), vec3.new(45.000003814697266, -4.99052524, 19.999998092651367)), true);
 }
 
 test "zalgebra.Mat4.extract_scale" {
