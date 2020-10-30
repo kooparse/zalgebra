@@ -5,6 +5,7 @@ const assert = std.debug.assert;
 const root = @import("main.zig");
 usingnamespace @import("vec3.zig");
 usingnamespace @import("vec4.zig");
+usingnamespace @import("mat4.zig");
 
 pub const quat = Quaternion(f32);
 pub const quat_f64 = Quaternion(f64);
@@ -83,6 +84,7 @@ pub fn Quaternion(comptime T: type) type {
 
         pub fn mult(left: Self, right: Self) Self {
             var q: Self = undefined;
+
             q.x = (left.x * right.w) + (left.y * right.z) - (left.z * right.y) + (left.w * right.x);
             q.y = (-left.x * right.z) + (left.y * right.w) + (left.z * right.x) + (left.w * right.y);
             q.z = (left.x * right.y) - (left.y * right.x) + (left.z * right.w) + (left.w * right.z);
@@ -192,8 +194,17 @@ pub fn Quaternion(comptime T: type) type {
             return Self.scale(result, 0.5 / math.sqr(t));
         }
 
-        /// Convert Euler angle to quaternion.
-        pub fn from_euler_angle(degrees: T, axis: Vec3(T)) Self {
+        /// Convert all Euler angles to quaternion.
+        pub fn from_euler_angle(axis: Vec3(T)) Self {
+            const x = Self.from_axis(axis.x, vec3.new(1, 0, 0));
+            const y = Self.from_axis(axis.y, vec3.new(0, 1, 0));
+            const z = Self.from_axis(axis.z, vec3.new(0, 0, 1));
+
+            return z.mult(y.mult(x));
+        }
+
+        /// Convert Euler angle around specified axis to quaternion.
+        pub fn from_axis(degrees: T, axis: Vec3(T)) Self {
             const radians = root.to_radians(degrees);
 
             const rot_sin = math.sin(radians / 2.0);
@@ -201,6 +212,15 @@ pub fn Quaternion(comptime T: type) type {
             const w = math.cos(radians / 2.0);
 
             return Self.from_vec3(w, quat_axis);
+        }
+
+        /// Extract euler angles from quaternion.
+        pub fn extract_rotation(self: Self) Vec3(T) {
+            const yaw = math.atan2(T, 2.0 * (self.y * self.z + self.w * self.x), self.w * self.w - self.x * self.x - self.y * self.y + self.z * self.z);
+            const pitch = math.asin(-2.0 * (self.x * self.z - self.w * self.y));
+            const roll = math.atan2(T, 2.0 * (self.x * self.y + self.w * self.z), self.w * self.w + self.x * self.x - self.y * self.y - self.z * self.z);
+
+            return Vec3(T).new(root.to_degrees(yaw), root.to_degrees(pitch), root.to_degrees(roll));
         }
     };
 }
@@ -237,4 +257,29 @@ test "zalgebra.Quaternion.norm" {
     const q2 = quat.from_vec3(0.2773500978946686, vec3.new(0.5547001957893372, 0.5547001957893372, 0.5547001957893372));
 
     testing.expectEqual(q1.norm().is_eq(q2), true);
+}
+
+test "zalgebra.Quaternion.from_euler_angle" {
+    const q1 = quat.from_euler_angle(vec3.new(10, 5, 45));
+    const res_q1 = q1.extract_rotation();
+
+    const q2 = quat.from_euler_angle(vec3.new(0, 55, 22));
+    const res_q2 = q2.to_mat4().extract_rotation();
+
+    testing.expectEqual(vec3.is_eq(res_q1, vec3.new(9.999999046325684, 5.000000476837158, 45)), true);
+    testing.expectEqual(vec3.is_eq(res_q2, vec3.new(0, 47.245025634765625, 22)), true);
+}
+
+test "zalgebra.Quaternion.from_axis" {
+    const q1 = quat.from_axis(45, vec3.new(0, 1, 0));
+    const res_q1 = q1.extract_rotation();
+
+    testing.expectEqual(vec3.is_eq(res_q1, vec3.new(0, 45.0000076, 0)), true);
+}
+
+test "zalgebra.Quaternion.extract_rotation" {
+    const q1 = quat.from_vec3(0.5, vec3.new(0.5, 1, 0.3));
+    const res_q1 = q1.extract_rotation();
+
+    testing.expectEqual(vec3.is_eq(res_q1, vec3.new(129.6000213623047, 44.427005767822266, 114.41073608398438)), true);
 }
