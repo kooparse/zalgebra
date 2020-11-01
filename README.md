@@ -63,7 +63,7 @@ add | Construct new vector resulting from the addition between two vectors
 scale | Construct new vector after multiplying each components by the given scalar
 cross | Construct the cross product (as vector) from two vectors (only for vec3)
 dot | Return the dot product between two vectors
-lerp | Linearly interpolates between two vectors
+lerp | Linear interpolation between two vectors
 min | Construct vector from the min components between two vectors
 max | Construct vector from the min components between two vectors
 
@@ -119,6 +119,7 @@ Methods | Description
 to_radians | Convert degrees to radians
 to_degrees | Convert radians to degrees
 lerp | Linear interpolation between two floats
+clamp | Restrict a value to a given range
 
 
 ## Contributing to the project

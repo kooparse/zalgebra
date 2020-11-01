@@ -39,6 +39,13 @@ pub fn lerp(comptime T: type, from: T, to: T, t: T) T {
     };
 }
 
+/// Restrict a value to a given range.
+pub fn clamp(comptime T: type, min: T, max: T, val: T) T {
+    if (val < min) return min;
+    if (val > max) return max;
+    return val;
+}
+
 test "zalgebra.to_radians" {
     testing.expectEqual(to_radians(@as(f32, 90)), 1.57079637);
     testing.expectEqual(to_radians(@as(f32, 45)), 0.785398185);
@@ -59,4 +66,13 @@ test "zalgebra.lerp" {
     testing.expectEqual(lerp(f32, from, to, 0), 0);
     testing.expectEqual(lerp(f32, from, to, 0.5), 5);
     testing.expectEqual(lerp(f32, from, to, 1), 10);
+}
+
+test "zalgebra.clamp" {
+    const from: f32 = 0;
+    const to: f32 = 10;
+
+    testing.expectEqual(clamp(f32, from, to, 5), 5);
+    testing.expectEqual(clamp(f32, from, to, 11), 10);
+    testing.expectEqual(clamp(f32, from, to, -0.5), 0);
 }
