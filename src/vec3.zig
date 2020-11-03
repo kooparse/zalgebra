@@ -30,7 +30,7 @@ pub fn Vec3(comptime T: type) type {
         }
 
         /// Return component from given index.
-        pub fn at(self: *const Self, index: usize) T {
+        pub fn at(self: *const Self, index: i32) T {
             assert(index <= 2);
 
             if (index == 0) {
