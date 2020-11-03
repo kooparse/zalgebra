@@ -1,6 +1,7 @@
 const std = @import("std");
 const root = @import("main.zig");
 const math = std.math;
+const assert = std.debug.assert;
 const testing = std.testing;
 
 pub const vec3 = Vec3(f32);
@@ -26,6 +27,19 @@ pub fn Vec3(comptime T: type) type {
                 .y = y,
                 .z = z,
             };
+        }
+
+        /// Return component from given index.
+        pub fn at(self: *const Self, index: usize) T {
+            assert(index <= 2);
+
+            if (index == 0) {
+                return self.x;
+            } else if (index == 1) {
+                return self.y;
+            } else {
+                return self.z;
+            }
         }
 
         /// Shorthand for writing vec3.new(0, 0, 0).
@@ -238,4 +252,12 @@ test "zalgebra.Vec3.max" {
     var _vec_1 = vec3.new(-10.0, 5.0, 0.0);
 
     testing.expectEqual(vec3.is_eq(vec3.max(_vec_0, _vec_1), vec3.new(10.0, 5.0, 0.0)), true);
+}
+
+test "zalgebra.Vec3.at" {
+    const t = vec3.new(10.0, -2.0, 0.0);
+
+    testing.expectEqual(t.at(0), 10.0);
+    testing.expectEqual(t.at(1), -2.0);
+    testing.expectEqual(t.at(2), 0.0);
 }

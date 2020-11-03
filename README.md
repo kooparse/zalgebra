@@ -46,6 +46,7 @@ look_at | LookAt function for `f32` 4x4 mat4
 Methods | Description
 ------------ | -------------
 new | Construct a vector from 2 to 4 components
+at | Return component from given index
 zero | Shorthand for `(0, 0, 0)`
 one | Shorthand for `(1, 1, 1)` (only for vec3)
 up | Shorthand for `(0, 1, 0)` (only for vec3)
