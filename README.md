@@ -119,7 +119,6 @@ Methods | Description
 to_radians | Convert degrees to radians
 to_degrees | Convert radians to degrees
 lerp | Linear interpolation between two floats
-clamp | Restrict a value to a given range
 
 
 ## Contributing to the project
