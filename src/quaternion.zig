@@ -191,7 +191,7 @@ pub fn Quaternion(comptime T: type) type {
                 }
             }
 
-            return Self.scale(result, 0.5 / math.sqr(t));
+            return Self.scale(result, 0.5 / math.sqrt(t));
         }
 
         /// Convert all Euler angles to quaternion.
