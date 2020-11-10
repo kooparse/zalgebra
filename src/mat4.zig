@@ -159,7 +159,11 @@ pub fn Mat4(comptime T: type) type {
         }
 
         pub fn extract_scale(mat: Self) Vec3(T) {
-            return Vec3(T).new(mat.data[0][0], mat.data[1][1], mat.data[2][2]);
+            const scale_x = vec3.new(mat.data[0][0], mat.data[0][1], mat.data[0][2]).length();
+            const scale_y = vec3.new(mat.data[1][0], mat.data[1][1], mat.data[1][2]).length();
+            const scale_z = vec3.new(mat.data[2][0], mat.data[2][1], mat.data[2][2]).length();
+
+            return Vec3(T).new(scale_x, scale_y, scale_z);
         }
 
         /// Construct a perspective 4x4 matrix.
