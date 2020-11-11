@@ -85,6 +85,7 @@ rotate | Construct a rotation from the given matrix according to given axis (vec
 from_scale | Construct a scale matrix
 scale | Construct a scale from the given matrix according to given axis (vec3)
 extract_translation | Return a vector with proper translation
+ortho_normalize | Ortho normalize the given matrix.
 ectract_rotation | Return a vector with proper pitch/yaw/roll 
 extract_scale | Return a vector with proper scale
 perspective | Construct a perspective matrix from given fovy, aspect ratio, near/far inputs

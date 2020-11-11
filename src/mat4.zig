@@ -129,16 +129,41 @@ pub fn Mat4(comptime T: type) type {
             return z.mult(y.mult(x));
         }
 
+        /// Ortho normalize given matrix.
+        pub fn ortho_normalize(mat: Self) Self {
+            const column_1 = vec3.new(mat.data[0][0], mat.data[0][1], mat.data[0][2]).norm();
+            const column_2 = vec3.new(mat.data[1][0], mat.data[1][1], mat.data[1][2]).norm();
+            const column_3 = vec3.new(mat.data[2][0], mat.data[2][1], mat.data[2][2]).norm();
+
+            var result = mat;
+
+            result.data[0][0] = column_1.x;
+            result.data[0][1] = column_1.y; 
+            result.data[0][2] = column_1.z;
+
+            result.data[1][0] = column_2.x;
+            result.data[1][1] = column_2.y; 
+            result.data[1][2] = column_2.z;
+
+            result.data[2][0] = column_3.x;
+            result.data[2][1] = column_3.y; 
+            result.data[2][2] = column_3.z;
+
+            return result;
+        }
+
         /// Return the rotation as Euler angles in degrees.
         /// Taken from Mike Day at Insomniac Games (and `glm` as the same function).
         /// For more details: https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf
         pub fn extract_rotation(self: Self) Vec3(T) {
-            const theta_x = math.atan2(T, self.data[1][2], self.data[2][2]);
-            const c2 = math.sqrt(math.pow(f32, self.data[0][0], 2) + math.pow(f32, self.data[0][1], 2));
-            const theta_y = math.atan2(T, -self.data[0][2], math.sqrt(c2));
+            const m = self.ortho_normalize();
+
+            const theta_x = math.atan2(T, m.data[1][2], m.data[2][2]);
+            const c2 = math.sqrt(math.pow(f32, m.data[0][0], 2) + math.pow(f32, m.data[0][1], 2));
+            const theta_y = math.atan2(T, -m.data[0][2], math.sqrt(c2));
             const s1 = math.sin(theta_x);
             const c1 = math.cos(theta_x);
-            const theta_z = math.atan2(T, s1 * self.data[2][0] - c1 * self.data[1][0], c1 * self.data[1][1] - s1 * self.data[2][1]);
+            const theta_z = math.atan2(T, s1 * m.data[2][0] - c1 * m.data[1][0], c1 * m.data[1][1] - s1 * m.data[2][1]);
 
             return vec3.new(root.to_degrees(theta_x), root.to_degrees(theta_y), root.to_degrees(theta_z));
         }
