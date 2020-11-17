@@ -101,6 +101,7 @@ fmt | Display the matrix components for debug purpose
 Methods | Description
 ------------ | -------------
 new| Construct new quat from given floats
+zero| Construct quat as `(1, 0, 0, 0)`
 from_vec3 | Construct quaternion from vec3
 is_eq | Return `true` if two quaternions are equal
 norm | Normalize given quaternion

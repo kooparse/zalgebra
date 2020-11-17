@@ -34,6 +34,11 @@ pub fn Quaternion(comptime T: type) type {
             };
         }
 
+        /// Construct most basic quaternion.
+        pub fn zero() Self {
+            return Self.new(1, 0, 0, 0);
+        }
+
         pub fn from_vec3(w: T, axis: Vec3(T)) Self {
             return .{
                 .w = w,
