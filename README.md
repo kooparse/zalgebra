@@ -93,6 +93,8 @@ orthographic| Construct an orthographic matrix from given left, right, bottom, t
 look_at | Construct a right-handed look_at matrix from given position (eye) and target
 mult | Multiply two matrices
 inv | Inverse the given matrix
+recompose | Return matrix from given `translation`, `rotation` and `scale` components
+decompose | Return components `translation`, `rotation` and `scale` from given matrix.
 fmt | Display the matrix components for debug purpose
 
 ### Quaternions

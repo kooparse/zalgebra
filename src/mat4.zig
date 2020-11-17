@@ -5,6 +5,7 @@ const testing = std.testing;
 const root = @import("main.zig");
 usingnamespace @import("vec4.zig");
 usingnamespace @import("vec3.zig");
+usingnamespace @import("quaternion.zig");
 
 pub const mat4 = Mat4(f32);
 pub const mat4_f64 = Mat4(f64);
@@ -341,6 +342,38 @@ pub fn Mat4(comptime T: type) type {
             return inv_mat;
         }
 
+        /// Return 4x4 matrix from given all transform components; `translation`, `rotation` and `sclale`. 
+        /// The final order is T * R * S.
+        /// Note: `rotation` could be `vec3` (Euler angles) or a `quat`.
+        pub fn recompose(translation: Vec3(T), rotation: anytype, scaler: Vec3(T)) Self {
+            const t = Self.from_translate(translation);
+            const s = Self.from_scale(scaler);
+
+            const r = switch (@TypeOf(rotation)) {
+                Quaternion(T) => Quaternion(T).to_mat4(rotation),
+                Vec3(T) => Self.from_euler_angle(rotation),
+                else => @compileError("Recompose not implemented for " ++ @typeName(@TypeOf(rotation)))
+            };
+
+            return t.mult(r.mult(s));
+        }
+
+        /// Return `translation`, `rotation` and `scale` components from given matrix.
+        /// For now, the rotation returned is a quaternion. If you want to get Euler angles
+        /// from it, just do: `returned_quat.extract_rotation()`. 
+        /// Note: We ortho nornalize the given matrix before extracting the rotation.
+        pub fn decompose(mat: Self) struct {t: Vec3(T), r: Quaternion(T), s: Vec3(T)} {
+            const t = mat.extract_translation();
+            const s = mat.extract_scale();
+            const r = quat.from_mat4(mat.ortho_normalize());
+
+            return .{
+                .t = t,
+                .r = r,
+                .s = s,
+            };
+        }
+
         /// Display the 4x4 matrix.
         pub fn fmt(self: Self) void {
             print("\n", .{});
@@ -461,3 +494,36 @@ test "zalgebra.Mat4.extract_scale" {
 
     testing.expectEqual(vec3.is_eq(base.extract_scale(), vec3.new(4, 16, 64)), true);
 }
+
+test "zalgebra.Mat4.recompose" {
+    const result = mat4.recompose(
+        vec3.new(2, 2, 2),
+        vec3.new(45, 5, 0),
+        vec3.new(1, 1, 1),
+    );
+
+    testing.expectEqual(mat4.is_eq(result, mat4{
+        .data = .{
+            .{ 0.9961947202682495, 0., -0.08715573698282242, 0.},
+            .{ 0.06162841618061066, 0.7071067690849304, 0.7044160962104797, 0. },
+            .{ 0.06162841245532036, -0.7071068286895752, 0.704416036605835, 0. },
+            .{ 2., 2., 2., 1},
+        },
+    }), true);
+}
+
+test "zalgebra.Mat4.decompose" {
+    const base = mat4.recompose(
+        vec3.new(10, 5, 5),
+        vec3.new(45, 5, 0),
+        vec3.new(1, 1, 1),
+    );
+
+    const result = base.decompose();
+
+    testing.expectEqual(result.t.is_eq(vec3.new(10, 5, 5)), true);
+    testing.expectEqual(result.s.is_eq(vec3.new(1, 1, 1)), true);
+    testing.expectEqual(result.r.extract_rotation().is_eq(vec3.new(45, 5, -0.00000010712935250012379)), true);
+
+}
+
