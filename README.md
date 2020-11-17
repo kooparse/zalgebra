@@ -21,7 +21,7 @@ pub fn main () void {
 }
 ```
 
-## Documentation
+## Quick reference
 
 ### Aliases
 
