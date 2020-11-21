@@ -26,13 +26,25 @@ pub fn Mat4(comptime T: type) type {
         const Self = @This();
 
         pub fn identity() Self {
-            return Self{
+            return .{
                 .data = .{
                     .{ 1., 0., 0., 0. },
                     .{ 0., 1., 0., 0. },
                     .{ 0., 0., 1., 0. },
                     .{ 0., 0., 0., 1. },
                 },
+            };
+        }
+
+        /// Construct new 4x4 matrix from given slice.
+        pub fn from_slice(data: *const [16]T) Self {
+            return .{
+                .data = .{
+                    data[0..4].*,
+                    data[4..8].*,
+                    data[8..12].*,
+                    data[12..16].*,
+                }
             };
         }
 
@@ -400,6 +412,13 @@ test "zalgebra.Mat4.is_eq" {
 
     testing.expectEqual(mat4.is_eq(mat_0, mat_1), true);
     testing.expectEqual(mat4.is_eq(mat_0, mat_2), false);
+}
+
+test "zalgebra.Mat4.from_slice" {
+    const data = [_]f32 {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    const result = mat4.from_slice(&data);
+
+    testing.expectEqual(mat4.is_eq(result, mat4.identity()), true);
 }
 
 test "zalgebra.Mat4.from_translate" {

@@ -74,6 +74,7 @@ Note: All matrices are column-major.
 Methods | Description
 ------------ | -------------
 identity | Construct an identity matrix
+from_slice | Construct new matrix from given slice of data
 get_data | Return a pointer to the inner data
 is_eq | Return `true` if two matrices are equals
 mult_by_vec4 | Multiply a given vec4 by matrix (only for mat4)
