@@ -82,6 +82,11 @@ pub fn Vec3(comptime T: type) type {
             return Self.new(0., 0., 1);
         }
 
+        /// Transform vector to array.
+        pub fn to_array(self: Self) [3]T {
+            return .{ self.x, self.y, self.z };
+        }
+
         /// Return the angle in degrees between two vectors.
         pub fn get_angle(lhs: Self, rhs: Self) T {
             const dot_product = Self.dot(lhs.norm(), rhs.norm());
@@ -177,6 +182,13 @@ test "zalgebra.Vec3.get_angle" {
     testing.expectEqual(vec3.get_angle(_vec_0, _vec_1), 90.);
     testing.expectEqual(vec3.get_angle(_vec_0, _vec_2), 180.);
     testing.expectEqual(vec3.get_angle(_vec_0, _vec_3), 45.);
+}
+
+test "zalgebra.Vec3.to_array" {
+    const _vec_0 = vec3.up().to_array();
+    const _vec_1 = [_]f32{0, 1, 0};
+
+    testing.expectEqual(std.mem.eql(f32, &_vec_0, &_vec_1), true);
 }
 
 test "zalgebra.Vec3.is_eq" {

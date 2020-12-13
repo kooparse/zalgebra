@@ -55,6 +55,7 @@ right | Shorthand for `(1, 0, 0)` (only for vec3)
 left | Shorthand for `(-1, 0, 0)` (only for vec3)
 forward | Shorthand for `(0, 0, 1)` (only for vec3)
 back | Shorthand for `(0, 0, -1)` (only for vec3)
+to_array | Return an array of same size.
 get_angle | Return angle in degrees between two vectors (only for vec2 and vec3)
 length | Return the magnitude of the current vector
 norm | Construct a new normalized vector based on the given one

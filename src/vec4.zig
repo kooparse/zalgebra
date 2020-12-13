@@ -34,6 +34,11 @@ pub fn Vec4(comptime T: type) type {
             return Self.new(0., 0., 0., 0.);
         }
 
+        /// Transform vector to array.
+        pub fn to_array(self: Self) [4]T {
+            return .{ self.x, self.y, self.z, self.w };
+        }
+
         /// Compute the length (magnitude) of given vector |a|.
         pub fn length(self: Self) T {
             return math.sqrt((self.x * self.x) + (self.y * self.y) + (self.z * self.z) + (self.w * self.w));
@@ -115,6 +120,13 @@ test "zalgebra.Vec4.is_eq" {
     var _vec_2 = vec4.new(1., 2., 3., 5.);
     testing.expectEqual(vec4.is_eq(_vec_0, _vec_1), true);
     testing.expectEqual(vec4.is_eq(_vec_0, _vec_2), false);
+}
+
+test "zalgebra.Vec2.to_array" {
+    const _vec_0 = vec4.new(0, 1, 0, 1).to_array();
+    const _vec_1 = [_]f32{0, 1, 0, 1};
+
+    testing.expectEqual(std.mem.eql(f32, &_vec_0, &_vec_1), true);
 }
 
 test "zalgebra.Vec4.length" {
