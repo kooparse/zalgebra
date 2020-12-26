@@ -186,7 +186,7 @@ test "zalgebra.Vec3.get_angle" {
 
 test "zalgebra.Vec3.to_array" {
     const _vec_0 = vec3.up().to_array();
-    const _vec_1 = [_]f32{0, 1, 0};
+    const _vec_1 = [_]f32{ 0, 1, 0 };
 
     testing.expectEqual(std.mem.eql(f32, &_vec_0, &_vec_1), true);
 }

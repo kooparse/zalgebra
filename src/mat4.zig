@@ -44,7 +44,7 @@ pub fn Mat4(comptime T: type) type {
                     data[4..8].*,
                     data[8..12].*,
                     data[12..16].*,
-                }
+                },
             };
         }
 
@@ -151,15 +151,15 @@ pub fn Mat4(comptime T: type) type {
             var result = mat;
 
             result.data[0][0] = column_1.x;
-            result.data[0][1] = column_1.y; 
+            result.data[0][1] = column_1.y;
             result.data[0][2] = column_1.z;
 
             result.data[1][0] = column_2.x;
-            result.data[1][1] = column_2.y; 
+            result.data[1][1] = column_2.y;
             result.data[1][2] = column_2.z;
 
             result.data[2][0] = column_3.x;
-            result.data[2][1] = column_3.y; 
+            result.data[2][1] = column_3.y;
             result.data[2][2] = column_3.z;
 
             return result;
@@ -354,7 +354,7 @@ pub fn Mat4(comptime T: type) type {
             return inv_mat;
         }
 
-        /// Return 4x4 matrix from given all transform components; `translation`, `rotation` and `sclale`. 
+        /// Return 4x4 matrix from given all transform components; `translation`, `rotation` and `sclale`.
         /// The final order is T * R * S.
         /// Note: `rotation` could be `vec3` (Euler angles) or a `quat`.
         pub fn recompose(translation: Vec3(T), rotation: anytype, scaler: Vec3(T)) Self {
@@ -364,7 +364,7 @@ pub fn Mat4(comptime T: type) type {
             const r = switch (@TypeOf(rotation)) {
                 Quaternion(T) => Quaternion(T).to_mat4(rotation),
                 Vec3(T) => Self.from_euler_angle(rotation),
-                else => @compileError("Recompose not implemented for " ++ @typeName(@TypeOf(rotation)))
+                else => @compileError("Recompose not implemented for " ++ @typeName(@TypeOf(rotation))),
             };
 
             return t.mult(r.mult(s));
@@ -372,9 +372,9 @@ pub fn Mat4(comptime T: type) type {
 
         /// Return `translation`, `rotation` and `scale` components from given matrix.
         /// For now, the rotation returned is a quaternion. If you want to get Euler angles
-        /// from it, just do: `returned_quat.extract_rotation()`. 
+        /// from it, just do: `returned_quat.extract_rotation()`.
         /// Note: We ortho nornalize the given matrix before extracting the rotation.
-        pub fn decompose(mat: Self) struct {t: Vec3(T), r: Quaternion(T), s: Vec3(T)} {
+        pub fn decompose(mat: Self) struct { t: Vec3(T), r: Quaternion(T), s: Vec3(T) } {
             const t = mat.extract_translation();
             const s = mat.extract_scale();
             const r = quat.from_mat4(mat.ortho_normalize());
@@ -415,7 +415,7 @@ test "zalgebra.Mat4.is_eq" {
 }
 
 test "zalgebra.Mat4.from_slice" {
-    const data = [_]f32 {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    const data = [_]f32{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
     const result = mat4.from_slice(&data);
 
     testing.expectEqual(mat4.is_eq(result, mat4.identity()), true);
@@ -523,10 +523,10 @@ test "zalgebra.Mat4.recompose" {
 
     testing.expectEqual(mat4.is_eq(result, mat4{
         .data = .{
-            .{ 0.9961947202682495, 0., -0.08715573698282242, 0.},
+            .{ 0.9961947202682495, 0., -0.08715573698282242, 0. },
             .{ 0.06162841618061066, 0.7071067690849304, 0.7044160962104797, 0. },
             .{ 0.06162841245532036, -0.7071068286895752, 0.704416036605835, 0. },
-            .{ 2., 2., 2., 1},
+            .{ 2., 2., 2., 1 },
         },
     }), true);
 }
@@ -543,6 +543,4 @@ test "zalgebra.Mat4.decompose" {
     testing.expectEqual(result.t.is_eq(vec3.new(10, 5, 5)), true);
     testing.expectEqual(result.s.is_eq(vec3.new(1, 1, 1)), true);
     testing.expectEqual(result.r.extract_rotation().is_eq(vec3.new(45, 5, -0.00000010712935250012379)), true);
-
 }
-

@@ -124,7 +124,7 @@ test "zalgebra.Vec4.is_eq" {
 
 test "zalgebra.Vec2.to_array" {
     const _vec_0 = vec4.new(0, 1, 0, 1).to_array();
-    const _vec_1 = [_]f32{0, 1, 0, 1};
+    const _vec_1 = [_]f32{ 0, 1, 0, 1 };
 
     testing.expectEqual(std.mem.eql(f32, &_vec_0, &_vec_1), true);
 }
