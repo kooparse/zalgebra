@@ -23,6 +23,11 @@ pub fn Vec2(comptime T: type) type {
             return .{ .x = x, .y = y };
         }
 
+        /// Set all components to the same given value.
+        pub fn set(val: T) Self {
+            return Self.new(val, val);
+        }
+
         pub fn zero() Self {
             return Self.new(0.0, 0.0);
         }
@@ -107,6 +112,12 @@ test "zalgebra.Vec2.init" {
 
     testing.expectEqual(_vec_0.x, 1.5);
     testing.expectEqual(_vec_0.y, 2.6);
+}
+
+test "zalgebra.Vec2.set" {
+    var _vec_0 = vec2.new(2.5, 2.5);
+    var _vec_1 = vec2.set(2.5);
+    testing.expectEqual(vec2.is_eq(_vec_0, _vec_1), true);
 }
 
 test "zalgebra.Vec2.get_angle" {

@@ -42,6 +42,11 @@ pub fn Vec3(comptime T: type) type {
             }
         }
 
+        /// Set all components to the same given value.
+        pub fn set(val: T) Self {
+            return Self.new(val, val, val);
+        }
+
         /// Shorthand for writing vec3.new(0, 0, 0).
         pub fn zero() Self {
             return Self.new(0., 0., 0.);
@@ -171,6 +176,12 @@ test "zalgebra.Vec3.init" {
     testing.expectEqual(_vec_0.x, 1.5);
     testing.expectEqual(_vec_0.y, 2.6);
     testing.expectEqual(_vec_0.z, 3.7);
+}
+
+test "zalgebra.Vec3.set" {
+    var _vec_0 = vec3.new(2.5, 2.5, 2.5);
+    var _vec_1 = vec3.set(2.5);
+    testing.expectEqual(vec3.is_eq(_vec_0, _vec_1), true);
 }
 
 test "zalgebra.Vec3.get_angle" {

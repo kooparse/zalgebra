@@ -30,6 +30,11 @@ pub fn Vec4(comptime T: type) type {
             };
         }
 
+        /// Set all components to the same given value.
+        pub fn set(val: T) Self {
+            return Self.new(val, val, val, val);
+        }
+
         pub fn zero() Self {
             return Self.new(0., 0., 0., 0.);
         }
@@ -120,6 +125,12 @@ test "zalgebra.Vec4.is_eq" {
     var _vec_2 = vec4.new(1., 2., 3., 5.);
     testing.expectEqual(vec4.is_eq(_vec_0, _vec_1), true);
     testing.expectEqual(vec4.is_eq(_vec_0, _vec_2), false);
+}
+
+test "zalgebra.Vec4.set" {
+    var _vec_0 = vec4.new(2.5, 2.5, 2.5, 2.5);
+    var _vec_1 = vec4.set(2.5);
+    testing.expectEqual(vec4.is_eq(_vec_0, _vec_1), true);
 }
 
 test "zalgebra.Vec2.to_array" {
