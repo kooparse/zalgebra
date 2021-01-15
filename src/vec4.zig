@@ -5,10 +5,11 @@ const testing = std.testing;
 
 pub const vec4 = Vec4(f32);
 pub const vec4_f64 = Vec4(f64);
+pub const vec4_i32 = Vec4(i32);
 
 /// A 4 dimensional vector.
 pub fn Vec4(comptime T: type) type {
-    if (@typeInfo(T) != .Float) {
+    if (@typeInfo(T) != .Float and @typeInfo(T) != .Int) {
         @compileError("Vec4 not implemented for " ++ @typeName(T));
     }
 
@@ -37,6 +38,16 @@ pub fn Vec4(comptime T: type) type {
 
         pub fn zero() Self {
             return Self.new(0., 0., 0., 0.);
+        }
+
+        /// Cast vector with integers as component to float vector.
+        pub fn to_float(self: Self, float_type: anytype) Vec4(float_type) {
+            const x = @intToFloat(float_type, self.x);
+            const y = @intToFloat(float_type, self.y);
+            const z = @intToFloat(float_type, self.z);
+            const w = @intToFloat(float_type, self.w);
+
+            return Vec4(float_type).new(x, y, z, w);
         }
 
         /// Transform vector to array.
@@ -181,16 +192,37 @@ test "zalgebra.Vec4.lerp" {
     testing.expectEqual(vec4.is_eq(vec4.lerp(_vec_0, _vec_1, 0.5), vec4.new(0.0, 5.0, 0.0, 0.0)), true);
 }
 
-test "zalgebra.Vec3.min" {
+test "zalgebra.Vec4.min" {
     var _vec_0 = vec4.new(10.0, -2.0, 0.0, 1.0);
     var _vec_1 = vec4.new(-10.0, 5.0, 0.0, 1.01);
 
     testing.expectEqual(vec4.is_eq(vec4.min(_vec_0, _vec_1), vec4.new(-10.0, -2.0, 0.0, 1.0)), true);
 }
 
-test "zalgebra.vec4.max" {
+test "zalgebra.Vec4.max" {
     var _vec_0 = vec4.new(10.0, -2.0, 0.0, 1.0);
     var _vec_1 = vec4.new(-10.0, 5.0, 0.0, 1.01);
 
     testing.expectEqual(vec4.is_eq(vec4.max(_vec_0, _vec_1), vec4.new(10.0, 5.0, 0.0, 1.01)), true);
+}
+
+test "zalgebra.Vec4.integers" {
+    const _vec_0 = vec4_i32.new(3, 5, 3, 0);
+    const _vec_1 = vec4_i32.set(3);
+
+    testing.expectEqual(
+        vec4_i32.is_eq(vec4_i32.add(_vec_0, _vec_1), vec4_i32.new(6, 8, 6, 3)),
+        true,
+    );
+
+    testing.expectEqual(
+        vec4_i32.is_eq(vec4_i32.sub(_vec_0, _vec_1), vec4_i32.new(0, 2, 0, -3)),
+        true,
+    );
+
+    const _vec_2 = vec4_i32.set(4);
+    testing.expectEqual(
+        vec4.is_eq(_vec_2.to_float(f32).norm(), vec4.new(0.5, 0.5, 0.5, 0.5)),
+        true,
+    );
 }

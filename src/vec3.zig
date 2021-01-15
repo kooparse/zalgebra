@@ -6,10 +6,11 @@ const testing = std.testing;
 
 pub const vec3 = Vec3(f32);
 pub const vec3_f64 = Vec3(f64);
+pub const vec3_i32 = Vec3(i32);
 
 /// A 3 dimensional vector.
 pub fn Vec3(comptime T: type) type {
-    if (@typeInfo(T) != .Float) {
+    if (@typeInfo(T) != .Float and @typeInfo(T) != .Int) {
         @compileError("Vec3 not implemented for " ++ @typeName(T));
     }
 
@@ -85,6 +86,15 @@ pub fn Vec3(comptime T: type) type {
         /// Shorthand for writing vec3.new(0, 0, 1).
         pub fn forward() Self {
             return Self.new(0., 0., 1);
+        }
+
+        /// Cast vector with integers as component to float vector.
+        pub fn to_float(self: Self, float_type: anytype) Vec3(float_type) {
+            const x = @intToFloat(float_type, self.x);
+            const y = @intToFloat(float_type, self.y);
+            const z = @intToFloat(float_type, self.z);
+
+            return Vec3(float_type).new(x, y, z);
         }
 
         /// Transform vector to array.
@@ -283,4 +293,29 @@ test "zalgebra.Vec3.at" {
     testing.expectEqual(t.at(0), 10.0);
     testing.expectEqual(t.at(1), -2.0);
     testing.expectEqual(t.at(2), 0.0);
+}
+
+test "zalgebra.Vec3.integers" {
+    const _vec_0 = vec3_i32.new(3, 5, 3);
+    const _vec_1 = vec3_i32.set(3);
+
+    testing.expectEqual(
+        vec3_i32.is_eq(vec3_i32.add(_vec_0, _vec_1), vec3_i32.new(6, 8, 6)),
+        true,
+    );
+
+    testing.expectEqual(
+        vec3_i32.is_eq(vec3_i32.sub(_vec_0, _vec_1), vec3_i32.new(0, 2, 0)),
+        true,
+    );
+
+    const _vec_2 = vec3_i32.set(4);
+    testing.expectEqual(
+        vec3.is_eq(_vec_2.to_float(f32).norm(), vec3.new(
+            0.5773502588272095,
+            0.5773502588272095,
+            0.5773502588272095,
+        )),
+        true,
+    );
 }

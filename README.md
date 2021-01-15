@@ -32,10 +32,13 @@ Type | Description
 ------------ | -------------
 vec2 | Two dimensional vector for `f32`
 vec2_f64 | Two dimensional vector for `f64`
+vec2_i32 | Two dimensional vector for `i32`
 vec3 | Three dimensional vector for `f32`
 vec3_f64 | Three dimensional vector for `f64`
+vec3_i32 | Three dimensional vector for `i32`
 vec4 | Four dimensional vector for `f32`
 vec4_f64 | Four dimensional vector for `f64`
+vec4_i32 | Four dimensional vector for `i32`
 mat4 | 4x4 matrix for `f32`
 mat4_f64 | 4x4 matrix for `f64`
 quat | Quaternion for `f32`
@@ -51,6 +54,7 @@ Methods | Description
 new | Construct a vector from 2 to 4 components
 at | Return component from given index
 set | Set all components to the same given value
+to_float | Cast integers vector to float vector 
 zero | Shorthand for `(0, 0, 0)`
 one | Shorthand for `(1, 1, 1)` (only for vec3)
 up | Shorthand for `(0, 1, 0)` (only for vec3)

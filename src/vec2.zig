@@ -5,10 +5,11 @@ const testing = std.testing;
 
 pub const vec2 = Vec2(f32);
 pub const vec2_f64 = Vec2(f64);
+pub const vec2_i32 = Vec2(i32);
 
 /// A 2 dimensional vector.
 pub fn Vec2(comptime T: type) type {
-    if (@typeInfo(T) != .Float) {
+    if (@typeInfo(T) != .Float and @typeInfo(T) != .Int) {
         @compileError("Vec2 not implemented for " ++ @typeName(T));
     }
 
@@ -34,6 +35,14 @@ pub fn Vec2(comptime T: type) type {
 
         pub fn up() Self {
             return Self.new(0.0, 1.0);
+        }
+
+        /// Cast vector with integers as component to float vector.
+        pub fn to_float(self: Self, float_type: anytype) Vec2(float_type) {
+            const x = @intToFloat(float_type, self.x);
+            const y = @intToFloat(float_type, self.y);
+
+            return Vec2(float_type).new(x, y);
         }
 
         /// Transform vector to array.
@@ -199,4 +208,28 @@ test "zalgebra.Vec2.max" {
     var _vec_1 = vec2.new(-10.0, 5.0);
 
     testing.expectEqual(vec2.is_eq(vec2.max(_vec_0, _vec_1), vec2.new(10.0, 5.0)), true);
+}
+
+test "zalgebra.Vec2.integers" {
+    const _vec_0 = vec2_i32.new(3, 5);
+    const _vec_1 = vec2_i32.set(3);
+
+    testing.expectEqual(
+        vec2_i32.is_eq(vec2_i32.add(_vec_0, _vec_1), vec2_i32.new(6, 8)),
+        true,
+    );
+
+    testing.expectEqual(
+        vec2_i32.is_eq(vec2_i32.sub(_vec_0, _vec_1), vec2_i32.new(0, 2)),
+        true,
+    );
+
+    const _vec_2 = vec2_i32.set(4);
+    testing.expectEqual(
+        vec2.is_eq(_vec_2.to_float(f32).norm(), vec2.new(
+            0.7071067690849304,
+            0.7071067690849304,
+        )),
+        true,
+    );
 }
