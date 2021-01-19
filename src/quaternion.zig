@@ -246,7 +246,7 @@ test "zalgebra.Quaternion.new" {
 }
 
 test "zalgebra.Quaternion.from_slice" {
-    const array = [4]f32{2, 3, 4, 1};
+    const array = [4]f32{ 2, 3, 4, 1 };
     testing.expectEqual(quat.is_eq(quat.from_slice(&array), quat.new(1, 2, 3, 4)), true);
 }
 

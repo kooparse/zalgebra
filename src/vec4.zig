@@ -212,7 +212,7 @@ test "zalgebra.Vec4.max" {
 }
 
 test "zalgebra.Vec2.from_slice" {
-    const array = [4]f32{2, 4, 3, 6};
+    const array = [4]f32{ 2, 4, 3, 6 };
     testing.expectEqual(vec4.is_eq(vec4.from_slice(&array), vec4.new(2, 4, 3, 6)), true);
 }
 

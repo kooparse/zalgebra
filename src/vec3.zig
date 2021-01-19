@@ -301,7 +301,7 @@ test "zalgebra.Vec3.at" {
 }
 
 test "zalgebra.Vec3.from_slice" {
-    const array = [3]f32{2, 1, 4};
+    const array = [3]f32{ 2, 1, 4 };
     testing.expectEqual(vec3.is_eq(vec3.from_slice(&array), vec3.new(2, 1, 4)), true);
 }
 
