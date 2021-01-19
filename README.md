@@ -55,6 +55,7 @@ new | Construct a vector from 2 to 4 components
 at | Return component from given index
 set | Set all components to the same given value
 to_float | Cast integers vector to float vector 
+from_slice | Construct new vectors from slice
 zero | Shorthand for `(0, 0, 0)`
 one | Shorthand for `(1, 1, 1)` (only for vec3)
 up | Shorthand for `(0, 1, 0)` (only for vec3)
@@ -112,6 +113,7 @@ Methods | Description
 ------------ | -------------
 new| Construct new quat from given floats
 zero| Construct quat as `(1, 0, 0, 0)`
+from_slice | Construct new quaternion from slice
 from_vec3 | Construct quaternion from vec3
 is_eq | Return `true` if two quaternions are equal
 norm | Normalize given quaternion

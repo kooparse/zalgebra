@@ -45,6 +45,11 @@ pub fn Vec2(comptime T: type) type {
             return Vec2(float_type).new(x, y);
         }
 
+        /// Construct new vector from slice.
+        pub fn from_slice(slice: []const T) Self {
+            return Self.new(slice[0], slice[1]);
+        }
+
         /// Transform vector to array.
         pub fn to_array(self: Self) [2]T {
             return .{ self.x, self.y };
@@ -208,6 +213,11 @@ test "zalgebra.Vec2.max" {
     var _vec_1 = vec2.new(-10.0, 5.0);
 
     testing.expectEqual(vec2.is_eq(vec2.max(_vec_0, _vec_1), vec2.new(10.0, 5.0)), true);
+}
+
+test "zalgebra.Vec2.from_slice" {
+    const array = [2]f32{2, 4};
+    testing.expectEqual(vec2.is_eq(vec2.from_slice(&array), vec2.new(2, 4)), true);
 }
 
 test "zalgebra.Vec2.integers" {

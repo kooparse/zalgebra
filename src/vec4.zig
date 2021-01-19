@@ -50,6 +50,11 @@ pub fn Vec4(comptime T: type) type {
             return Vec4(float_type).new(x, y, z, w);
         }
 
+        /// Construct new vector from slice.
+        pub fn from_slice(slice: []const T) Self {
+            return Self.new(slice[0], slice[1], slice[2], slice[3]);
+        }
+
         /// Transform vector to array.
         pub fn to_array(self: Self) [4]T {
             return .{ self.x, self.y, self.z, self.w };
@@ -204,6 +209,11 @@ test "zalgebra.Vec4.max" {
     var _vec_1 = vec4.new(-10.0, 5.0, 0.0, 1.01);
 
     testing.expectEqual(vec4.is_eq(vec4.max(_vec_0, _vec_1), vec4.new(10.0, 5.0, 0.0, 1.01)), true);
+}
+
+test "zalgebra.Vec2.from_slice" {
+    const array = [4]f32{2, 4, 3, 6};
+    testing.expectEqual(vec4.is_eq(vec4.from_slice(&array), vec4.new(2, 4, 3, 6)), true);
 }
 
 test "zalgebra.Vec4.integers" {

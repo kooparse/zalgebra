@@ -39,6 +39,12 @@ pub fn Quaternion(comptime T: type) type {
             return Self.new(1, 0, 0, 0);
         }
 
+        /// Construct new quaternion from slice.
+        /// Note: Careful, the latest component `slice[3]` is the `W` component.
+        pub fn from_slice(slice: []const T) Self {
+            return Self.new(slice[3], slice[0], slice[1], slice[2]);
+        }
+
         pub fn from_vec3(w: T, axis: Vec3(T)) Self {
             return .{
                 .w = w,
@@ -237,6 +243,11 @@ test "zalgebra.Quaternion.new" {
     testing.expectEqual(q.x, 2.6);
     testing.expectEqual(q.y, 3.7);
     testing.expectEqual(q.z, 4.7);
+}
+
+test "zalgebra.Quaternion.from_slice" {
+    const array = [4]f32{2, 3, 4, 1};
+    testing.expectEqual(quat.is_eq(quat.from_slice(&array), quat.new(1, 2, 3, 4)), true);
 }
 
 test "zalgebra.Quaternion.from_vec3" {

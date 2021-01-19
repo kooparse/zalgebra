@@ -97,6 +97,11 @@ pub fn Vec3(comptime T: type) type {
             return Vec3(float_type).new(x, y, z);
         }
 
+        /// Construct new vector from slice.
+        pub fn from_slice(slice: []const T) Self {
+            return Self.new(slice[0], slice[1], slice[2]);
+        }
+
         /// Transform vector to array.
         pub fn to_array(self: Self) [3]T {
             return .{ self.x, self.y, self.z };
@@ -293,6 +298,11 @@ test "zalgebra.Vec3.at" {
     testing.expectEqual(t.at(0), 10.0);
     testing.expectEqual(t.at(1), -2.0);
     testing.expectEqual(t.at(2), 0.0);
+}
+
+test "zalgebra.Vec3.from_slice" {
+    const array = [3]f32{2, 1, 4};
+    testing.expectEqual(vec3.is_eq(vec3.from_slice(&array), vec3.new(2, 1, 4)), true);
 }
 
 test "zalgebra.Vec3.integers" {
