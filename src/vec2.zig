@@ -67,7 +67,7 @@ pub fn Vec2(comptime T: type) type {
                     return Vec2(dest).new(x, y);
                 },
                 else => panic(
-                    "Error, given type should be an integers or float.\n",
+                    "Error, given type should be integers or float.\n",
                     .{},
                 ),
             };

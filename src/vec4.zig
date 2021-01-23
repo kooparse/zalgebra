@@ -78,7 +78,7 @@ pub fn Vec4(comptime T: type) type {
                     return Vec4(dest).new(x, y, z, w);
                 },
                 else => panic(
-                    "Error, given type should be an integers or float.\n",
+                    "Error, given type should be integers or float.\n",
                     .{},
                 ),
             };

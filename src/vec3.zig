@@ -122,7 +122,7 @@ pub fn Vec3(comptime T: type) type {
                     return Vec3(dest).new(x, y, z);
                 },
                 else => panic(
-                    "Error, given type should be an integers or float.\n",
+                    "Error, given type should be integers or float.\n",
                     .{},
                 ),
             };
