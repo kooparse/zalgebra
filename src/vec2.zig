@@ -6,6 +6,7 @@ const testing = std.testing;
 pub const vec2 = Vec2(f32);
 pub const vec2_f64 = Vec2(f64);
 pub const vec2_i32 = Vec2(i32);
+pub const vec2_usize = Vec2(usize);
 
 /// A 2 dimensional vector.
 pub fn Vec2(comptime T: type) type {
