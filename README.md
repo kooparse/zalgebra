@@ -54,7 +54,7 @@ Methods | Description
 new | Construct a vector from 2 to 4 components
 at | Return component from given index
 set | Set all components to the same given value
-to_float | Cast integers vector to float vector 
+cast | Cast a type to another type
 from_slice | Construct new vectors from slice
 zero | Shorthand for `(0, 0, 0)`
 one | Shorthand for `(1, 1, 1)` (only for vec3)

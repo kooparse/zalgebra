@@ -88,13 +88,44 @@ pub fn Vec3(comptime T: type) type {
             return Self.new(0., 0., 1);
         }
 
-        /// Cast vector with integers as component to float vector.
-        pub fn to_float(self: Self, float_type: anytype) Vec3(float_type) {
-            const x = @intToFloat(float_type, self.x);
-            const y = @intToFloat(float_type, self.y);
-            const z = @intToFloat(float_type, self.z);
+        /// Cast a type to another type. Only for integers and floats.
+        /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt
+        pub fn cast(self: Self, dest: anytype) Vec3(dest) {
+            const source_info = @typeInfo(T);
+            const dest_info = @typeInfo(dest);
 
-            return Vec3(float_type).new(x, y, z);
+            if (source_info == .Float and dest_info == .Int) {
+                const x = @floatToInt(dest, self.x);
+                const y = @floatToInt(dest, self.y);
+                const z = @floatToInt(dest, self.z);
+                return Vec3(dest).new(x, y, z);
+            }
+
+            if (source_info == .Int and dest_info == .Float) {
+                const x = @intToFloat(dest, self.x);
+                const y = @intToFloat(dest, self.y);
+                const z = @intToFloat(dest, self.z);
+                return Vec3(dest).new(x, y, z);
+            }
+
+            return switch (dest_info) {
+                .Float => {
+                    const x = @floatCast(dest, self.x);
+                    const y = @floatCast(dest, self.y);
+                    const z = @floatCast(dest, self.z);
+                    return Vec3(dest).new(x, y, z);
+                },
+                .Int => {
+                    const x = @intCast(dest, self.x);
+                    const y = @intCast(dest, self.y);
+                    const z = @intCast(dest, self.z);
+                    return Vec3(dest).new(x, y, z);
+                },
+                else => panic(
+                    "Error, given type should be an integers or float.\n",
+                    .{},
+                ),
+            };
         }
 
         /// Construct new vector from slice.
@@ -305,27 +336,36 @@ test "zalgebra.Vec3.from_slice" {
     testing.expectEqual(vec3.is_eq(vec3.from_slice(&array), vec3.new(2, 1, 4)), true);
 }
 
-test "zalgebra.Vec3.integers" {
-    const _vec_0 = vec3_i32.new(3, 5, 3);
-    const _vec_1 = vec3_i32.set(3);
+test "zalgebra.Vec3.cast" {
+    const a = vec3_i32.new(3, 6, 2);
+    const b = Vec3(usize).new(3, 6, 2);
 
     testing.expectEqual(
-        vec3_i32.is_eq(vec3_i32.add(_vec_0, _vec_1), vec3_i32.new(6, 8, 6)),
+        Vec3(usize).is_eq(a.cast(usize), b),
         true,
     );
 
+    const c = vec3.new(3.5, 6.5, 2.0);
+    const d = vec3_f64.new(3.5, 6.5, 2);
+
     testing.expectEqual(
-        vec3_i32.is_eq(vec3_i32.sub(_vec_0, _vec_1), vec3_i32.new(0, 2, 0)),
+        vec3_f64.is_eq(c.cast(f64), d),
         true,
     );
 
-    const _vec_2 = vec3_i32.set(4);
+    const e = vec3_i32.new(3, 6, 2);
+    const f = vec3.new(3.0, 6.0, 2.0);
+
     testing.expectEqual(
-        vec3.is_eq(_vec_2.to_float(f32).norm(), vec3.new(
-            0.5773502588272095,
-            0.5773502588272095,
-            0.5773502588272095,
-        )),
+        vec3.is_eq(e.cast(f32), f),
+        true,
+    );
+
+    const g = vec3.new(3.0, 6.0, 2.0);
+    const h = vec3_i32.new(3, 6, 2);
+
+    testing.expectEqual(
+        vec3_i32.is_eq(g.cast(i32), h),
         true,
     );
 }

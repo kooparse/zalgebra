@@ -6,7 +6,6 @@ const testing = std.testing;
 pub const vec2 = Vec2(f32);
 pub const vec2_f64 = Vec2(f64);
 pub const vec2_i32 = Vec2(i32);
-pub const vec2_usize = Vec2(usize);
 
 /// A 2 dimensional vector.
 pub fn Vec2(comptime T: type) type {
@@ -38,12 +37,40 @@ pub fn Vec2(comptime T: type) type {
             return Self.new(0.0, 1.0);
         }
 
-        /// Cast vector with integers as component to float vector.
-        pub fn to_float(self: Self, float_type: anytype) Vec2(float_type) {
-            const x = @intToFloat(float_type, self.x);
-            const y = @intToFloat(float_type, self.y);
+        /// Cast a type to another type. Only for integers and floats.
+        /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt
+        pub fn cast(self: Self, dest: anytype) Vec2(dest) {
+            const source_info = @typeInfo(T);
+            const dest_info = @typeInfo(dest);
 
-            return Vec2(float_type).new(x, y);
+            if (source_info == .Float and dest_info == .Int) {
+                const x = @floatToInt(dest, self.x);
+                const y = @floatToInt(dest, self.y);
+                return Vec2(dest).new(x, y);
+            }
+
+            if (source_info == .Int and dest_info == .Float) {
+                const x = @intToFloat(dest, self.x);
+                const y = @intToFloat(dest, self.y);
+                return Vec2(dest).new(x, y);
+            }
+
+            return switch (dest_info) {
+                .Float => {
+                    const x = @floatCast(dest, self.x);
+                    const y = @floatCast(dest, self.y);
+                    return Vec2(dest).new(x, y);
+                },
+                .Int => {
+                    const x = @intCast(dest, self.x);
+                    const y = @intCast(dest, self.y);
+                    return Vec2(dest).new(x, y);
+                },
+                else => panic(
+                    "Error, given type should be an integers or float.\n",
+                    .{},
+                ),
+            };
         }
 
         /// Construct new vector from slice.
@@ -221,26 +248,36 @@ test "zalgebra.Vec2.from_slice" {
     testing.expectEqual(vec2.is_eq(vec2.from_slice(&array), vec2.new(2, 4)), true);
 }
 
-test "zalgebra.Vec2.integers" {
-    const _vec_0 = vec2_i32.new(3, 5);
-    const _vec_1 = vec2_i32.set(3);
+test "zalgebra.Vec2.cast" {
+    const a = vec2_i32.new(3, 6);
+    const b = Vec2(usize).new(3, 6);
 
     testing.expectEqual(
-        vec2_i32.is_eq(vec2_i32.add(_vec_0, _vec_1), vec2_i32.new(6, 8)),
+        Vec2(usize).is_eq(a.cast(usize), b),
         true,
     );
 
+    const c = vec2.new(3.5, 6.5);
+    const d = vec2_f64.new(3.5, 6.5);
+
     testing.expectEqual(
-        vec2_i32.is_eq(vec2_i32.sub(_vec_0, _vec_1), vec2_i32.new(0, 2)),
+        vec2_f64.is_eq(c.cast(f64), d),
         true,
     );
 
-    const _vec_2 = vec2_i32.set(4);
+    const e = vec2_i32.new(3, 6);
+    const f = vec2.new(3.0, 6.0);
+
     testing.expectEqual(
-        vec2.is_eq(_vec_2.to_float(f32).norm(), vec2.new(
-            0.7071067690849304,
-            0.7071067690849304,
-        )),
+        vec2.is_eq(e.cast(f32), f),
+        true,
+    );
+
+    const g = vec2.new(3.0, 6.0);
+    const h = vec2_i32.new(3, 6);
+
+    testing.expectEqual(
+        vec2_i32.is_eq(g.cast(i32), h),
         true,
     );
 }
