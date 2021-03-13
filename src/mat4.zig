@@ -210,7 +210,7 @@ pub fn Mat4(comptime T: type) type {
         pub fn perspective(fovy_in_degrees: T, aspect_ratio: T, z_near: T, z_far: T) Self {
             var mat: Self = undefined;
 
-            const f = 1.0 / math.tan(fovy_in_degrees * 0.5);
+            const f = 1.0 / math.tan(root.to_radians(fovy_in_degrees) * 0.5);
 
             mat.data[0][0] = f / aspect_ratio;
             mat.data[1][1] = f;
