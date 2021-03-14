@@ -217,6 +217,7 @@ pub fn Mat4(comptime T: type) type {
             mat.data[2][2] = (z_near + z_far) / (z_near - z_far);
             mat.data[2][3] = -1;
             mat.data[3][2] = 2 * z_far * z_near / (z_near - z_far);
+            mat.data[3][3] = 0;
 
             return mat;
         }
