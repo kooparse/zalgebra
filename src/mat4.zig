@@ -208,7 +208,7 @@ pub fn Mat4(comptime T: type) type {
         /// Note: Field of view is given in degrees.
         /// Also for more details https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml.
         pub fn perspective(fovy_in_degrees: T, aspect_ratio: T, z_near: T, z_far: T) Self {
-            var mat: Self = undefined;
+            var mat: Self = Self.identity();
 
             const f = 1.0 / math.tan(root.to_radians(fovy_in_degrees) * 0.5);
 
