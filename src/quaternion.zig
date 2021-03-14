@@ -233,6 +233,16 @@ pub fn Quaternion(comptime T: type) type {
 
             return Vec3(T).new(root.to_degrees(yaw), root.to_degrees(pitch), root.to_degrees(roll));
         }
+
+        /// Rotate the vector v using the sandwich product
+        /// Taken from Foundations of Game Engine Development Vol. 1 Mathematics
+        pub fn rotate(self: Self, v: Vec3(T)) Vec3(T) {
+            const q = self.norm();
+            const b = Vec3(T).new(q.x, q.y, q.z);
+            const b2 = b.x * b.x + b.y * b.y + b.z * b.z;
+
+            return v.scale(q.w * q.w - b2).add(b.scale(v.dot(b) * 2.0)).add(b.cross(v).scale(q.w * 2.0));
+        }
     };
 }
 
@@ -298,4 +308,22 @@ test "zalgebra.Quaternion.extract_rotation" {
     const res_q1 = q1.extract_rotation();
 
     testing.expectEqual(vec3.is_eq(res_q1, vec3.new(129.6000213623047, 44.427005767822266, 114.41073608398438)), true);
+}
+
+test "zalgebra.Quaternion.rotate" {
+    const eps_value = comptime std.math.epsilon(f32);
+    const q = quat.from_euler_angle(vec3.new(45, 45, 45));
+    const m = q.to_mat4();
+
+    const v = vec3.new(0, 1, 0);
+    const v1 = q.rotate(v);
+    const v2 = m.mult_by_vec4(vec4.new(v.x, v.y, v.z, 1.0));
+
+    testing.expect(std.math.approxEqAbs(f32, v1.x, -1.46446585e-01, eps_value));
+    testing.expect(std.math.approxEqAbs(f32, v1.y, 8.53553473e-01, eps_value));
+    testing.expect(std.math.approxEqAbs(f32, v1.z, 0.5, eps_value));
+
+    testing.expect(std.math.approxEqAbs(f32, v1.x, v2.x, eps_value));
+    testing.expect(std.math.approxEqAbs(f32, v1.y, v2.y, eps_value));
+    testing.expect(std.math.approxEqAbs(f32, v1.z, v2.z, eps_value));
 }
