@@ -127,6 +127,7 @@ to_mat4 | Convert given quat to rotation 4x4 matrix
 from_euler_angle | Construct quaternion from Euler angle
 from_axis | Construct quat from angle around specified axis
 extract_rotation | Get euler angles from given quaternion
+rotate_vec | Rotate given vector
 
 
 ### Utilities
