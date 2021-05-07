@@ -1,6 +1,6 @@
 pkgs:
   zalgebra:
-    version: 0.0.0
+    version: 0.1.0
     description: "Linear algebra library for games and real-time computer graphics."
     license: MIT
     source_url: "https://github.com/kooparse/zalgebra"
