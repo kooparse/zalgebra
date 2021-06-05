@@ -152,107 +152,107 @@ pub fn Vec2(comptime T: type) type {
 test "zalgebra.Vec2.init" {
     var _vec_0 = vec2.new(1.5, 2.6);
 
-    testing.expectEqual(_vec_0.x, 1.5);
-    testing.expectEqual(_vec_0.y, 2.6);
+    try testing.expectEqual(_vec_0.x, 1.5);
+    try testing.expectEqual(_vec_0.y, 2.6);
 }
 
 test "zalgebra.Vec2.set" {
     var _vec_0 = vec2.new(2.5, 2.5);
     var _vec_1 = vec2.set(2.5);
-    testing.expectEqual(vec2.is_eq(_vec_0, _vec_1), true);
+    try testing.expectEqual(vec2.is_eq(_vec_0, _vec_1), true);
 }
 
 test "zalgebra.Vec2.get_angle" {
-    var _vec_0 = vec2.new(1., 0.);
+    var _vec_0 = vec2.new(1.0, 0.0);
     var _vec_1 = vec2.up();
-    var _vec_2 = vec2.new(-1., 0.);
-    var _vec_3 = vec2.new(1., 1.);
+    var _vec_2 = vec2.new(-1.0, 0.0);
+    var _vec_3 = vec2.new(1.0, 1.0);
 
-    testing.expectEqual(vec2.get_angle(_vec_0, _vec_1), 90.);
-    testing.expectEqual(vec2.get_angle(_vec_0, _vec_2), 180.);
-    testing.expectEqual(vec2.get_angle(_vec_0, _vec_3), 45.);
+    try testing.expectEqual(vec2.get_angle(_vec_0, _vec_1), 90);
+    try testing.expectEqual(vec2.get_angle(_vec_0, _vec_2), 180);
+    try testing.expectEqual(vec2.get_angle(_vec_0, _vec_3), 45);
 }
 
 test "zalgebra.Vec2.to_array" {
     const _vec_0 = vec2.up().to_array();
     const _vec_1 = [_]f32{ 0, 1 };
 
-    testing.expectEqual(std.mem.eql(f32, &_vec_0, &_vec_1), true);
+    try testing.expectEqual(std.mem.eql(f32, &_vec_0, &_vec_1), true);
 }
 
 test "zalgebra.Vec2.is_eq" {
-    var _vec_0 = vec2.new(1., 2.);
-    var _vec_1 = vec2.new(1., 2.);
-    var _vec_2 = vec2.new(1.5, 2.);
-    testing.expectEqual(vec2.is_eq(_vec_0, _vec_1), true);
-    testing.expectEqual(vec2.is_eq(_vec_0, _vec_2), false);
+    var _vec_0 = vec2.new(1, 2);
+    var _vec_1 = vec2.new(1, 2);
+    var _vec_2 = vec2.new(1.5, 2);
+    try testing.expectEqual(vec2.is_eq(_vec_0, _vec_1), true);
+    try testing.expectEqual(vec2.is_eq(_vec_0, _vec_2), false);
 }
 
 test "zalgebra.Vec2.length" {
     var _vec_0 = vec2.new(1.5, 2.6);
-    testing.expectEqual(_vec_0.length(), 3.00166606);
+    try testing.expectEqual(_vec_0.length(), 3.00166606);
 }
 
 test "zalgebra.Vec2.normalize" {
     var _vec_0 = vec2.new(1.5, 2.6);
-    testing.expectEqual(vec2.is_eq(_vec_0.norm(), vec2.new(0.499722480, 0.866185605)), true);
+    try testing.expectEqual(vec2.is_eq(_vec_0.norm(), vec2.new(0.499722480, 0.866185605)), true);
 }
 
 test "zalgebra.Vec2.sub" {
-    var _vec_0 = vec2.new(1., 2.);
-    var _vec_1 = vec2.new(2., 2.);
-    testing.expectEqual(vec2.is_eq(vec2.sub(_vec_0, _vec_1), vec2.new(-1., 0.)), true);
+    var _vec_0 = vec2.new(1, 2);
+    var _vec_1 = vec2.new(2, 2);
+    try testing.expectEqual(vec2.is_eq(vec2.sub(_vec_0, _vec_1), vec2.new(-1, 0)), true);
 }
 
 test "zalgebra.Vec2.add" {
-    var _vec_0 = vec2.new(1., 2.);
-    var _vec_1 = vec2.new(2., 2.);
-    testing.expectEqual(vec2.is_eq(vec2.add(_vec_0, _vec_1), vec2.new(3., 4.)), true);
+    var _vec_0 = vec2.new(1, 2);
+    var _vec_1 = vec2.new(2, 2);
+    try testing.expectEqual(vec2.is_eq(vec2.add(_vec_0, _vec_1), vec2.new(3, 4)), true);
 }
 
 test "zalgebra.Vec2.scale" {
-    var _vec_0 = vec2.new(1., 2.);
-    testing.expectEqual(vec2.is_eq(vec2.scale(_vec_0, 5.), vec2.new(5., 10.)), true);
+    var _vec_0 = vec2.new(1, 2);
+    try testing.expectEqual(vec2.is_eq(vec2.scale(_vec_0, 5), vec2.new(5, 10)), true);
 }
 
 test "zalgebra.Vec2.dot" {
     var _vec_0 = vec2.new(1.5, 2.6);
     var _vec_1 = vec2.new(2.5, 3.45);
 
-    testing.expectEqual(vec2.dot(_vec_0, _vec_1), 12.7200002);
+    try testing.expectEqual(vec2.dot(_vec_0, _vec_1), 12.7200002);
 }
 
 test "zalgebra.Vec2.lerp" {
     var _vec_0 = vec2.new(-10.0, 0.0);
     var _vec_1 = vec2.new(10.0, 10.0);
 
-    testing.expectEqual(vec2.is_eq(vec2.lerp(_vec_0, _vec_1, 0.5), vec2.new(0.0, 5.0)), true);
+    try testing.expectEqual(vec2.is_eq(vec2.lerp(_vec_0, _vec_1, 0.5), vec2.new(0.0, 5.0)), true);
 }
 
 test "zalgebra.Vec2.min" {
     var _vec_0 = vec2.new(10.0, -2.0);
     var _vec_1 = vec2.new(-10.0, 5.0);
 
-    testing.expectEqual(vec2.is_eq(vec2.min(_vec_0, _vec_1), vec2.new(-10.0, -2.0)), true);
+    try testing.expectEqual(vec2.is_eq(vec2.min(_vec_0, _vec_1), vec2.new(-10.0, -2.0)), true);
 }
 
 test "zalgebra.Vec2.max" {
     var _vec_0 = vec2.new(10.0, -2.0);
     var _vec_1 = vec2.new(-10.0, 5.0);
 
-    testing.expectEqual(vec2.is_eq(vec2.max(_vec_0, _vec_1), vec2.new(10.0, 5.0)), true);
+    try testing.expectEqual(vec2.is_eq(vec2.max(_vec_0, _vec_1), vec2.new(10.0, 5.0)), true);
 }
 
 test "zalgebra.Vec2.from_slice" {
     const array = [2]f32{ 2, 4 };
-    testing.expectEqual(vec2.is_eq(vec2.from_slice(&array), vec2.new(2, 4)), true);
+    try testing.expectEqual(vec2.is_eq(vec2.from_slice(&array), vec2.new(2, 4)), true);
 }
 
 test "zalgebra.Vec2.cast" {
     const a = vec2_i32.new(3, 6);
     const b = Vec2(usize).new(3, 6);
 
-    testing.expectEqual(
+    try testing.expectEqual(
         Vec2(usize).is_eq(a.cast(usize), b),
         true,
     );
@@ -260,7 +260,7 @@ test "zalgebra.Vec2.cast" {
     const c = vec2.new(3.5, 6.5);
     const d = vec2_f64.new(3.5, 6.5);
 
-    testing.expectEqual(
+    try testing.expectEqual(
         vec2_f64.is_eq(c.cast(f64), d),
         true,
     );
@@ -268,7 +268,7 @@ test "zalgebra.Vec2.cast" {
     const e = vec2_i32.new(3, 6);
     const f = vec2.new(3.0, 6.0);
 
-    testing.expectEqual(
+    try testing.expectEqual(
         vec2.is_eq(e.cast(f32), f),
         true,
     );
@@ -276,7 +276,7 @@ test "zalgebra.Vec2.cast" {
     const g = vec2.new(3.0, 6.0);
     const h = vec2_i32.new(3, 6);
 
-    testing.expectEqual(
+    try testing.expectEqual(
         vec2_i32.is_eq(g.cast(i32), h),
         true,
     );

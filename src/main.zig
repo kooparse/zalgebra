@@ -40,23 +40,23 @@ pub fn lerp(comptime T: type, from: T, to: T, t: T) T {
 }
 
 test "zalgebra.to_radians" {
-    testing.expectEqual(to_radians(@as(f32, 90)), 1.57079637);
-    testing.expectEqual(to_radians(@as(f32, 45)), 0.785398185);
-    testing.expectEqual(to_radians(@as(f32, 360)), 6.28318548);
-    testing.expectEqual(to_radians(@as(f32, 0)), 0.0);
+    try testing.expectEqual(to_radians(@as(f32, 90)), 1.57079637);
+    try testing.expectEqual(to_radians(@as(f32, 45)), 0.785398185);
+    try testing.expectEqual(to_radians(@as(f32, 360)), 6.28318548);
+    try testing.expectEqual(to_radians(@as(f32, 0)), 0.0);
 }
 
 test "zalgebra.to_degrees" {
-    testing.expectEqual(to_degrees(@as(f32, 0.5)), 28.6478900);
-    testing.expectEqual(to_degrees(@as(f32, 1.0)), 57.2957801);
-    testing.expectEqual(to_degrees(@as(f32, 0.0)), 0.0);
+    try testing.expectEqual(to_degrees(@as(f32, 0.5)), 28.6478900);
+    try testing.expectEqual(to_degrees(@as(f32, 1.0)), 57.2957801);
+    try testing.expectEqual(to_degrees(@as(f32, 0.0)), 0.0);
 }
 
 test "zalgebra.lerp" {
     const from: f32 = 0;
     const to: f32 = 10;
 
-    testing.expectEqual(lerp(f32, from, to, 0), 0);
-    testing.expectEqual(lerp(f32, from, to, 0.5), 5);
-    testing.expectEqual(lerp(f32, from, to, 1), 10);
+    try testing.expectEqual(lerp(f32, from, to, 0), 0);
+    try testing.expectEqual(lerp(f32, from, to, 0.5), 5);
+    try testing.expectEqual(lerp(f32, from, to, 1), 10);
 }
