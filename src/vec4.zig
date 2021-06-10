@@ -40,6 +40,10 @@ pub fn Vec4(comptime T: type) type {
             return Self.new(0, 0, 0, 0);
         }
 
+        pub fn one() Self {
+            return Self.new(1, 1, 1, 1);
+        }
+
         /// Cast a type to another type. Only for integers and floats.
         /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt
         pub fn cast(self: Self, dest: anytype) Vec4(dest) {

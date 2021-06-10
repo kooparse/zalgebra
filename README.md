@@ -57,7 +57,7 @@ set | Set all components to the same given value
 cast | Cast a type to another type
 from_slice | Construct new vectors from slice
 zero | Shorthand for `(0, 0, 0)`
-one | Shorthand for `(1, 1, 1)` (only for vec3)
+one | Shorthand for `(1, 1, 1)`
 up | Shorthand for `(0, 1, 0)` (only for vec3)
 down | Shorthand for `(0, -1, 0)` (only for vec3)
 right | Shorthand for `(1, 0, 0)` (only for vec3)
