@@ -13,7 +13,7 @@ pub fn Vec2(comptime T: type) type {
         @compileError("Vec2 not implemented for " ++ @typeName(T));
     }
 
-    return packed struct {
+    return struct {
         x: T,
         y: T,
 

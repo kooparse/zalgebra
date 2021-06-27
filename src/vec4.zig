@@ -13,7 +13,7 @@ pub fn Vec4(comptime T: type) type {
         @compileError("Vec4 not implemented for " ++ @typeName(T));
     }
 
-    return packed struct {
+    return struct {
         x: T,
         y: T,
         z: T,
