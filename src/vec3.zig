@@ -146,7 +146,18 @@ pub fn Vec3(comptime T: type) type {
 
         /// Compute the length (magnitude) of given vector |a|.
         pub fn length(self: Self) T {
-            return math.sqrt((self.x * self.x) + (self.y * self.y) + (self.z * self.z));
+            return math.sqrt(
+                (self.x * self.x) + (self.y * self.y) + (self.z * self.z),
+            );
+        }
+
+        /// Compute the distance between two points.
+        pub fn distance(a: Self, b: Self) T {
+            return math.sqrt(
+                math.pow(T, b.x - a.x, 2) +
+                    math.pow(T, b.y - a.y, 2) +
+                    math.pow(T, b.z - a.z, 2),
+            );
         }
 
         /// Construct new normalized vector from a given vector.
@@ -259,6 +270,15 @@ test "zalgebra.Vec3.is_eq" {
 test "zalgebra.Vec3.length" {
     var _vec_0 = vec3.new(1.5, 2.6, 3.7);
     try testing.expectEqual(_vec_0.length(), 4.7644519);
+}
+
+test "zalgebra.Vec3.distance" {
+    var a = vec3.new(0, 0, 0);
+    var b = vec3.new(-1, 0, 0);
+    var c = vec3.new(0, 5, 0);
+
+    try testing.expectEqual(vec3.distance(a, b), 1);
+    try testing.expectEqual(vec3.distance(a, c), 5);
 }
 
 test "zalgebra.Vec3.normalize" {

@@ -100,7 +100,22 @@ pub fn Vec4(comptime T: type) type {
 
         /// Compute the length (magnitude) of given vector |a|.
         pub fn length(self: Self) T {
-            return math.sqrt((self.x * self.x) + (self.y * self.y) + (self.z * self.z) + (self.w * self.w));
+            return math.sqrt(
+                (self.x * self.x) +
+                    (self.y * self.y) +
+                    (self.z * self.z) +
+                    (self.w * self.w),
+            );
+        }
+
+        /// Compute the distance between two points.
+        pub fn distance(a: Self, b: Self) T {
+            return math.sqrt(
+                math.pow(T, b.x - a.x, 2) +
+                    math.pow(T, b.y - a.y, 2) +
+                    math.pow(T, b.z - a.z, 2) +
+                    math.pow(T, b.w - a.w, 2),
+            );
         }
 
         /// Construct new normalized vector from a given vector.
@@ -110,22 +125,40 @@ pub fn Vec4(comptime T: type) type {
         }
 
         pub fn is_eq(left: Self, right: Self) bool {
-            return left.x == right.x and left.y == right.y and left.z == right.z and left.w == right.w;
+            return left.x == right.x and
+                left.y == right.y and
+                left.z == right.z and
+                left.w == right.w;
         }
 
         /// Substraction between two given vector.
         pub fn sub(left: Self, right: Self) Self {
-            return Self.new(left.x - right.x, left.y - right.y, left.z - right.z, left.w - right.w);
+            return Self.new(
+                left.x - right.x,
+                left.y - right.y,
+                left.z - right.z,
+                left.w - right.w,
+            );
         }
 
         /// Addition betwen two given vector.
         pub fn add(left: Self, right: Self) Self {
-            return Self.new(left.x + right.x, left.y + right.y, left.z + right.z, left.w + right.w);
+            return Self.new(
+                left.x + right.x,
+                left.y + right.y,
+                left.z + right.z,
+                left.w + right.w,
+            );
         }
 
         /// Multiply each components by the given scalar.
         pub fn scale(v: Self, scalar: T) Self {
-            return Self.new(v.x * scalar, v.y * scalar, v.z * scalar, v.w * scalar);
+            return Self.new(
+                v.x * scalar,
+                v.y * scalar,
+                v.z * scalar,
+                v.w * scalar,
+            );
         }
 
         /// Return the dot product between two given vector.
@@ -197,6 +230,15 @@ test "zalgebra.Vec2.to_array" {
 test "zalgebra.Vec4.length" {
     var _vec_0 = vec4.new(1.5, 2.6, 3.7, 4.7);
     try testing.expectEqual(_vec_0.length(), 6.69253301);
+}
+
+test "zalgebra.Vec4.distance" {
+    var a = vec4.new(0, 0, 0, 0);
+    var b = vec4.new(-1, 0, 0, 0);
+    var c = vec4.new(0, 5, 0, 0);
+
+    try testing.expectEqual(vec4.distance(a, b), 1);
+    try testing.expectEqual(vec4.distance(a, c), 5);
 }
 
 test "zalgebra.Vec4.normalize" {

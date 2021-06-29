@@ -98,6 +98,13 @@ pub fn Vec2(comptime T: type) type {
             return math.sqrt((self.x * self.x) + (self.y * self.y));
         }
 
+        /// Compute the distance between two points.
+        pub fn distance(a: Self, b: Self) T {
+            return math.sqrt(
+                math.pow(T, b.x - a.x, 2) + math.pow(T, b.y - a.y, 2),
+            );
+        }
+
         /// Construct new normalized vector from a given vector.
         pub fn norm(self: Self) Self {
             var l = length(self);
@@ -195,6 +202,15 @@ test "zalgebra.Vec2.is_eq" {
 test "zalgebra.Vec2.length" {
     var _vec_0 = vec2.new(1.5, 2.6);
     try testing.expectEqual(_vec_0.length(), 3.00166606);
+}
+
+test "zalgebra.Vec2.distance" {
+    var a = vec2.new(0, 0);
+    var b = vec2.new(-1, 0);
+    var c = vec2.new(0, 5);
+
+    try testing.expectEqual(vec2.distance(a, b), 1);
+    try testing.expectEqual(vec2.distance(a, c), 5);
 }
 
 test "zalgebra.Vec2.normalize" {
