@@ -86,7 +86,7 @@ Methods | Description
 ------------ | -------------
 identity | Construct an identity matrix
 fromSlice | Construct new matrix from given slice of data
-get_data | Return a pointer to the inner data
+getData | Return a pointer to the inner data
 isEql | Return `true` if two matrices are equals
 multByVec4 | Multiply a given vec4 by matrix (only for mat4)
 fromTranslate | Construct a translation matrix
@@ -107,7 +107,7 @@ mult | Multiply two matrices
 inv | Inverse the given matrix
 recompose | Return matrix from given `translation`, `rotation` and `scale` components
 decompose | Return components `translation`, `rotation` and `scale` from given matrix.
-debug_print | Print the matrix data for debug purpose
+debugPrint | Print the matrix data for debug purpose
 
 ### Quaternions
 Methods | Description

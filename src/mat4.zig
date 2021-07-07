@@ -387,7 +387,7 @@ pub fn Mat4x4(comptime T: type) type {
         }
 
         /// Print the 4x4 to stderr.
-        pub fn debug_print(self: Self) void {
+        pub fn debugPrint(self: Self) void {
             const string =
                 \\ ({d}, {d}, {d}, {d})
                 \\ ({d}, {d}, {d}, {d})
