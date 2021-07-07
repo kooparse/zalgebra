@@ -11,7 +11,7 @@ pub usingnamespace @import("mat4.zig");
 pub usingnamespace @import("quaternion.zig");
 
 /// Convert degrees to radians.
-pub fn to_radians(degrees: anytype) @TypeOf(degrees) {
+pub fn toRadians(degrees: anytype) @TypeOf(degrees) {
     const T = @TypeOf(degrees);
 
     return switch (@typeInfo(T)) {
@@ -21,7 +21,7 @@ pub fn to_radians(degrees: anytype) @TypeOf(degrees) {
 }
 
 /// Convert radians to degrees.
-pub fn to_degrees(radians: anytype) @TypeOf(radians) {
+pub fn toDegrees(radians: anytype) @TypeOf(radians) {
     const T = @TypeOf(radians);
 
     return switch (@typeInfo(T)) {
@@ -39,17 +39,17 @@ pub fn lerp(comptime T: type, from: T, to: T, t: T) T {
     };
 }
 
-test "zalgebra.to_radians" {
-    try testing.expectEqual(to_radians(@as(f32, 90)), 1.57079637);
-    try testing.expectEqual(to_radians(@as(f32, 45)), 0.785398185);
-    try testing.expectEqual(to_radians(@as(f32, 360)), 6.28318548);
-    try testing.expectEqual(to_radians(@as(f32, 0)), 0.0);
+test "zalgebra.toRadians" {
+    try testing.expectEqual(toRadians(@as(f32, 90)), 1.57079637);
+    try testing.expectEqual(toRadians(@as(f32, 45)), 0.785398185);
+    try testing.expectEqual(toRadians(@as(f32, 360)), 6.28318548);
+    try testing.expectEqual(toRadians(@as(f32, 0)), 0.0);
 }
 
-test "zalgebra.to_degrees" {
-    try testing.expectEqual(to_degrees(@as(f32, 0.5)), 28.6478900);
-    try testing.expectEqual(to_degrees(@as(f32, 1.0)), 57.2957801);
-    try testing.expectEqual(to_degrees(@as(f32, 0.0)), 0.0);
+test "zalgebra.toDegrees" {
+    try testing.expectEqual(toDegrees(@as(f32, 0.5)), 28.6478900);
+    try testing.expectEqual(toDegrees(@as(f32, 1.0)), 57.2957801);
+    try testing.expectEqual(toDegrees(@as(f32, 0.0)), 0.0);
 }
 
 test "zalgebra.lerp" {

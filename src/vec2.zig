@@ -3,14 +3,14 @@ const root = @import("main.zig");
 const math = std.math;
 const testing = std.testing;
 
-pub const vec2 = Vec2(f32);
-pub const vec2_f64 = Vec2(f64);
-pub const vec2_i32 = Vec2(i32);
+pub const Vec2 = Vector2(f32);
+pub const Vec2_f64 = Vector2(f64);
+pub const Vec2_i32 = Vector2(i32);
 
 /// A 2 dimensional vector.
-pub fn Vec2(comptime T: type) type {
+pub fn Vector2(comptime T: type) type {
     if (@typeInfo(T) != .Float and @typeInfo(T) != .Int) {
-        @compileError("Vec2 not implemented for " ++ @typeName(T));
+        @compileError("Vector2 not implemented for " ++ @typeName(T));
     }
 
     return struct {
@@ -19,7 +19,7 @@ pub fn Vec2(comptime T: type) type {
 
         const Self = @This();
 
-        /// Constract vector from given 3 components.
+        /// Construct vector from given 2 components.
         pub fn new(x: T, y: T) Self {
             return .{ .x = x, .y = y };
         }
@@ -42,55 +42,55 @@ pub fn Vec2(comptime T: type) type {
         }
 
         /// Cast a type to another type. Only for integers and floats.
-        /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt
-        pub fn cast(self: Self, dest: anytype) Vec2(dest) {
+        /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
+        pub fn cast(self: Self, dest: anytype) Vector2(dest) {
             const source_info = @typeInfo(T);
             const dest_info = @typeInfo(dest);
 
             if (source_info == .Float and dest_info == .Int) {
                 const x = @floatToInt(dest, self.x);
                 const y = @floatToInt(dest, self.y);
-                return Vec2(dest).new(x, y);
+                return Vector2(dest).new(x, y);
             }
 
             if (source_info == .Int and dest_info == .Float) {
                 const x = @intToFloat(dest, self.x);
                 const y = @intToFloat(dest, self.y);
-                return Vec2(dest).new(x, y);
+                return Vector2(dest).new(x, y);
             }
 
             return switch (dest_info) {
                 .Float => {
                     const x = @floatCast(dest, self.x);
                     const y = @floatCast(dest, self.y);
-                    return Vec2(dest).new(x, y);
+                    return Vector2(dest).new(x, y);
                 },
                 .Int => {
                     const x = @intCast(dest, self.x);
                     const y = @intCast(dest, self.y);
-                    return Vec2(dest).new(x, y);
+                    return Vector2(dest).new(x, y);
                 },
                 else => panic(
-                    "Error, given type should be integers or float.\n",
+                    "Error, given type should be integer or float.\n",
                     .{},
                 ),
             };
         }
 
         /// Construct new vector from slice.
-        pub fn from_slice(slice: []const T) Self {
+        pub fn fromSlice(slice: []const T) Self {
             return Self.new(slice[0], slice[1]);
         }
 
         /// Transform vector to array.
-        pub fn to_array(self: Self) [2]T {
+        pub fn toArray(self: Self) [2]T {
             return .{ self.x, self.y };
         }
 
         /// Return the angle in degrees between two vectors.
-        pub fn get_angle(left: Self, right: Self) T {
+        pub fn getAngle(left: Self, right: Self) T {
             const dot_product = Self.dot(left.norm(), right.norm());
-            return root.to_degrees(math.acos(dot_product));
+            return root.toDegrees(math.acos(dot_product));
         }
 
         /// Compute the length (magnitude) of given vector |a|.
@@ -111,7 +111,7 @@ pub fn Vec2(comptime T: type) type {
             return Self.new(self.x / l, self.y / l);
         }
 
-        pub fn is_eq(left: Self, right: Self) bool {
+        pub fn isEql(left: Self, right: Self) bool {
             return left.x == right.x and left.y == right.y;
         }
 
@@ -161,143 +161,143 @@ pub fn Vec2(comptime T: type) type {
 }
 
 test "zalgebra.Vec2.init" {
-    var _vec_0 = vec2.new(1.5, 2.6);
+    var a = Vec2.new(1.5, 2.6);
 
-    try testing.expectEqual(_vec_0.x, 1.5);
-    try testing.expectEqual(_vec_0.y, 2.6);
+    try testing.expectEqual(a.x, 1.5);
+    try testing.expectEqual(a.y, 2.6);
 }
 
 test "zalgebra.Vec2.set" {
-    var _vec_0 = vec2.new(2.5, 2.5);
-    var _vec_1 = vec2.set(2.5);
-    try testing.expectEqual(vec2.is_eq(_vec_0, _vec_1), true);
+    var a = Vec2.new(2.5, 2.5);
+    var b = Vec2.set(2.5);
+    try testing.expectEqual(Vec2.isEql(a, b), true);
 }
 
-test "zalgebra.Vec2.get_angle" {
-    var _vec_0 = vec2.new(1.0, 0.0);
-    var _vec_1 = vec2.up();
-    var _vec_2 = vec2.new(-1.0, 0.0);
-    var _vec_3 = vec2.new(1.0, 1.0);
+test "zalgebra.Vec2.getAngle" {
+    var a = Vec2.new(1, 0);
+    var b = Vec2.up();
+    var c = Vec2.new(-1, 0);
+    var d = Vec2.new(1, 1);
 
-    try testing.expectEqual(vec2.get_angle(_vec_0, _vec_1), 90);
-    try testing.expectEqual(vec2.get_angle(_vec_0, _vec_2), 180);
-    try testing.expectEqual(vec2.get_angle(_vec_0, _vec_3), 45);
+    try testing.expectEqual(Vec2.getAngle(a, b), 90);
+    try testing.expectEqual(Vec2.getAngle(a, c), 180);
+    try testing.expectEqual(Vec2.getAngle(a, d), 45);
 }
 
-test "zalgebra.Vec2.to_array" {
-    const _vec_0 = vec2.up().to_array();
-    const _vec_1 = [_]f32{ 0, 1 };
+test "zalgebra.Vec2.toArray" {
+    const a = Vec2.up().toArray();
+    const b = [_]f32{ 0, 1 };
 
-    try testing.expectEqual(std.mem.eql(f32, &_vec_0, &_vec_1), true);
+    try testing.expectEqual(std.mem.eql(f32, &a, &b), true);
 }
 
-test "zalgebra.Vec2.is_eq" {
-    var _vec_0 = vec2.new(1, 2);
-    var _vec_1 = vec2.new(1, 2);
-    var _vec_2 = vec2.new(1.5, 2);
-    try testing.expectEqual(vec2.is_eq(_vec_0, _vec_1), true);
-    try testing.expectEqual(vec2.is_eq(_vec_0, _vec_2), false);
+test "zalgebra.Vec2.isEql" {
+    var a = Vec2.new(1, 2);
+    var b = Vec2.new(1, 2);
+    var c = Vec2.new(1.5, 2);
+    try testing.expectEqual(Vec2.isEql(a, b), true);
+    try testing.expectEqual(Vec2.isEql(a, c), false);
 }
 
 test "zalgebra.Vec2.length" {
-    var _vec_0 = vec2.new(1.5, 2.6);
-    try testing.expectEqual(_vec_0.length(), 3.00166606);
+    var a = Vec2.new(1.5, 2.6);
+    try testing.expectEqual(a.length(), 3.00166606);
 }
 
 test "zalgebra.Vec2.distance" {
-    var a = vec2.new(0, 0);
-    var b = vec2.new(-1, 0);
-    var c = vec2.new(0, 5);
+    var a = Vec2.new(0, 0);
+    var b = Vec2.new(-1, 0);
+    var c = Vec2.new(0, 5);
 
-    try testing.expectEqual(vec2.distance(a, b), 1);
-    try testing.expectEqual(vec2.distance(a, c), 5);
+    try testing.expectEqual(Vec2.distance(a, b), 1);
+    try testing.expectEqual(Vec2.distance(a, c), 5);
 }
 
 test "zalgebra.Vec2.normalize" {
-    var _vec_0 = vec2.new(1.5, 2.6);
-    try testing.expectEqual(vec2.is_eq(_vec_0.norm(), vec2.new(0.499722480, 0.866185605)), true);
+    var a = Vec2.new(1.5, 2.6);
+    try testing.expectEqual(Vec2.isEql(a.norm(), Vec2.new(0.499722480, 0.866185605)), true);
 }
 
 test "zalgebra.Vec2.sub" {
-    var _vec_0 = vec2.new(1, 2);
-    var _vec_1 = vec2.new(2, 2);
-    try testing.expectEqual(vec2.is_eq(vec2.sub(_vec_0, _vec_1), vec2.new(-1, 0)), true);
+    var a = Vec2.new(1, 2);
+    var b = Vec2.new(2, 2);
+    try testing.expectEqual(Vec2.isEql(Vec2.sub(a, b), Vec2.new(-1, 0)), true);
 }
 
 test "zalgebra.Vec2.add" {
-    var _vec_0 = vec2.new(1, 2);
-    var _vec_1 = vec2.new(2, 2);
-    try testing.expectEqual(vec2.is_eq(vec2.add(_vec_0, _vec_1), vec2.new(3, 4)), true);
+    var a = Vec2.new(1, 2);
+    var b = Vec2.new(2, 2);
+    try testing.expectEqual(Vec2.isEql(Vec2.add(a, b), Vec2.new(3, 4)), true);
 }
 
 test "zalgebra.Vec2.scale" {
-    var _vec_0 = vec2.new(1, 2);
-    try testing.expectEqual(vec2.is_eq(vec2.scale(_vec_0, 5), vec2.new(5, 10)), true);
+    var a = Vec2.new(1, 2);
+    try testing.expectEqual(Vec2.isEql(Vec2.scale(a, 5), Vec2.new(5, 10)), true);
 }
 
 test "zalgebra.Vec2.dot" {
-    var _vec_0 = vec2.new(1.5, 2.6);
-    var _vec_1 = vec2.new(2.5, 3.45);
+    var a = Vec2.new(1.5, 2.6);
+    var b = Vec2.new(2.5, 3.45);
 
-    try testing.expectEqual(vec2.dot(_vec_0, _vec_1), 12.7200002);
+    try testing.expectEqual(Vec2.dot(a, b), 12.7200002);
 }
 
 test "zalgebra.Vec2.lerp" {
-    var _vec_0 = vec2.new(-10.0, 0.0);
-    var _vec_1 = vec2.new(10.0, 10.0);
+    var a = Vec2.new(-10.0, 0.0);
+    var b = Vec2.new(10.0, 10.0);
 
-    try testing.expectEqual(vec2.is_eq(vec2.lerp(_vec_0, _vec_1, 0.5), vec2.new(0.0, 5.0)), true);
+    try testing.expectEqual(Vec2.isEql(Vec2.lerp(a, b, 0.5), Vec2.new(0.0, 5.0)), true);
 }
 
 test "zalgebra.Vec2.min" {
-    var _vec_0 = vec2.new(10.0, -2.0);
-    var _vec_1 = vec2.new(-10.0, 5.0);
+    var a = Vec2.new(10.0, -2.0);
+    var b = Vec2.new(-10.0, 5.0);
 
-    try testing.expectEqual(vec2.is_eq(vec2.min(_vec_0, _vec_1), vec2.new(-10.0, -2.0)), true);
+    try testing.expectEqual(Vec2.isEql(Vec2.min(a, b), Vec2.new(-10.0, -2.0)), true);
 }
 
 test "zalgebra.Vec2.max" {
-    var _vec_0 = vec2.new(10.0, -2.0);
-    var _vec_1 = vec2.new(-10.0, 5.0);
+    var a = Vec2.new(10.0, -2.0);
+    var b = Vec2.new(-10.0, 5.0);
 
-    try testing.expectEqual(vec2.is_eq(vec2.max(_vec_0, _vec_1), vec2.new(10.0, 5.0)), true);
+    try testing.expectEqual(Vec2.isEql(Vec2.max(a, b), Vec2.new(10.0, 5.0)), true);
 }
 
-test "zalgebra.Vec2.from_slice" {
+test "zalgebra.Vec2.fromSlice" {
     const array = [2]f32{ 2, 4 };
-    try testing.expectEqual(vec2.is_eq(vec2.from_slice(&array), vec2.new(2, 4)), true);
+    try testing.expectEqual(Vec2.isEql(Vec2.fromSlice(&array), Vec2.new(2, 4)), true);
 }
 
 test "zalgebra.Vec2.cast" {
-    const a = vec2_i32.new(3, 6);
-    const b = Vec2(usize).new(3, 6);
+    const a = Vec2_i32.new(3, 6);
+    const b = Vector2(usize).new(3, 6);
 
     try testing.expectEqual(
-        Vec2(usize).is_eq(a.cast(usize), b),
+        Vector2(usize).isEql(a.cast(usize), b),
         true,
     );
 
-    const c = vec2.new(3.5, 6.5);
-    const d = vec2_f64.new(3.5, 6.5);
+    const c = Vec2.new(3.5, 6.5);
+    const d = Vec2_f64.new(3.5, 6.5);
 
     try testing.expectEqual(
-        vec2_f64.is_eq(c.cast(f64), d),
+        Vec2_f64.isEql(c.cast(f64), d),
         true,
     );
 
-    const e = vec2_i32.new(3, 6);
-    const f = vec2.new(3.0, 6.0);
+    const e = Vec2_i32.new(3, 6);
+    const f = Vec2.new(3.0, 6.0);
 
     try testing.expectEqual(
-        vec2.is_eq(e.cast(f32), f),
+        Vec2.isEql(e.cast(f32), f),
         true,
     );
 
-    const g = vec2.new(3.0, 6.0);
-    const h = vec2_i32.new(3, 6);
+    const g = Vec2.new(3.0, 6.0);
+    const h = Vec2_i32.new(3, 6);
 
     try testing.expectEqual(
-        vec2_i32.is_eq(g.cast(i32), h),
+        Vec2_i32.isEql(g.cast(i32), h),
         true,
     );
 }
