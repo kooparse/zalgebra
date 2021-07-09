@@ -111,7 +111,7 @@ pub fn Vector2(comptime T: type) type {
             return Self.new(self.x / l, self.y / l);
         }
 
-        pub fn isEql(left: Self, right: Self) bool {
+        pub fn eql(left: Self, right: Self) bool {
             return left.x == right.x and left.y == right.y;
         }
 
@@ -170,7 +170,7 @@ test "zalgebra.Vec2.init" {
 test "zalgebra.Vec2.set" {
     var a = Vec2.new(2.5, 2.5);
     var b = Vec2.set(2.5);
-    try testing.expectEqual(Vec2.isEql(a, b), true);
+    try testing.expectEqual(Vec2.eql(a, b), true);
 }
 
 test "zalgebra.Vec2.getAngle" {
@@ -191,12 +191,12 @@ test "zalgebra.Vec2.toArray" {
     try testing.expectEqual(std.mem.eql(f32, &a, &b), true);
 }
 
-test "zalgebra.Vec2.isEql" {
+test "zalgebra.Vec2.eql" {
     var a = Vec2.new(1, 2);
     var b = Vec2.new(1, 2);
     var c = Vec2.new(1.5, 2);
-    try testing.expectEqual(Vec2.isEql(a, b), true);
-    try testing.expectEqual(Vec2.isEql(a, c), false);
+    try testing.expectEqual(Vec2.eql(a, b), true);
+    try testing.expectEqual(Vec2.eql(a, c), false);
 }
 
 test "zalgebra.Vec2.length" {
@@ -215,24 +215,24 @@ test "zalgebra.Vec2.distance" {
 
 test "zalgebra.Vec2.normalize" {
     var a = Vec2.new(1.5, 2.6);
-    try testing.expectEqual(Vec2.isEql(a.norm(), Vec2.new(0.499722480, 0.866185605)), true);
+    try testing.expectEqual(Vec2.eql(a.norm(), Vec2.new(0.499722480, 0.866185605)), true);
 }
 
 test "zalgebra.Vec2.sub" {
     var a = Vec2.new(1, 2);
     var b = Vec2.new(2, 2);
-    try testing.expectEqual(Vec2.isEql(Vec2.sub(a, b), Vec2.new(-1, 0)), true);
+    try testing.expectEqual(Vec2.eql(Vec2.sub(a, b), Vec2.new(-1, 0)), true);
 }
 
 test "zalgebra.Vec2.add" {
     var a = Vec2.new(1, 2);
     var b = Vec2.new(2, 2);
-    try testing.expectEqual(Vec2.isEql(Vec2.add(a, b), Vec2.new(3, 4)), true);
+    try testing.expectEqual(Vec2.eql(Vec2.add(a, b), Vec2.new(3, 4)), true);
 }
 
 test "zalgebra.Vec2.scale" {
     var a = Vec2.new(1, 2);
-    try testing.expectEqual(Vec2.isEql(Vec2.scale(a, 5), Vec2.new(5, 10)), true);
+    try testing.expectEqual(Vec2.eql(Vec2.scale(a, 5), Vec2.new(5, 10)), true);
 }
 
 test "zalgebra.Vec2.dot" {
@@ -246,26 +246,26 @@ test "zalgebra.Vec2.lerp" {
     var a = Vec2.new(-10.0, 0.0);
     var b = Vec2.new(10.0, 10.0);
 
-    try testing.expectEqual(Vec2.isEql(Vec2.lerp(a, b, 0.5), Vec2.new(0.0, 5.0)), true);
+    try testing.expectEqual(Vec2.eql(Vec2.lerp(a, b, 0.5), Vec2.new(0.0, 5.0)), true);
 }
 
 test "zalgebra.Vec2.min" {
     var a = Vec2.new(10.0, -2.0);
     var b = Vec2.new(-10.0, 5.0);
 
-    try testing.expectEqual(Vec2.isEql(Vec2.min(a, b), Vec2.new(-10.0, -2.0)), true);
+    try testing.expectEqual(Vec2.eql(Vec2.min(a, b), Vec2.new(-10.0, -2.0)), true);
 }
 
 test "zalgebra.Vec2.max" {
     var a = Vec2.new(10.0, -2.0);
     var b = Vec2.new(-10.0, 5.0);
 
-    try testing.expectEqual(Vec2.isEql(Vec2.max(a, b), Vec2.new(10.0, 5.0)), true);
+    try testing.expectEqual(Vec2.eql(Vec2.max(a, b), Vec2.new(10.0, 5.0)), true);
 }
 
 test "zalgebra.Vec2.fromSlice" {
     const array = [2]f32{ 2, 4 };
-    try testing.expectEqual(Vec2.isEql(Vec2.fromSlice(&array), Vec2.new(2, 4)), true);
+    try testing.expectEqual(Vec2.eql(Vec2.fromSlice(&array), Vec2.new(2, 4)), true);
 }
 
 test "zalgebra.Vec2.cast" {
@@ -273,7 +273,7 @@ test "zalgebra.Vec2.cast" {
     const b = Vector2(usize).new(3, 6);
 
     try testing.expectEqual(
-        Vector2(usize).isEql(a.cast(usize), b),
+        Vector2(usize).eql(a.cast(usize), b),
         true,
     );
 
@@ -281,7 +281,7 @@ test "zalgebra.Vec2.cast" {
     const d = Vec2_f64.new(3.5, 6.5);
 
     try testing.expectEqual(
-        Vec2_f64.isEql(c.cast(f64), d),
+        Vec2_f64.eql(c.cast(f64), d),
         true,
     );
 
@@ -289,7 +289,7 @@ test "zalgebra.Vec2.cast" {
     const f = Vec2.new(3.0, 6.0);
 
     try testing.expectEqual(
-        Vec2.isEql(e.cast(f32), f),
+        Vec2.eql(e.cast(f32), f),
         true,
     );
 
@@ -297,7 +297,7 @@ test "zalgebra.Vec2.cast" {
     const h = Vec2_i32.new(3, 6);
 
     try testing.expectEqual(
-        Vec2_i32.isEql(g.cast(i32), h),
+        Vec2_i32.eql(g.cast(i32), h),
         true,
     );
 }

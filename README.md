@@ -69,7 +69,7 @@ getAngle | Return angle in degrees between two vectors (only for vec2 and vec3)
 length | Return the magnitude of the current vector
 distance | Return the distance between two points
 norm | Construct a new normalized vector based on the given one
-isEql | Return `true` if two vectors are equals
+eql | Return `true` if two vectors are equals
 sub | Construct new vector resulting from the substraction between two vectors
 add | Construct new vector resulting from the addition between two vectors
 scale | Construct new vector after multiplying each components by the given scalar
@@ -87,7 +87,7 @@ Methods | Description
 identity | Construct an identity matrix
 fromSlice | Construct new matrix from given slice of data
 getData | Return a pointer to the inner data
-isEql | Return `true` if two matrices are equals
+eql | Return `true` if two matrices are equals
 multByVec4 | Multiply a given vec4 by matrix (only for mat4)
 fromTranslate | Construct a translation matrix
 translate | Construct a translation from the given matrix according to given axis (vec3)
@@ -116,7 +116,7 @@ new| Construct new quat from given floats
 zero| Construct quat as `(1, 0, 0, 0)`
 fromSlice | Construct new quaternion from slice
 fromVec3 | Construct quaternion from vec3
-isEql | Return `true` if two quaternions are equal
+eql | Return `true` if two quaternions are equal
 norm | Normalize given quaternion
 length | Return the magniture of the given quaternion
 sub | Construct quaternion resulting from the subtraction of two given ones

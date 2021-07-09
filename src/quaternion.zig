@@ -54,7 +54,7 @@ pub fn Quaternion(comptime T: type) type {
             };
         }
 
-        pub fn isEql(left: Self, right: Self) bool {
+        pub fn eql(left: Self, right: Self) bool {
             return (left.w == right.w and
                 left.x == right.x and
                 left.y == right.y and
@@ -267,7 +267,7 @@ test "zalgebra.Quaternion.new" {
 
 test "zalgebra.Quaternion.fromSlice" {
     const array = [4]f32{ 2, 3, 4, 1 };
-    try testing.expectEqual(Quat.isEql(Quat.fromSlice(&array), Quat.new(1, 2, 3, 4)), true);
+    try testing.expectEqual(Quat.eql(Quat.fromSlice(&array), Quat.new(1, 2, 3, 4)), true);
 }
 
 test "zalgebra.Quaternion.fromVec3" {
@@ -284,15 +284,15 @@ test "zalgebra.Quaternion.fromVec3" {
     const q2 = Quat.fromVec3(1.5, Vec3.new(2.6, 3.7, 4.7));
     const q3 = Quat.fromVec3(1, Vec3.new(2.6, 3.7, 4.7));
 
-    try testing.expectEqual(q1.isEql(q2), true);
-    try testing.expectEqual(q1.isEql(q3), false);
+    try testing.expectEqual(q1.eql(q2), true);
+    try testing.expectEqual(q1.eql(q3), false);
 }
 
 test "zalgebra.Quaternion.norm" {
     const q1 = Quat.fromVec3(1, Vec3.new(2, 2.0, 2.0));
     const q2 = Quat.fromVec3(0.2773500978946686, Vec3.new(0.5547001957893372, 0.5547001957893372, 0.5547001957893372));
 
-    try testing.expectEqual(q1.norm().isEql(q2), true);
+    try testing.expectEqual(q1.norm().eql(q2), true);
 }
 
 test "zalgebra.Quaternion.fromEulerAngle" {
@@ -302,22 +302,22 @@ test "zalgebra.Quaternion.fromEulerAngle" {
     const q2 = Quat.fromEulerAngle(Vec3.new(0, 55, 22));
     const res_q2 = q2.toMat4().extractRotation();
 
-    try testing.expectEqual(Vec3.isEql(res_q1, Vec3.new(9.999999046325684, 5.000000476837158, 45)), true);
-    try testing.expectEqual(Vec3.isEql(res_q2, Vec3.new(0, 47.245025634765625, 22)), true);
+    try testing.expectEqual(Vec3.eql(res_q1, Vec3.new(9.999999046325684, 5.000000476837158, 45)), true);
+    try testing.expectEqual(Vec3.eql(res_q2, Vec3.new(0, 47.245025634765625, 22)), true);
 }
 
 test "zalgebra.Quaternion.fromAxis" {
     const q1 = Quat.fromAxis(45, Vec3.new(0, 1, 0));
     const res_q1 = q1.extractRotation();
 
-    try testing.expectEqual(Vec3.isEql(res_q1, Vec3.new(0, 45.0000076, 0)), true);
+    try testing.expectEqual(Vec3.eql(res_q1, Vec3.new(0, 45.0000076, 0)), true);
 }
 
 test "zalgebra.Quaternion.extractRotation" {
     const q1 = Quat.fromVec3(0.5, Vec3.new(0.5, 1, 0.3));
     const res_q1 = q1.extractRotation();
 
-    try testing.expectEqual(Vec3.isEql(res_q1, Vec3.new(129.6000213623047, 44.427005767822266, 114.41073608398438)), true);
+    try testing.expectEqual(Vec3.eql(res_q1, Vec3.new(129.6000213623047, 44.427005767822266, 114.41073608398438)), true);
 }
 
 test "zalgebra.Quaternion.rotateVec" {
