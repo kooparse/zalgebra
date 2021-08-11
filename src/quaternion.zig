@@ -271,10 +271,10 @@ pub fn Quaternion(comptime T: type) type {
                 // Use regular old lerp to avoid numerical instability
                 return lerp(left, right1, t);
             } else {
-                var theta = std.math.acos(std.math.clamp(cos_theta, -1, 1));
+                var theta = math.acos(math.clamp(cos_theta, -1, 1));
                 var thetap = theta * t;
                 var qperp = right1.sub(left.scale(cos_theta)).norm();
-                return left.scale(std.math.cos(thetap)).add(qperp.scale(std.math.sin(thetap)));
+                return left.scale(math.cos(thetap)).add(qperp.scale(math.sin(thetap)));
             }
         }
 
