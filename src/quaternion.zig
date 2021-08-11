@@ -244,6 +244,40 @@ pub fn Quaternion(comptime T: type) type {
             return Vector3(T).new(root.toDegrees(yaw), root.toDegrees(pitch), root.toDegrees(roll));
         }
 
+        /// Lerp between two quaternions.
+        pub fn lerp(left: Self, right: Self, t: f32) Self {
+            const w = root.lerp(T, left.w, right.w, t);
+            const x = root.lerp(T, left.x, right.x, t);
+            const y = root.lerp(T, left.y, right.y, t);
+            const z = root.lerp(T, left.z, right.z, t);
+            return Self.new(w, x, y, z);
+        }
+
+        // Shortest path slerp between two quaternions.
+        // Taken from "Physically Based Rendering, 3rd Edition, Chapter 2.9.2"
+        // https://pbr-book.org/3ed-2018/Geometry_and_Transformations/Animating_Transformations#QuaternionInterpolation
+        pub fn slerp(left: Self, right: Self, t: f32) Self {
+            const ParallelThreshold: f32 = 0.9995;
+            var cos_theta = dot(left, right);
+            var right1 = right;
+
+            // We need the absolute value of the dot product to take the shortest path
+            if (cos_theta < 0.0) {
+                cos_theta *= -1;
+                right1 = right.scale(-1);
+            }
+
+            if (cos_theta > ParallelThreshold) {
+                // Use regular old lerp to avoid numerical instability
+                return lerp(left, right1, t);
+            } else {
+                var theta = std.math.acos(std.math.clamp(cos_theta, -1, 1));
+                var thetap = theta * t;
+                var qperp = right1.sub(left.scale(cos_theta)).norm();
+                return left.scale(std.math.cos(thetap)).add(qperp.scale(std.math.sin(thetap)));
+            }
+        }
+
         /// Rotate the vector v using the sandwich product.
         /// Taken from "Foundations of Game Engine Development Vol. 1 Mathematics".
         pub fn rotateVec(self: Self, v: Vector3(T)) Vector3(T) {
@@ -336,4 +370,36 @@ test "zalgebra.Quaternion.rotateVec" {
     try testing.expect(std.math.approxEqAbs(f32, v1.x, v2.x, eps_value));
     try testing.expect(std.math.approxEqAbs(f32, v1.y, v2.y, eps_value));
     try testing.expect(std.math.approxEqAbs(f32, v1.z, v2.z, eps_value));
+}
+
+test "zalgebra.Quaternion.lerp" {
+    const eps_value = comptime std.math.epsilon(f32);
+    var v1 = Quat.zero();
+    var v2 = Quat.fromAxis(180, Vec3.up());
+    try testing.expectEqual(Quat.eql(
+        Quat.lerp(v1, v2, 1.0),
+        v2,
+    ), true);
+    var v3 = Quat.lerp(v1, v2, 0.5);
+    var v4 = Quat.new(4.99999970e-01, 0, 4.99999970e-01, 0);
+    try testing.expect(std.math.approxEqAbs(f32, v3.w, v4.w, eps_value));
+    try testing.expect(std.math.approxEqAbs(f32, v3.x, v4.x, eps_value));
+    try testing.expect(std.math.approxEqAbs(f32, v3.y, v4.y, eps_value));
+    try testing.expect(std.math.approxEqAbs(f32, v3.z, v4.z, eps_value));
+}
+
+test "zalgebra.Quaternion.slerp" {
+    const eps_value = comptime std.math.epsilon(f32);
+    var v1 = Quat.zero();
+    var v2 = Quat.fromAxis(180, Vec3.up());
+    try testing.expectEqual(Quat.eql(
+        Quat.slerp(v1, v2, 1.0),
+        Quat.new(7.54979012e-08, 0, -1, 0),
+    ), true);
+    var v3 = Quat.slerp(v1, v2, 0.5);
+    var v4 = Quat.new(7.071067e-01, 0, -7.071067e-01, 0);
+    try testing.expect(std.math.approxEqAbs(f32, v3.w, v4.w, eps_value));
+    try testing.expect(std.math.approxEqAbs(f32, v3.x, v4.x, eps_value));
+    try testing.expect(std.math.approxEqAbs(f32, v3.y, v4.y, eps_value));
+    try testing.expect(std.math.approxEqAbs(f32, v3.z, v4.z, eps_value));
 }
