@@ -70,7 +70,7 @@ pub fn Vector2(comptime T: type) type {
                     const y = @intCast(dest, self.y);
                     return Vector2(dest).new(x, y);
                 },
-                else => panic(
+                else => std.debug.panic(
                     "Error, given type should be integer or float.\n",
                     .{},
                 ),

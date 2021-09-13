@@ -117,7 +117,7 @@ pub fn Vector3(comptime T: type) type {
                     const z = @intCast(dest, self.z);
                     return Vector3(dest).new(x, y, z);
                 },
-                else => panic(
+                else => std.debug.panic(
                     "Error, given type should be integers or float.\n",
                     .{},
                 ),

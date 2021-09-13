@@ -3,9 +3,15 @@ const math = std.math;
 const testing = std.testing;
 const assert = std.debug.assert;
 const root = @import("main.zig");
-usingnamespace @import("vec3.zig");
-usingnamespace @import("vec4.zig");
-usingnamespace @import("mat4.zig");
+const vec4 = @import("vec4.zig");
+const vec3 = @import("vec3.zig");
+const mat4 = @import("mat4.zig");
+
+const Vec3 = vec3.Vec3;
+const Vector3 = vec3.Vector3;
+const Vec4 = vec4.Vec4;
+const Vector4 = vec4.Vector4;
+const Mat4x4 = mat4.Mat4x4;
 
 pub const Quat = Quaternion(f32);
 pub const Quat_f64 = Quaternion(f64);

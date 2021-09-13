@@ -81,7 +81,7 @@ pub fn Vector4(comptime T: type) type {
                     const w = @intCast(dest, self.w);
                     return Vector4(dest).new(x, y, z, w);
                 },
-                else => panic(
+                else => std.debug.panic(
                     "Error, given type should be integers or float.\n",
                     .{},
                 ),
