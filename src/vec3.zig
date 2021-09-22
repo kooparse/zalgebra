@@ -2,6 +2,7 @@ const std = @import("std");
 const root = @import("main.zig");
 const math = std.math;
 const assert = std.debug.assert;
+const panic = std.debug.panic;
 const testing = std.testing;
 
 pub const Vec3 = Vector3(f32);
@@ -117,7 +118,7 @@ pub fn Vector3(comptime T: type) type {
                     const z = @intCast(dest, self.z);
                     return Vector3(dest).new(x, y, z);
                 },
-                else => std.debug.panic(
+                else => panic(
                     "Error, given type should be integers or float.\n",
                     .{},
                 ),

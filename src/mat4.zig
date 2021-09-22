@@ -1,6 +1,7 @@
 const std = @import("std");
 const math = std.math;
 const testing = std.testing;
+const print = std.debug.print;
 const root = @import("main.zig");
 const vec4 = @import("vec4.zig");
 const vec3 = @import("vec3.zig");
@@ -402,7 +403,7 @@ pub fn Mat4x4(comptime T: type) type {
                 \\
             ;
 
-            std.debug.print(string, .{
+            print(string, .{
                 self.data[0][0],
                 self.data[1][0],
                 self.data[2][0],
