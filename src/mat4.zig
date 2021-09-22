@@ -1,10 +1,17 @@
 const std = @import("std");
 const math = std.math;
 const testing = std.testing;
+const print = std.debug.print;
 const root = @import("main.zig");
-usingnamespace @import("vec4.zig");
-usingnamespace @import("vec3.zig");
-usingnamespace @import("quaternion.zig");
+const vec4 = @import("vec4.zig");
+const vec3 = @import("vec3.zig");
+const quat = @import("quaternion.zig");
+
+const Vec3 = vec3.Vec3;
+const Vector3 = vec3.Vector3;
+const Vector4 = vec4.Vector4;
+const Quaternion = quat.Quaternion;
+const Quat = quat.Quat;
 
 pub const Mat4 = Mat4x4(f32);
 pub const Mat4_f64 = Mat4x4(f64);
@@ -396,7 +403,7 @@ pub fn Mat4x4(comptime T: type) type {
                 \\
             ;
 
-            std.debug.print(string, .{
+            print(string, .{
                 self.data[0][0],
                 self.data[1][0],
                 self.data[2][0],

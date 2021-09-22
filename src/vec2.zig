@@ -2,6 +2,7 @@ const std = @import("std");
 const root = @import("main.zig");
 const math = std.math;
 const testing = std.testing;
+const panic = std.debug.panic;
 
 pub const Vec2 = Vector2(f32);
 pub const Vec2_f64 = Vector2(f64);
