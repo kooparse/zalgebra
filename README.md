@@ -54,6 +54,7 @@ Methods | Description
 new | Construct a vector from 2 to 4 components
 at | Return component from given index
 set | Set all components to the same given value
+negate | Scale all components by -1
 cast | Cast a type to another type
 fromSlice | Construct new vectors from slice
 zero | Shorthand for `(0, 0, 0)`
@@ -87,6 +88,7 @@ Methods | Description
 identity | Construct an identity matrix
 fromSlice | Construct new matrix from given slice of data
 getData | Return a pointer to the inner data
+negate | Scale all components by -1
 eql | Return `true` if two matrices are equals
 multByVec4 | Multiply a given vec4 by matrix (only for mat4)
 fromTranslate | Construct a translation matrix

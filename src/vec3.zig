@@ -85,6 +85,11 @@ pub fn Vector3(comptime T: type) type {
             return Self.new(0, 0, 1);
         }
 
+        /// Negate the given vector.
+        pub fn negate(self: Self) Self {
+            return self.scale(-1);
+        }
+
         /// Cast a type to another type. Only for integers and floats.
         /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt
         pub fn cast(self: Self, dest: anytype) Vector3(dest) {
@@ -236,6 +241,12 @@ test "zalgebra.Vec3.set" {
     var a = Vec3.new(2.5, 2.5, 2.5);
     var b = Vec3.set(2.5);
     try testing.expectEqual(Vec3.eql(a, b), true);
+}
+
+test "zalgebra.Vec3.negate" {
+    var a = Vec3.set(10);
+    var b = Vec3.set(-10);
+    try testing.expectEqual(Vec3.eql(a.negate(), b), true);
 }
 
 test "zalgebra.Vec3.getAngle" {

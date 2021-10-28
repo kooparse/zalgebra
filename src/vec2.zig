@@ -42,6 +42,11 @@ pub fn Vector2(comptime T: type) type {
             return Self.new(0, 1);
         }
 
+        /// Negate the given vector.
+        pub fn negate(self: Self) Self {
+            return self.scale(-1);
+        }
+
         /// Cast a type to another type. Only for integers and floats.
         /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
         pub fn cast(self: Self, dest: anytype) Vector2(dest) {
@@ -172,6 +177,12 @@ test "zalgebra.Vec2.set" {
     var a = Vec2.new(2.5, 2.5);
     var b = Vec2.set(2.5);
     try testing.expectEqual(Vec2.eql(a, b), true);
+}
+
+test "zalgebra.Vec2.negate" {
+    var a = Vec2.set(5);
+    var b = Vec2.set(-5);
+    try testing.expectEqual(Vec2.eql(a.negate(), b), true);
 }
 
 test "zalgebra.Vec2.getAngle" {

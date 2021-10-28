@@ -54,6 +54,22 @@ pub fn Mat4x4(comptime T: type) type {
             };
         }
 
+        /// Negate the given matrix.
+        pub fn negate(mat: Self) Self {
+            var result = mat;
+
+            var col: usize = 0;
+            var row: usize = 0;
+
+            while (col < 4) : (col += 1) {
+                while (row < 4) : (row += 1) {
+                    result.data[col][row] = -mat.data[col][row];
+                }
+            }
+
+            return result;
+        }
+
         /// Return a pointer to the inner data of the matrix.
         pub fn getData(mat: *const Self) *const T {
             return @ptrCast(*const T, &mat.data);
@@ -442,6 +458,27 @@ test "zalgebra.Mat4.eql" {
 
     try testing.expectEqual(Mat4.eql(a, b), true);
     try testing.expectEqual(Mat4.eql(a, c), false);
+}
+
+test "zalgebra.Mat4.negate" {
+    const a = Mat4{
+        .data = .{
+            .{ 1, 2, 3, 4 },
+            .{ 5, -6, 7, 8 },
+            .{ 9, 10, 11, -12 },
+            .{ 13, 14, 15, 16 },
+        },
+    };
+    const b = Mat4{
+        .data = .{
+            .{ -1, -2, -3, -4 },
+            .{ -5, 6, -7, -8 },
+            .{ -9, -10, -11, 12 },
+            .{ -13, -14, -15, -16 },
+        },
+    };
+
+    try testing.expectEqual(Mat4.eql(a.negate(), b), true);
 }
 
 test "zalgebra.Mat4.fromSlice" {
