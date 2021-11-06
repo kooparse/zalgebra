@@ -88,6 +88,7 @@ Methods | Description
 identity | Construct an identity matrix
 fromSlice | Construct new matrix from given slice of data
 getData | Return a pointer to the inner data
+transpose | Return the transpose matrix
 negate | Scale all components by -1
 eql | Return `true` if two matrices are equals
 multByVec4 | Multiply a given vec4 by matrix (only for mat4)
