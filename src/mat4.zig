@@ -57,13 +57,27 @@ pub fn Mat4x4(comptime T: type) type {
         /// Negate the given matrix.
         pub fn negate(mat: Self) Self {
             var result = mat;
-
             var col: usize = 0;
-            var row: usize = 0;
 
             while (col < 4) : (col += 1) {
+                var row: usize = 0;
                 while (row < 4) : (row += 1) {
                     result.data[col][row] = -mat.data[col][row];
+                }
+            }
+
+            return result;
+        }
+
+        /// Transpose the given matrix.
+        pub fn transpose(mat: Self) Self {
+            var result = mat;
+            var col: usize = 0;
+
+            while (col < 4) : (col += 1) {
+                var row: usize = col;
+                while (row < 4) : (row += 1) {
+                    std.mem.swap(T, &result.data[col][row], &result.data[row][col]);
                 }
             }
 
@@ -77,9 +91,9 @@ pub fn Mat4x4(comptime T: type) type {
 
         pub fn eql(left: Self, right: Self) bool {
             var col: usize = 0;
-            var row: usize = 0;
 
             while (col < 4) : (col += 1) {
+                var row: usize = 0;
                 while (row < 4) : (row += 1) {
                     if (left.data[col][row] != right.data[col][row]) {
                         return false;
@@ -481,6 +495,27 @@ test "zalgebra.Mat4.negate" {
     try testing.expectEqual(Mat4.eql(a.negate(), b), true);
 }
 
+test "zalgebra.Mat4.transpose" {
+    const a = Mat4{
+        .data = .{
+            .{ 1, 2, 3, 4 },
+            .{ 5, 6, 7, 8 },
+            .{ 9, 10, 11, 12 },
+            .{ 13, 14, 15, 16 },
+        },
+    };
+    const b = Mat4{
+        .data = .{
+            .{ 1, 5, 9, 13 },
+            .{ 2, 6, 10, 14 },
+            .{ 3, 7, 11, 15 },
+            .{ 4, 8, 12, 16 },
+        },
+    };
+
+    try testing.expectEqual(Mat4.eql(a.transpose(), b), true);
+}
+
 test "zalgebra.Mat4.fromSlice" {
     const data = [_]f32{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
     const result = Mat4.fromSlice(&data);
@@ -510,7 +545,7 @@ test "zalgebra.Mat4.translate" {
             .{ 1, 0, 0, 0 },
             .{ 0, 1, 0, 0 },
             .{ 0, 0, 1, 0 },
-            .{ 4, 9, 8, 1 },
+            .{ 4, 6, 6, 1 },
         },
     }), true);
 }
@@ -536,7 +571,7 @@ test "zalgebra.Mat4.scale" {
         .data = .{
             .{ 4, 0, 0, 0 },
             .{ 0, 6, 0, 0 },
-            .{ 0, 0, 4, 0 },
+            .{ 0, 0, 8, 0 },
             .{ 0, 0, 0, 1 },
         },
     }), true);
