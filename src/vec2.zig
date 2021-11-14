@@ -14,7 +14,7 @@ pub fn Vector2(comptime T: type) type {
         @compileError("Vector2 not implemented for " ++ @typeName(T));
     }
 
-    return struct {
+    return extern struct {
         x: T,
         y: T,
 

@@ -26,7 +26,7 @@ pub fn Mat4x4(comptime T: type) type {
         @compileError("Mat4x4 not implemented for " ++ @typeName(T));
     }
 
-    return struct {
+    return extern struct {
         data: [4][4]T,
 
         const Self = @This();

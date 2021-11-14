@@ -22,7 +22,7 @@ pub fn Quaternion(comptime T: type) type {
         @compileError("Quaternion not implemented for " ++ @typeName(T));
     }
 
-    return struct {
+    return extern struct {
         w: T,
         x: T,
         y: T,
