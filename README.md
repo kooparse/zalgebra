@@ -86,6 +86,7 @@ Note: All matrices are column-major.
 Methods | Description
 ------------ | -------------
 identity | Construct an identity matrix
+set | Set all matrix values to given value
 fromSlice | Construct new matrix from given slice of data
 getData | Return a pointer to the inner data
 transpose | Return the transpose matrix

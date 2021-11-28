@@ -1,5 +1,6 @@
 const std = @import("std");
 const math = std.math;
+const mem = std.mem;
 const testing = std.testing;
 const print = std.debug.print;
 const root = @import("main.zig");
@@ -27,7 +28,8 @@ pub fn Mat4x4(comptime T: type) type {
     }
 
     return extern struct {
-        data: [4][4]T,
+        data: [4][4]T = mem.zeroes([4][4]T),
+
 
         const Self = @This();
 
@@ -40,6 +42,13 @@ pub fn Mat4x4(comptime T: type) type {
                     .{ 0, 0, 0, 1 },
                 },
             };
+        }
+
+        /// Set all mat4 values to given value.
+        pub fn set(value: T) Self {
+            var data: [16]T = undefined;
+            mem.set(T, &data, value);
+            return Self.fromSlice(&data);
         }
 
         /// Construct new 4x4 matrix from given slice.
@@ -260,7 +269,7 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Construct an orthographic 4x4 matrix.
         pub fn orthographic(left: T, right: T, bottom: T, top: T, z_near: T, z_far: T) Self {
-            var mat: Self = undefined;
+            var mat = Self{};
 
             mat.data[0][0] = 2.0 / (right - left);
             mat.data[1][1] = 2.0 / (top - bottom);
@@ -472,6 +481,20 @@ test "zalgebra.Mat4.eql" {
 
     try testing.expectEqual(Mat4.eql(a, b), true);
     try testing.expectEqual(Mat4.eql(a, c), false);
+}
+
+test "zalgebra.Mat4.set" {
+    const a = Mat4.set(12);
+    const b = Mat4{
+        .data = .{
+            .{ 12, 12, 12, 12 },
+            .{ 12, 12, 12, 12 },
+            .{ 12, 12, 12, 12 },
+            .{ 12, 12, 12, 12 },
+        },
+    };
+
+    try testing.expectEqual(Mat4.eql(a, b), true);
 }
 
 test "zalgebra.Mat4.negate" {
