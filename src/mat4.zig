@@ -30,7 +30,6 @@ pub fn Mat4x4(comptime T: type) type {
     return extern struct {
         data: [4][4]T = mem.zeroes([4][4]T),
 
-
         const Self = @This();
 
         pub fn identity() Self {
