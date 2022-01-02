@@ -1,13 +1,12 @@
 const std = @import("std");
-const math = std.math;
-const mem = std.mem;
-const testing = std.testing;
-const print = std.debug.print;
 const root = @import("main.zig");
 const vec4 = @import("vec4.zig");
 const vec3 = @import("vec3.zig");
 const quat = @import("quaternion.zig");
-
+const math = std.math;
+const mem = std.mem;
+const expectEqual = std.testing.expectEqual;
+const print = std.debug.print;
 const Vec3 = vec3.Vec3;
 const Vector3 = vec3.Vector3;
 const Vector4 = vec4.Vector4;
@@ -478,8 +477,8 @@ test "zalgebra.Mat4.eql" {
         },
     };
 
-    try testing.expectEqual(Mat4.eql(a, b), true);
-    try testing.expectEqual(Mat4.eql(a, c), false);
+    try expectEqual(Mat4.eql(a, b), true);
+    try expectEqual(Mat4.eql(a, c), false);
 }
 
 test "zalgebra.Mat4.set" {
@@ -493,7 +492,7 @@ test "zalgebra.Mat4.set" {
         },
     };
 
-    try testing.expectEqual(Mat4.eql(a, b), true);
+    try expectEqual(Mat4.eql(a, b), true);
 }
 
 test "zalgebra.Mat4.negate" {
@@ -514,7 +513,7 @@ test "zalgebra.Mat4.negate" {
         },
     };
 
-    try testing.expectEqual(Mat4.eql(a.negate(), b), true);
+    try expectEqual(Mat4.eql(a.negate(), b), true);
 }
 
 test "zalgebra.Mat4.transpose" {
@@ -535,20 +534,20 @@ test "zalgebra.Mat4.transpose" {
         },
     };
 
-    try testing.expectEqual(Mat4.eql(a.transpose(), b), true);
+    try expectEqual(Mat4.eql(a.transpose(), b), true);
 }
 
 test "zalgebra.Mat4.fromSlice" {
     const data = [_]f32{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
     const result = Mat4.fromSlice(&data);
 
-    try testing.expectEqual(Mat4.eql(result, Mat4.identity()), true);
+    try expectEqual(Mat4.eql(result, Mat4.identity()), true);
 }
 
 test "zalgebra.Mat4.fromTranslate" {
     const a = Mat4.fromTranslate(Vec3.new(2, 3, 4));
 
-    try testing.expectEqual(Mat4.eql(a, Mat4{
+    try expectEqual(Mat4.eql(a, Mat4{
         .data = .{
             .{ 1, 0, 0, 0 },
             .{ 0, 1, 0, 0 },
@@ -562,7 +561,7 @@ test "zalgebra.Mat4.translate" {
     const a = Mat4.fromTranslate(Vec3.new(2, 3, 2));
     const result = Mat4.translate(a, Vec3.new(2, 3, 4));
 
-    try testing.expectEqual(Mat4.eql(result, Mat4{
+    try expectEqual(Mat4.eql(result, Mat4{
         .data = .{
             .{ 1, 0, 0, 0 },
             .{ 0, 1, 0, 0 },
@@ -575,7 +574,7 @@ test "zalgebra.Mat4.translate" {
 test "zalgebra.Mat4.fromScale" {
     const a = Mat4.fromScale(Vec3.new(2, 3, 4));
 
-    try testing.expectEqual(Mat4.eql(a, Mat4{
+    try expectEqual(Mat4.eql(a, Mat4{
         .data = .{
             .{ 2, 0, 0, 0 },
             .{ 0, 3, 0, 0 },
@@ -589,7 +588,7 @@ test "zalgebra.Mat4.scale" {
     const a = Mat4.fromScale(Vec3.new(2, 3, 4));
     const result = Mat4.scale(a, Vec3.new(2, 2, 2));
 
-    try testing.expectEqual(Mat4.eql(result, Mat4{
+    try expectEqual(Mat4.eql(result, Mat4{
         .data = .{
             .{ 4, 0, 0, 0 },
             .{ 0, 6, 0, 0 },
@@ -609,7 +608,7 @@ test "zalgebra.Mat4.inv" {
         },
     };
 
-    try testing.expectEqual(Mat4.eql(a.inv(), Mat4{
+    try expectEqual(Mat4.eql(a.inv(), Mat4{
         .data = .{
             .{ -0.1666666716337204, 0, 0, 0.3333333432674408 },
             .{ 0, 0.5, 0, 0 },
@@ -623,12 +622,12 @@ test "zalgebra.Mat4.extractTranslation" {
     var a = Mat4.fromTranslate(Vec3.new(2, 3, 2));
     a = a.translate(Vec3.new(2, 3, 2));
 
-    try testing.expectEqual(Vec3.eql(a.extractTranslation(), Vec3.new(4, 6, 4)), true);
+    try expectEqual(Vec3.eql(a.extractTranslation(), Vec3.new(4, 6, 4)), true);
 }
 
 test "zalgebra.Mat4.extractRotation" {
     const a = Mat4.fromEulerAngle(Vec3.new(45, -5, 20));
-    try testing.expectEqual(Vec3.eql(
+    try expectEqual(Vec3.eql(
         a.extractRotation(),
         Vec3.new(45.000003814697266, -4.99052524, 19.999998092651367),
     ), true);
@@ -638,7 +637,7 @@ test "zalgebra.Mat4.extractScale" {
     var a = Mat4.fromScale(Vec3.new(2, 4, 8));
     a = a.scale(Vec3.new(2, 4, 8));
 
-    try testing.expectEqual(Vec3.eql(a.extractScale(), Vec3.new(4, 16, 64)), true);
+    try expectEqual(Vec3.eql(a.extractScale(), Vec3.new(4, 16, 64)), true);
 }
 
 test "zalgebra.Mat4.recompose" {
@@ -648,14 +647,12 @@ test "zalgebra.Mat4.recompose" {
         Vec3.new(1, 1, 1),
     );
 
-    try testing.expectEqual(Mat4.eql(result, Mat4{
-        .data = .{
-            .{ 0.9961947202682495, 0, -0.08715573698282242, 0 },
-            .{ 0.06162841618061066, 0.7071067690849304, 0.7044160962104797, 0 },
-            .{ 0.06162841245532036, -0.7071068286895752, 0.704416036605835, 0 },
-            .{ 2, 2, 2, 1 },
-        },
-    }), true);
+    try expectEqual(Mat4.eql(result, Mat4{ .data = .{
+        .{ 0.9961947202682495, 0, -0.08715573698282242, 0 },
+        .{ 0.06162841245532036, 0.7071067690849304, 0.704416036605835, 0 },
+        .{ 0.06162841245532036, -0.7071067690849304, 0.704416036605835, 0 },
+        .{ 2, 2, 2, 1 },
+    } }), true);
 }
 
 test "zalgebra.Mat4.decompose" {
@@ -667,7 +664,7 @@ test "zalgebra.Mat4.decompose" {
 
     const result = a.decompose();
 
-    try testing.expectEqual(result.t.eql(Vec3.new(10, 5, 5)), true);
-    try testing.expectEqual(result.s.eql(Vec3.new(1, 1, 1)), true);
-    try testing.expectEqual(result.r.extractRotation().eql(Vec3.new(45, 5, -0.00000010712935250012379)), true);
+    try expectEqual(result.t.eql(Vec3.new(10, 5, 5)), true);
+    try expectEqual(result.s.eql(Vec3.new(1, 1, 1)), true);
+    try expectEqual(result.r.extractRotation().eql(Vec3.new(45, 5, 0.00000010712935250012379)), true);
 }

@@ -1,11 +1,12 @@
 const std = @import("std");
-const math = std.math;
-const testing = std.testing;
-const assert = std.debug.assert;
 const root = @import("main.zig");
 const vec4 = @import("vec4.zig");
 const vec3 = @import("vec3.zig");
 const mat4 = @import("mat4.zig");
+const math = std.math;
+const expectEqual = std.testing.expectEqual;
+const expect = std.testing.expect;
+const assert = std.debug.assert;
 
 const Vec3 = vec3.Vec3;
 const Vector3 = vec3.Vector3;
@@ -299,24 +300,24 @@ pub fn Quaternion(comptime T: type) type {
 test "zalgebra.Quaternion.new" {
     const q = Quat.new(1.5, 2.6, 3.7, 4.7);
 
-    try testing.expectEqual(q.w, 1.5);
-    try testing.expectEqual(q.x, 2.6);
-    try testing.expectEqual(q.y, 3.7);
-    try testing.expectEqual(q.z, 4.7);
+    try expectEqual(q.w, 1.5);
+    try expectEqual(q.x, 2.6);
+    try expectEqual(q.y, 3.7);
+    try expectEqual(q.z, 4.7);
 }
 
 test "zalgebra.Quaternion.fromSlice" {
     const array = [4]f32{ 2, 3, 4, 1 };
-    try testing.expectEqual(Quat.eql(Quat.fromSlice(&array), Quat.new(1, 2, 3, 4)), true);
+    try expectEqual(Quat.eql(Quat.fromSlice(&array), Quat.new(1, 2, 3, 4)), true);
 }
 
 test "zalgebra.Quaternion.fromVec3" {
     const q = Quat.fromVec3(1.5, Vec3.new(2.6, 3.7, 4.7));
 
-    try testing.expectEqual(q.w, 1.5);
-    try testing.expectEqual(q.x, 2.6);
-    try testing.expectEqual(q.y, 3.7);
-    try testing.expectEqual(q.z, 4.7);
+    try expectEqual(q.w, 1.5);
+    try expectEqual(q.x, 2.6);
+    try expectEqual(q.y, 3.7);
+    try expectEqual(q.z, 4.7);
 }
 
 test "zalgebra.Quaternion.fromVec3" {
@@ -324,40 +325,40 @@ test "zalgebra.Quaternion.fromVec3" {
     const q2 = Quat.fromVec3(1.5, Vec3.new(2.6, 3.7, 4.7));
     const q3 = Quat.fromVec3(1, Vec3.new(2.6, 3.7, 4.7));
 
-    try testing.expectEqual(q1.eql(q2), true);
-    try testing.expectEqual(q1.eql(q3), false);
+    try expectEqual(q1.eql(q2), true);
+    try expectEqual(q1.eql(q3), false);
 }
 
 test "zalgebra.Quaternion.norm" {
     const q1 = Quat.fromVec3(1, Vec3.new(2, 2.0, 2.0));
     const q2 = Quat.fromVec3(0.2773500978946686, Vec3.new(0.5547001957893372, 0.5547001957893372, 0.5547001957893372));
 
-    try testing.expectEqual(q1.norm().eql(q2), true);
+    try expectEqual(q1.norm().eql(q2), true);
 }
 
 test "zalgebra.Quaternion.fromEulerAngle" {
     const q1 = Quat.fromEulerAngle(Vec3.new(10, 5, 45));
-    const res_q1 = q1.extractRotation();
+    const rot1 = q1.extractRotation();
 
     const q2 = Quat.fromEulerAngle(Vec3.new(0, 55, 22));
-    const res_q2 = q2.toMat4().extractRotation();
+    const rot2 = q2.toMat4().extractRotation();
 
-    try testing.expectEqual(Vec3.eql(res_q1, Vec3.new(9.999999046325684, 5.000000476837158, 45)), true);
-    try testing.expectEqual(Vec3.eql(res_q2, Vec3.new(0, 47.245025634765625, 22)), true);
+    try expectEqual(Vec3.eql(rot1, Vec3.new(9.999999046325684, 5.000000476837158, 45)), true);
+    try expectEqual(Vec3.eql(rot2, Vec3.new(0, 47.2450294, 22)), true);
 }
 
 test "zalgebra.Quaternion.fromAxis" {
     const q1 = Quat.fromAxis(45, Vec3.new(0, 1, 0));
     const res_q1 = q1.extractRotation();
 
-    try testing.expectEqual(Vec3.eql(res_q1, Vec3.new(0, 45.0000076, 0)), true);
+    try expectEqual(Vec3.eql(res_q1, Vec3.new(0, 45.0000076, 0)), true);
 }
 
 test "zalgebra.Quaternion.extractRotation" {
     const q1 = Quat.fromVec3(0.5, Vec3.new(0.5, 1, 0.3));
     const res_q1 = q1.extractRotation();
 
-    try testing.expectEqual(Vec3.eql(res_q1, Vec3.new(129.6000213623047, 44.427005767822266, 114.41073608398438)), true);
+    try expectEqual(Vec3.eql(res_q1, Vec3.new(129.6000213623047, 44.427005767822266, 114.41073608398438)), true);
 }
 
 test "zalgebra.Quaternion.rotateVec" {
@@ -369,43 +370,43 @@ test "zalgebra.Quaternion.rotateVec" {
     const v1 = q.rotateVec(v);
     const v2 = m.multByVec4(Vec4.new(v.x, v.y, v.z, 1.0));
 
-    try testing.expect(std.math.approxEqAbs(f32, v1.x, -1.46446585e-01, eps_value));
-    try testing.expect(std.math.approxEqAbs(f32, v1.y, 8.53553473e-01, eps_value));
-    try testing.expect(std.math.approxEqAbs(f32, v1.z, 0.5, eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.x, -1.46446585e-01, eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.y, 8.53553473e-01, eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.z, 0.5, eps_value));
 
-    try testing.expect(std.math.approxEqAbs(f32, v1.x, v2.x, eps_value));
-    try testing.expect(std.math.approxEqAbs(f32, v1.y, v2.y, eps_value));
-    try testing.expect(std.math.approxEqAbs(f32, v1.z, v2.z, eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.x, v2.x, eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.y, v2.y, eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.z, v2.z, eps_value));
 }
 
 test "zalgebra.Quaternion.lerp" {
     const eps_value = comptime std.math.epsilon(f32);
     var v1 = Quat.zero();
     var v2 = Quat.fromAxis(180, Vec3.up());
-    try testing.expectEqual(Quat.eql(
+    try expectEqual(Quat.eql(
         Quat.lerp(v1, v2, 1.0),
         v2,
     ), true);
     var v3 = Quat.lerp(v1, v2, 0.5);
     var v4 = Quat.new(4.99999970e-01, 0, 4.99999970e-01, 0);
-    try testing.expect(std.math.approxEqAbs(f32, v3.w, v4.w, eps_value));
-    try testing.expect(std.math.approxEqAbs(f32, v3.x, v4.x, eps_value));
-    try testing.expect(std.math.approxEqAbs(f32, v3.y, v4.y, eps_value));
-    try testing.expect(std.math.approxEqAbs(f32, v3.z, v4.z, eps_value));
+    try expect(std.math.approxEqAbs(f32, v3.w, v4.w, eps_value));
+    try expect(std.math.approxEqAbs(f32, v3.x, v4.x, eps_value));
+    try expect(std.math.approxEqAbs(f32, v3.y, v4.y, eps_value));
+    try expect(std.math.approxEqAbs(f32, v3.z, v4.z, eps_value));
 }
 
 test "zalgebra.Quaternion.slerp" {
     const eps_value = comptime std.math.epsilon(f32);
     var v1 = Quat.zero();
     var v2 = Quat.fromAxis(180, Vec3.up());
-    try testing.expectEqual(Quat.eql(
+    try expectEqual(Quat.eql(
         Quat.slerp(v1, v2, 1.0),
         Quat.new(7.54979012e-08, 0, -1, 0),
     ), true);
     var v3 = Quat.slerp(v1, v2, 0.5);
     var v4 = Quat.new(7.071067e-01, 0, -7.071067e-01, 0);
-    try testing.expect(std.math.approxEqAbs(f32, v3.w, v4.w, eps_value));
-    try testing.expect(std.math.approxEqAbs(f32, v3.x, v4.x, eps_value));
-    try testing.expect(std.math.approxEqAbs(f32, v3.y, v4.y, eps_value));
-    try testing.expect(std.math.approxEqAbs(f32, v3.z, v4.z, eps_value));
+    try expect(std.math.approxEqAbs(f32, v3.w, v4.w, eps_value));
+    try expect(std.math.approxEqAbs(f32, v3.x, v4.x, eps_value));
+    try expect(std.math.approxEqAbs(f32, v3.y, v4.y, eps_value));
+    try expect(std.math.approxEqAbs(f32, v3.z, v4.z, eps_value));
 }
