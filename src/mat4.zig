@@ -151,8 +151,8 @@ pub fn Mat4x4(comptime T: type) type {
 
             const norm_axis = axis.norm();
 
-            const sin_theta = math.sin(root.toRadians(angle_in_degrees));
-            const cos_theta = math.cos(root.toRadians(angle_in_degrees));
+            const sin_theta = @sin(root.toRadians(angle_in_degrees));
+            const cos_theta = @cos(root.toRadians(angle_in_degrees));
             const cos_value = 1.0 - cos_theta;
 
             mat.data[0][0] = (norm_axis.x * norm_axis.x * cos_value) + cos_theta;
@@ -178,9 +178,9 @@ pub fn Mat4x4(comptime T: type) type {
         /// Construct a rotation matrix from euler angles (X * Y * Z).
         /// Order matters because matrix multiplication are NOT commutative.
         pub fn fromEulerAngle(euler_angle: Vector3(T)) Self {
-            const x = Self.fromRotation(euler_angle.x, Vec3.new(1, 0, 0));
-            const y = Self.fromRotation(euler_angle.y, Vec3.new(0, 1, 0));
-            const z = Self.fromRotation(euler_angle.z, Vec3.new(0, 0, 1));
+            const x = Self.fromRotation(euler_angle.x, Vec3.right());
+            const y = Self.fromRotation(euler_angle.y, Vec3.up());
+            const z = Self.fromRotation(euler_angle.z, Vec3.forward());
 
             return z.mult(y.mult(x));
         }
@@ -215,10 +215,10 @@ pub fn Mat4x4(comptime T: type) type {
             const m = self.orthoNormalize();
 
             const theta_x = math.atan2(T, m.data[1][2], m.data[2][2]);
-            const c2 = math.sqrt(math.pow(f32, m.data[0][0], 2) + math.pow(f32, m.data[0][1], 2));
-            const theta_y = math.atan2(T, -m.data[0][2], math.sqrt(c2));
-            const s1 = math.sin(theta_x);
-            const c1 = math.cos(theta_x);
+            const c2 = @sqrt(math.pow(f32, m.data[0][0], 2) + math.pow(f32, m.data[0][1], 2));
+            const theta_y = math.atan2(T, -m.data[0][2], @sqrt(c2));
+            const s1 = @sin(theta_x);
+            const c1 = @cos(theta_x);
             const theta_z = math.atan2(T, s1 * m.data[2][0] - c1 * m.data[1][0], c1 * m.data[1][1] - s1 * m.data[2][1]);
 
             return Vec3.new(root.toDegrees(theta_x), root.toDegrees(theta_y), root.toDegrees(theta_z));

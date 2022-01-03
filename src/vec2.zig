@@ -31,11 +31,11 @@ pub fn Vector2(comptime T: type) type {
         }
 
         pub fn zero() Self {
-            return Self.new(0, 0);
+            return Self.set(0);
         }
 
         pub fn one() Self {
-            return Self.new(1, 1);
+            return Self.set(1);
         }
 
         pub fn up() Self {
@@ -101,20 +101,21 @@ pub fn Vector2(comptime T: type) type {
 
         /// Compute the length (magnitude) of given vector |a|.
         pub fn length(self: Self) T {
-            return math.sqrt((self.x * self.x) + (self.y * self.y));
+            return @sqrt(self.dot(self));
         }
 
         /// Compute the distance between two points.
         pub fn distance(a: Self, b: Self) T {
-            return math.sqrt(
-                math.pow(T, b.x - a.x, 2) + math.pow(T, b.y - a.y, 2),
-            );
+            return length(b.sub(a));
         }
 
         /// Construct new normalized vector from a given vector.
         pub fn norm(self: Self) Self {
             var l = length(self);
-            return Self.new(self.x / l, self.y / l);
+            return Self.new(
+                self.x / l,
+                self.y / l,
+            );
         }
 
         pub fn eql(left: Self, right: Self) bool {
@@ -123,17 +124,26 @@ pub fn Vector2(comptime T: type) type {
 
         /// Substraction between two given vector.
         pub fn sub(left: Self, right: Self) Self {
-            return Self.new(left.x - right.x, left.y - right.y);
+            return Self.new(
+                left.x - right.x,
+                left.y - right.y,
+            );
         }
 
         /// Addition betwen two given vector.
         pub fn add(left: Self, right: Self) Self {
-            return Self.new(left.x + right.x, left.y + right.y);
+            return Self.new(
+                left.x + right.x,
+                left.y + right.y,
+            );
         }
 
         /// Multiply each components by the given scalar.
         pub fn scale(v: Self, scalar: T) Self {
-            return Self.new(v.x * scalar, v.y * scalar);
+            return Self.new(
+                v.x * scalar,
+                v.y * scalar,
+            );
         }
 
         /// Return the dot product between two given vector.
@@ -151,16 +161,16 @@ pub fn Vector2(comptime T: type) type {
         /// Construct a new vector from the min components between two vectors.
         pub fn min(left: Self, right: Self) Self {
             return Self.new(
-                math.min(left.x, right.x),
-                math.min(left.y, right.y),
+                @minimum(left.x, right.x),
+                @minimum(left.y, right.y),
             );
         }
 
         /// Construct a new vector from the max components between two vectors.
         pub fn max(left: Self, right: Self) Self {
             return Self.new(
-                math.max(left.x, right.x),
-                math.max(left.y, right.y),
+                @maximum(left.x, right.x),
+                @maximum(left.y, right.y),
             );
         }
     };

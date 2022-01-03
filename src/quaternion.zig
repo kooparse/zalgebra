@@ -72,14 +72,16 @@ pub fn Quaternion(comptime T: type) type {
             const l = length(self);
             assert(l != 0);
 
-            return Self.new(self.w / l, self.x / l, self.y / l, self.z / l);
+            return Self.new(
+                self.w / l,
+                self.x / l,
+                self.y / l,
+                self.z / l,
+            );
         }
 
         pub fn length(self: Self) T {
-            return math.sqrt((self.w * self.w) +
-                (self.x * self.x) +
-                (self.y * self.y) +
-                (self.z * self.z));
+            return @sqrt(self.dot(self));
         }
 
         pub fn sub(left: Self, right: Self) Self {
@@ -214,9 +216,9 @@ pub fn Quaternion(comptime T: type) type {
 
         /// Convert all Euler angles to quaternion.
         pub fn fromEulerAngle(axis: Vector3(T)) Self {
-            const x = Self.fromAxis(axis.x, Vec3.new(1, 0, 0));
-            const y = Self.fromAxis(axis.y, Vec3.new(0, 1, 0));
-            const z = Self.fromAxis(axis.z, Vec3.new(0, 0, 1));
+            const x = Self.fromAxis(axis.x, Vec3.right());
+            const y = Self.fromAxis(axis.y, Vec3.up());
+            const z = Self.fromAxis(axis.z, Vec3.forward());
 
             return z.mult(y.mult(x));
         }
@@ -225,9 +227,9 @@ pub fn Quaternion(comptime T: type) type {
         pub fn fromAxis(degrees: T, axis: Vector3(T)) Self {
             const radians = root.toRadians(degrees);
 
-            const rot_sin = math.sin(radians / 2.0);
+            const rot_sin = @sin(radians / 2.0);
             const quat_axis = axis.norm().scale(rot_sin);
-            const w = math.cos(radians / 2.0);
+            const w = @cos(radians / 2.0);
 
             return Self.fromVec3(w, quat_axis);
         }
@@ -281,7 +283,7 @@ pub fn Quaternion(comptime T: type) type {
                 var theta = math.acos(math.clamp(cos_theta, -1, 1));
                 var thetap = theta * t;
                 var qperp = right1.sub(left.scale(cos_theta)).norm();
-                return left.scale(math.cos(thetap)).add(qperp.scale(math.sin(thetap)));
+                return left.scale(@cos(thetap)).add(qperp.scale(@sin(thetap)));
             }
         }
 

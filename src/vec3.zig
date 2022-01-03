@@ -8,6 +8,7 @@ const expectEqual = std.testing.expectEqual;
 pub const Vec3 = Vector3(f32);
 pub const Vec3_f64 = Vector3(f64);
 pub const Vec3_i32 = Vector3(i32);
+pub const Vec3_usize = Vector3(usize);
 
 /// A 3 dimensional vector.
 pub fn Vector3(comptime T: type) type {
@@ -47,12 +48,12 @@ pub fn Vector3(comptime T: type) type {
 
         /// Shorthand for writing vec3.new(0, 0, 0).
         pub fn zero() Self {
-            return Self.new(0, 0, 0);
+            return Self.set(0);
         }
 
         /// Shorthand for writing vec3.new(1, 1, 1).
         pub fn one() Self {
-            return Self.new(1, 1, 1);
+            return Self.set(1);
         }
 
         /// Shorthand for writing vec3.new(0, 1, 0).
@@ -148,24 +149,22 @@ pub fn Vector3(comptime T: type) type {
 
         /// Compute the length (magnitude) of given vector |a|.
         pub fn length(self: Self) T {
-            return math.sqrt(
-                (self.x * self.x) + (self.y * self.y) + (self.z * self.z),
-            );
+            return @sqrt(self.dot(self));
         }
 
         /// Compute the distance between two points.
         pub fn distance(a: Self, b: Self) T {
-            return math.sqrt(
-                math.pow(T, b.x - a.x, 2) +
-                    math.pow(T, b.y - a.y, 2) +
-                    math.pow(T, b.z - a.z, 2),
-            );
+            return length(b.sub(a));
         }
 
         /// Construct new normalized vector from a given vector.
         pub fn norm(self: Self) Self {
             var l = length(self);
-            return Self.new(self.x / l, self.y / l, self.z / l);
+            return Self.new(
+                self.x / l,
+                self.y / l,
+                self.z / l,
+            );
         }
 
         pub fn eql(lhs: Self, rhs: Self) bool {
@@ -174,17 +173,29 @@ pub fn Vector3(comptime T: type) type {
 
         /// Substraction between two given vector.
         pub fn sub(lhs: Self, rhs: Self) Self {
-            return Self.new(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+            return Self.new(
+                lhs.x - rhs.x,
+                lhs.y - rhs.y,
+                lhs.z - rhs.z,
+            );
         }
 
         /// Addition betwen two given vector.
         pub fn add(lhs: Self, rhs: Self) Self {
-            return Self.new(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+            return Self.new(
+                lhs.x + rhs.x,
+                lhs.y + rhs.y,
+                lhs.z + rhs.z,
+            );
         }
 
         /// Multiply each components by the given scalar.
         pub fn scale(v: Self, scalar: T) Self {
-            return Self.new(v.x * scalar, v.y * scalar, v.z * scalar);
+            return Self.new(
+                v.x * scalar,
+                v.y * scalar,
+                v.z * scalar,
+            );
         }
 
         /// Compute the cross product from two vector.
@@ -212,18 +223,18 @@ pub fn Vector3(comptime T: type) type {
         /// Construct a new vector from the min components between two vectors.
         pub fn min(lhs: Self, rhs: Self) Self {
             return Self.new(
-                math.min(lhs.x, rhs.x),
-                math.min(lhs.y, rhs.y),
-                math.min(lhs.z, rhs.z),
+                @minimum(lhs.x, rhs.x),
+                @minimum(lhs.y, rhs.y),
+                @minimum(lhs.z, rhs.z),
             );
         }
 
         /// Construct a new vector from the max components between two vectors.
         pub fn max(lhs: Self, rhs: Self) Self {
             return Self.new(
-                math.max(lhs.x, rhs.x),
-                math.max(lhs.y, rhs.y),
-                math.max(lhs.z, rhs.z),
+                @maximum(lhs.x, rhs.x),
+                @maximum(lhs.y, rhs.y),
+                @maximum(lhs.z, rhs.z),
             );
         }
     };
@@ -378,9 +389,9 @@ test "zalgebra.Vec3.fromSlice" {
 
 test "zalgebra.Vec3.cast" {
     const a = Vec3_i32.new(3, 6, 2);
-    const b = Vector3(usize).new(3, 6, 2);
+    const b = Vec3_usize.new(3, 6, 2);
 
-    try expectEqual(Vector3(usize).eql(a.cast(usize), b), true);
+    try expectEqual(Vec3_usize.eql(a.cast(usize), b), true);
 
     const c = Vec3.new(3.5, 6.5, 2.0);
     const d = Vec3_f64.new(3.5, 6.5, 2);
