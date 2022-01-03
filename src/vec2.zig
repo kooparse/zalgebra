@@ -7,6 +7,7 @@ const panic = std.debug.panic;
 pub const Vec2 = Vector2(f32);
 pub const Vec2_f64 = Vector2(f64);
 pub const Vec2_i32 = Vector2(i32);
+pub const Vec2_usize = Vector2(usize);
 
 /// A 2 dimensional vector.
 pub fn Vector2(comptime T: type) type {
@@ -30,14 +31,17 @@ pub fn Vector2(comptime T: type) type {
             return Self.new(val, val);
         }
 
+        /// Shorthand for writing vec2.new(0, 0).
         pub fn zero() Self {
             return Self.set(0);
         }
 
+        /// Shorthand for writing vec2.new(1, 1).
         pub fn one() Self {
             return Self.set(1);
         }
 
+        /// Shorthand for writing vec2.new(0, 1).
         pub fn up() Self {
             return Self.new(0, 1);
         }
@@ -294,7 +298,7 @@ test "zalgebra.Vec2.cast" {
     const a = Vec2_i32.new(3, 6);
     const b = Vector2(usize).new(3, 6);
 
-    try expectEqual(Vector2(usize).eql(a.cast(usize), b), true);
+    try expectEqual(Vec2_usize.eql(a.cast(usize), b), true);
 
     const c = Vec2.new(3.5, 6.5);
     const d = Vec2_f64.new(3.5, 6.5);

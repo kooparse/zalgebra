@@ -38,12 +38,14 @@ pub fn Vector4(comptime T: type) type {
             return Self.new(val, val, val, val);
         }
 
+        /// Shorthand for writing vec4.new(0, 0, 0, 0).
         pub fn zero() Self {
-            return Self.new(0, 0, 0, 0);
+            return Self.set(0);
         }
 
+        /// Shorthand for writing vec4.new(1, 1, 1, 1).
         pub fn one() Self {
-            return Self.new(1, 1, 1, 1);
+            return Self.set(1);
         }
 
         /// Negate the given vector.
