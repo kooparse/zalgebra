@@ -17,7 +17,7 @@ const Mat4 = za.Mat4;
 
 pub fn main () void {
   var projection = za.perspective(45.0, 800.0 / 600.0, 0.1, 100.0);
-  var view = za.lookAt(Vec3.new(0., 0., -3.), Vec3.zero(), Vec3.up());
+  var view = za.lookAt(Vec3.new(0.0, 0.0, -3.), Vec3.zero(), Vec3.up());
   var model = Mat4.fromTranslate(Vec3.new(0.2, 0.5, 0.0));
   
   var mvp = Mat4.mult(projection, view.mult(model));
@@ -33,12 +33,15 @@ Type | Description
 Vec2 | Two dimensional vector for `f32`
 Vec2_f64 | Two dimensional vector for `f64`
 Vec2_i32 | Two dimensional vector for `i32`
+Vec2_usize | Two dimensional vector for `usize
 Vec3 | Three dimensional vector for `f32`
 Vec3_f64 | Three dimensional vector for `f64`
 Vec3_i32 | Three dimensional vector for `i32`
+Vec3_usize | Three dimensional vector for `usize'
 Vec4 | Four dimensional vector for `f32`
 Vec4_f64 | Four dimensional vector for `f64`
 Vec4_i32 | Four dimensional vector for `i32`
+Vec4_usize | Four dimensional vector for `usize`
 Mat4 | 4x4 matrix for `f32`
 Mat4_f64 | 4x4 matrix for `f64`
 Quat | Quaternion for `f32`
@@ -78,7 +81,7 @@ cross | Construct the cross product (as vector) from two vectors (only for vec3)
 dot | Return the dot product between two vectors
 lerp | Linear interpolation between two vectors
 min | Construct vector from the min components between two vectors
-max | Construct vector from the min components between two vectors
+max | Construct vector from the max components between two vectors
 
 ### Matrices
 Note: All matrices are column-major.
@@ -116,8 +119,8 @@ debugPrint | Print the matrix data for debug purpose
 ### Quaternions
 Methods | Description
 ------------ | -------------
-new| Construct new quat from given floats
-zero| Construct quat as `(1, 0, 0, 0)`
+new | Construct new quat from given floats
+zero | Construct quat as `(1, 0, 0, 0)`
 fromSlice | Construct new quaternion from slice
 fromVec3 | Construct quaternion from vec3
 eql | Return `true` if two quaternions are equal

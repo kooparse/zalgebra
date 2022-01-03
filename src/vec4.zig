@@ -7,6 +7,7 @@ const expectEqual = std.testing.expectEqual;
 pub const Vec4 = Vector4(f32);
 pub const Vec4_f64 = Vector4(f64);
 pub const Vec4_i32 = Vector4(i32);
+pub const Vec4_usize = Vector4(usize);
 
 /// A 4 dimensional vector.
 pub fn Vector4(comptime T: type) type {
@@ -37,12 +38,14 @@ pub fn Vector4(comptime T: type) type {
             return Self.new(val, val, val, val);
         }
 
+        /// Shorthand for writing vec4.new(0, 0, 0, 0).
         pub fn zero() Self {
-            return Self.new(0, 0, 0, 0);
+            return Self.set(0);
         }
 
+        /// Shorthand for writing vec4.new(1, 1, 1, 1).
         pub fn one() Self {
-            return Self.new(1, 1, 1, 1);
+            return Self.set(1);
         }
 
         /// Negate the given vector.
@@ -106,28 +109,23 @@ pub fn Vector4(comptime T: type) type {
 
         /// Compute the length (magnitude) of given vector |a|.
         pub fn length(self: Self) T {
-            return math.sqrt(
-                (self.x * self.x) +
-                    (self.y * self.y) +
-                    (self.z * self.z) +
-                    (self.w * self.w),
-            );
+            return @sqrt(self.dot(self));
         }
 
         /// Compute the distance between two points.
         pub fn distance(a: Self, b: Self) T {
-            return math.sqrt(
-                math.pow(T, b.x - a.x, 2) +
-                    math.pow(T, b.y - a.y, 2) +
-                    math.pow(T, b.z - a.z, 2) +
-                    math.pow(T, b.w - a.w, 2),
-            );
+            return length(b.sub(a));
         }
 
         /// Construct new normalized vector from a given vector.
         pub fn norm(self: Self) Self {
             var l = length(self);
-            return Self.new(self.x / l, self.y / l, self.z / l, self.w / l);
+            return Self.new(
+                self.x / l,
+                self.y / l,
+                self.z / l,
+                self.w / l,
+            );
         }
 
         pub fn eql(left: Self, right: Self) bool {
@@ -184,20 +182,20 @@ pub fn Vector4(comptime T: type) type {
         /// Construct a new vector from the min components between two vectors.
         pub fn min(left: Self, right: Self) Self {
             return Self.new(
-                math.min(left.x, right.x),
-                math.min(left.y, right.y),
-                math.min(left.z, right.z),
-                math.min(left.w, right.w),
+                @minimum(left.x, right.x),
+                @minimum(left.y, right.y),
+                @minimum(left.z, right.z),
+                @minimum(left.w, right.w),
             );
         }
 
         /// Construct a new vector from the max components between two vectors.
         pub fn max(left: Self, right: Self) Self {
             return Self.new(
-                math.max(left.x, right.x),
-                math.max(left.y, right.y),
-                math.max(left.z, right.z),
-                math.max(left.w, right.w),
+                @maximum(left.x, right.x),
+                @maximum(left.y, right.y),
+                @maximum(left.z, right.z),
+                @maximum(left.w, right.w),
             );
         }
     };
@@ -232,7 +230,7 @@ test "zalgebra.Vec4.negate" {
     try expectEqual(Vec4.eql(a.negate(), b), true);
 }
 
-test "zalgebra.Vec2.toArray" {
+test "zalgebra.Vec4.toArray" {
     const _vec_0 = Vec4.new(0, 1, 0, 1).toArray();
     const _vec_1 = [_]f32{ 0, 1, 0, 1 };
 
@@ -324,7 +322,7 @@ test "zalgebra.Vec4.max" {
     ), true);
 }
 
-test "zalgebra.Vec2.fromSlice" {
+test "zalgebra.Vec4.fromSlice" {
     const array = [4]f32{ 2, 4, 3, 6 };
     try expectEqual(Vec4.eql(
         Vec4.fromSlice(&array),
@@ -334,9 +332,9 @@ test "zalgebra.Vec2.fromSlice" {
 
 test "zalgebra.Vec4.cast" {
     const a = Vec4_i32.new(3, 6, 2, 0);
-    const b = Vector4(usize).new(3, 6, 2, 0);
+    const b = Vec4_usize.new(3, 6, 2, 0);
 
-    try expectEqual(Vector4(usize).eql(a.cast(usize), b), true);
+    try expectEqual(Vec4_usize.eql(a.cast(usize), b), true);
 
     const c = Vec4.new(3.5, 6.5, 2.0, 0);
     const d = Vec4_f64.new(3.5, 6.5, 2, 0.0);

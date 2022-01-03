@@ -7,6 +7,7 @@ const panic = std.debug.panic;
 pub const Vec2 = Vector2(f32);
 pub const Vec2_f64 = Vector2(f64);
 pub const Vec2_i32 = Vector2(i32);
+pub const Vec2_usize = Vector2(usize);
 
 /// A 2 dimensional vector.
 pub fn Vector2(comptime T: type) type {
@@ -30,14 +31,17 @@ pub fn Vector2(comptime T: type) type {
             return Self.new(val, val);
         }
 
+        /// Shorthand for writing vec2.new(0, 0).
         pub fn zero() Self {
-            return Self.new(0, 0);
+            return Self.set(0);
         }
 
+        /// Shorthand for writing vec2.new(1, 1).
         pub fn one() Self {
-            return Self.new(1, 1);
+            return Self.set(1);
         }
 
+        /// Shorthand for writing vec2.new(0, 1).
         pub fn up() Self {
             return Self.new(0, 1);
         }
@@ -101,20 +105,21 @@ pub fn Vector2(comptime T: type) type {
 
         /// Compute the length (magnitude) of given vector |a|.
         pub fn length(self: Self) T {
-            return math.sqrt((self.x * self.x) + (self.y * self.y));
+            return @sqrt(self.dot(self));
         }
 
         /// Compute the distance between two points.
         pub fn distance(a: Self, b: Self) T {
-            return math.sqrt(
-                math.pow(T, b.x - a.x, 2) + math.pow(T, b.y - a.y, 2),
-            );
+            return length(b.sub(a));
         }
 
         /// Construct new normalized vector from a given vector.
         pub fn norm(self: Self) Self {
             var l = length(self);
-            return Self.new(self.x / l, self.y / l);
+            return Self.new(
+                self.x / l,
+                self.y / l,
+            );
         }
 
         pub fn eql(left: Self, right: Self) bool {
@@ -123,17 +128,26 @@ pub fn Vector2(comptime T: type) type {
 
         /// Substraction between two given vector.
         pub fn sub(left: Self, right: Self) Self {
-            return Self.new(left.x - right.x, left.y - right.y);
+            return Self.new(
+                left.x - right.x,
+                left.y - right.y,
+            );
         }
 
         /// Addition betwen two given vector.
         pub fn add(left: Self, right: Self) Self {
-            return Self.new(left.x + right.x, left.y + right.y);
+            return Self.new(
+                left.x + right.x,
+                left.y + right.y,
+            );
         }
 
         /// Multiply each components by the given scalar.
         pub fn scale(v: Self, scalar: T) Self {
-            return Self.new(v.x * scalar, v.y * scalar);
+            return Self.new(
+                v.x * scalar,
+                v.y * scalar,
+            );
         }
 
         /// Return the dot product between two given vector.
@@ -151,16 +165,16 @@ pub fn Vector2(comptime T: type) type {
         /// Construct a new vector from the min components between two vectors.
         pub fn min(left: Self, right: Self) Self {
             return Self.new(
-                math.min(left.x, right.x),
-                math.min(left.y, right.y),
+                @minimum(left.x, right.x),
+                @minimum(left.y, right.y),
             );
         }
 
         /// Construct a new vector from the max components between two vectors.
         pub fn max(left: Self, right: Self) Self {
             return Self.new(
-                math.max(left.x, right.x),
-                math.max(left.y, right.y),
+                @maximum(left.x, right.x),
+                @maximum(left.y, right.y),
             );
         }
     };
@@ -284,7 +298,7 @@ test "zalgebra.Vec2.cast" {
     const a = Vec2_i32.new(3, 6);
     const b = Vector2(usize).new(3, 6);
 
-    try expectEqual(Vector2(usize).eql(a.cast(usize), b), true);
+    try expectEqual(Vec2_usize.eql(a.cast(usize), b), true);
 
     const c = Vec2.new(3.5, 6.5);
     const d = Vec2_f64.new(3.5, 6.5);
