@@ -1,6 +1,7 @@
 const std = @import("std");
 const root = @import("main.zig");
 const math = std.math;
+const meta = std.meta;
 const expectEqual = std.testing.expectEqual;
 const panic = std.debug.panic;
 
@@ -24,33 +25,47 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
     if (@typeInfo(T) != .Float and @typeInfo(T) != .Int) {
         @compileError("Vectors not implemented for " ++ @typeName(T));
     }
+
     if (dimensions < 2 or dimensions > 4) {
         @compileError("Dimensions must be 2, 3 or 4!");
     }
-    const Vector = std.meta.Vector(dimensions, T);
+
+    const Vector = meta.Vector(dimensions, T);
+
     return extern struct {
         const Self = @This();
-        usingnamespace if (dimensions == 3) extern struct {
-            pub usingnamespace Self;
-            /// Shorthand for (0, 0, -1).
-            pub fn back() Vector {
-                return [3]T{ 0, 0, -1 };
-            }
 
-            /// Shorthand for (0, 0, 1).
-            pub fn forward() Vector {
-                return [3]T{ 0, 0, 1 };
-            }
+        usingnamespace switch (dimensions) {
+            3 => extern struct {
+                pub usingnamespace Self;
 
-            /// Construct the cross product (as vector) from two vectors.
-            pub fn cross(lhs: Vector, rhs: Vector) Vector {
-                return [3]T{
-                    (lhs[1] * rhs[2]) - (lhs[2] * rhs[1]),
-                    (lhs[2] * rhs[0]) - (lhs[0] * rhs[2]),
-                    (lhs[0] * rhs[1]) - (lhs[1] * rhs[0]),
-                };
-            }
-        } else Self;
+                /// Shorthand for (0, 0, -1).
+                pub fn back() Vector {
+                    return [3]T{ 0, 0, -1 };
+                }
+
+                /// Shorthand for (0, 0, 1).
+                pub fn forward() Vector {
+                    return [3]T{ 0, 0, 1 };
+                }
+
+                /// Construct the cross product (as vector) from two vectors.
+                pub fn cross(lhs: Vector, rhs: Vector) Vector {
+                    return [3]T{
+                        (lhs[1] * rhs[2]) - (lhs[2] * rhs[1]),
+                        (lhs[2] * rhs[0]) - (lhs[0] * rhs[2]),
+                        (lhs[0] * rhs[1]) - (lhs[1] * rhs[0]),
+                    };
+                }
+            },
+            else => Self,
+        };
+
+        /// Construct new vector.
+        pub fn new(values: [dimensions]T) Vector {
+            return values;
+        }
+
         /// Set all components to the same given value.
         pub fn set(val: T) Vector {
             var result: [dimensions]T = undefined;
@@ -117,7 +132,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
         /// Cast a type to another type.
         /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
-        pub fn cast(self: Vector, dest: anytype) std.meta.Vector(dimensions, dest) {
+        pub fn cast(self: Vector, dest: anytype) meta.Vector(dimensions, dest) {
             const source_info = @typeInfo(T);
             const dest_info = @typeInfo(dest);
             var result: [dimensions]dest = undefined;
@@ -219,6 +234,23 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
     };
 }
 
+test "zalgebra.Vectors.add" {
+    // Vec2
+    const a = Vec2.new(.{ 1, 1 });
+    const b = Vec2.set(1);
+    try expectEqual(a + b, Vec2.set(2));
+
+    // Vec3
+    const c = Vec3.new(.{ 1, 1, 1 });
+    const d = Vec3.set(1);
+    try expectEqual(c + d, Vec3.set(2));
+
+    // Vec4
+    const e = Vec4.new(.{ 1, 1, 1, 1 });
+    const f = Vec4.set(1);
+    try expectEqual(e + f, Vec4.set(2));
+}
+
 test "zalgebra.Vectors.set" {
     // Vec2
     const a = [2]f32{ 2.5, 2.5 };
@@ -234,7 +266,6 @@ test "zalgebra.Vectors.set" {
     // Vec4
     const e = [4]f32{ 2.5, 2.5, 2.5, 2.5 };
     const f = Vec4.set(2.5);
-
     try expectEqual(Vec4.eql(e, f), true);
 }
 
@@ -292,6 +323,7 @@ test "zalgebra.Vectors.eql" {
     const a = [2]f32{ 1, 2 };
     const b = [2]f32{ 1, 2 };
     const c = [2]f32{ 1.5, 2 };
+
     try expectEqual(Vec2.eql(a, b), true);
     try expectEqual(Vec2.eql(a, c), false);
 
@@ -299,6 +331,7 @@ test "zalgebra.Vectors.eql" {
     const d = [3]f32{ 1, 2, 3 };
     const e = [3]f32{ 1, 2, 3 };
     const f = [3]f32{ 1.5, 2, 3 };
+
     try expectEqual(Vec3.eql(d, e), true);
     try expectEqual(Vec3.eql(d, f), false);
 
@@ -306,6 +339,7 @@ test "zalgebra.Vectors.eql" {
     const g = [4]f32{ 1, 2, 3, 4 };
     const h = [4]f32{ 1, 2, 3, 4 };
     const i = [4]f32{ 1.5, 2, 3, 4 };
+
     try expectEqual(Vec4.eql(g, h), true);
     try expectEqual(Vec4.eql(g, i), false);
 }
@@ -382,19 +416,16 @@ test "zalgebra.Vectors.dot" {
     // Vec2
     const a = [2]f32{ 1.5, 2.6 };
     const b = [2]f32{ 2.5, 3.45 };
-
     try expectEqual(Vec2.dot(a, b), 12.7200002);
 
     // Vec3
     const c = [3]f32{ 1.5, 2.6, 3.7 };
     const d = [3]f32{ 2.5, 3.45, 1.0 };
-
     try expectEqual(Vec3.dot(c, d), 16.42);
 
     // Vec4
     const e = [4]f32{ 1.5, 2.6, 3.7, 5 };
     const f = [4]f32{ 2.5, 3.45, 1.0, 1 };
-
     try expectEqual(Vec4.dot(e, f), 21.4200000);
 }
 
@@ -402,19 +433,16 @@ test "zalgebra.Vectors.lerp" {
     // Vec2
     const a = [2]f32{ -10.0, 0.0 };
     const b = Vec2.set(10.0);
-
     try expectEqual(Vec2.eql(Vec2.lerp(a, b, 0.5), [2]f32{ 0.0, 5.0 }), true);
 
     // Vec3
     const c = [3]f32{ -10.0, 0.0, -10.0 };
     const d = Vec3.set(10.0);
-
     try expectEqual(Vec3.eql(Vec3.lerp(c, d, 0.5), [3]f32{ 0.0, 5.0, 0.0 }), true);
 
     // Vec4
     const e = [4]f32{ -10.0, 0.0, -10.0, -10.0 };
     const f = Vec4.set(10.0);
-
     try expectEqual(Vec4.eql(Vec4.lerp(e, f, 0.5), [4]f32{ 0.0, 5.0, 0.0, 0.0 }), true);
 }
 
@@ -422,19 +450,16 @@ test "zalgebra.Vectors.min" {
     // Vec2
     const a = [2]f32{ 10.0, -2.0 };
     const b = [2]f32{ -10.0, 5.0 };
-
     try expectEqual(Vec2.eql(Vec2.min(a, b), [2]f32{ -10.0, -2.0 }), true);
 
     // Vec3
     const c = [3]f32{ 10.0, -2.0, 0.0 };
     const d = [3]f32{ -10.0, 5.0, 0.0 };
-
     try expectEqual(Vec3.eql(Vec3.min(c, d), [3]f32{ -10.0, -2.0, 0.0 }), true);
 
     // Vec4
     const e = [4]f32{ 10.0, -2.0, 0.0, 1.0 };
     const f = [4]f32{ -10.0, 5.0, 0.0, 1.01 };
-
     try expectEqual(Vec4.eql(Vec4.min(e, f), [4]f32{ -10.0, -2.0, 0.0, 1.0 }), true);
 }
 
@@ -442,19 +467,16 @@ test "zalgebra.Vectors.max" {
     // Vec2
     const a = [2]f32{ 10.0, -2.0 };
     const b = [2]f32{ -10.0, 5.0 };
-
     try expectEqual(Vec2.eql(Vec2.max(a, b), [2]f32{ 10.0, 5.0 }), true);
 
     // Vec3
     const c = [3]f32{ 10.0, -2.0, 0.0 };
     const d = [3]f32{ -10.0, 5.0, 0.0 };
-
     try expectEqual(Vec3.eql(Vec3.max(c, d), [3]f32{ 10.0, 5.0, 0.0 }), true);
 
     // Vec4
     const e = [4]f32{ 10.0, -2.0, 0.0, 1.0 };
     const f = [4]f32{ -10.0, 5.0, 0.0, 1.01 };
-
     try expectEqual(Vec4.eql(Vec4.max(e, f), [4]f32{ 10.0, 5.0, 0.0, 1.01 }), true);
 }
 
@@ -476,64 +498,52 @@ test "zalgebra.Vectors.cast" {
     // Vec2
     const a = [2]i32{ 3, 6 };
     const b = [2]usize{ 3, 6 };
-
     try expectEqual(Vec2_usize.eql(Vec2_i32.cast(a, usize), b), true);
 
     const c = [2]f32{ 3.5, 6.5 };
     const d = [2]f64{ 3.5, 6.5 };
-
     try expectEqual(Vec2_f64.eql(Vec2.cast(c, f64), d), true);
 
     const e = [2]i32{ 3, 6 };
     const f = [2]f32{ 3.0, 6.0 };
-
     try expectEqual(Vec2.eql(Vec2_i32.cast(e, f32), f), true);
 
     const g = [2]f32{ 3.0, 6.0 };
     const h = [2]i32{ 3, 6 };
-
     try expectEqual(Vec2_i32.eql(Vec2.cast(g, i32), h), true);
 
     // Vec3
     const i = [3]i32{ 3, 6, 2 };
     const j = [3]usize{ 3, 6, 2 };
-
     try expectEqual(Vec3_usize.eql(Vec3_i32.cast(i, usize), j), true);
 
     const k = [3]f32{ 3.5, 6.5, 2.0 };
     const l = [3]f64{ 3.5, 6.5, 2.0 };
-
     try expectEqual(Vec3_f64.eql(Vec3.cast(k, f64), l), true);
 
     const m = [3]i32{ 3, 6, 2 };
     const n = [3]f32{ 3.0, 6.0, 2.0 };
-
     try expectEqual(Vec3.eql(Vec3_i32.cast(m, f32), n), true);
 
     const o = [3]f32{ 3.0, 6.0, 2.0 };
     const p = [3]i32{ 3, 6, 2 };
-
     try expectEqual(Vec3_i32.eql(Vec3.cast(o, i32), p), true);
 
     // Vec4
     const q = [4]i32{ 3, 6, 2, 0 };
     const r = [4]usize{ 3, 6, 2, 0 };
-
     try expectEqual(Vec4_usize.eql(Vec4_i32.cast(q, usize), r), true);
 
     const s = [4]f32{ 3.5, 6.5, 2.0, 0 };
     const t = [4]f64{ 3.5, 6.5, 2, 0.0 };
-
     try expectEqual(Vec4_f64.eql(Vec4.cast(s, f64), t), true);
 
     const u = [4]i32{ 3, 6, 2, 0 };
     const v = [4]f32{ 3.0, 6.0, 2.0, 0.0 };
-
     try expectEqual(Vec4.eql(Vec4_i32.cast(u, f32), v), true);
 
     const w = [4]f32{ 3.0, 6.0, 2.0, 0.0 };
     const x = [4]i32{ 3, 6, 2, 0 };
-
     try expectEqual(Vec4_i32.eql(Vec4.cast(w, i32), x), true);
 }
 

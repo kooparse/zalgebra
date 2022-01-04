@@ -1,5 +1,6 @@
 const std = @import("std");
 const math = std.math;
+const meta = std.meta;
 const mem = std.mem;
 const expectEqual = std.testing.expectEqual;
 const print = std.debug.print;
@@ -24,8 +25,10 @@ pub fn Mat4x4(comptime T: type) type {
     if (@typeInfo(T) != .Float) {
         @compileError("Mat4x4 not implemented for " ++ @typeName(T));
     }
-    const Vector3 = std.meta.Vector(3, T);
-    const Vector4 = std.meta.Vector(4, T);
+
+    const Vector3 = meta.Vector(3, T);
+    const Vector4 = meta.Vector(4, T);
+
     return extern struct {
         data: [4][4]T = mem.zeroes([4][4]T),
 
@@ -409,7 +412,7 @@ pub fn Mat4x4(comptime T: type) type {
 
             const r = switch (@TypeOf(rotation)) {
                 Quaternion(T) => Quaternion(T).toMat4(rotation),
-                std.meta.Vector(3, T) => Self.fromEulerAngle(rotation),
+                meta.Vector(3, T) => Self.fromEulerAngle(rotation),
                 [3]T => Self.fromEulerAngle(rotation),
                 else => @compileError("Recompose not implemented for " ++ @typeName(@TypeOf(rotation))),
             };

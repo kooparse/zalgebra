@@ -54,6 +54,7 @@ lookAt | LookAt function for `f32` 4x4 mat4
 
 Methods | Description
 ------------ | -------------
+new | Construct vector with given values
 set | Set all components to the same given value
 negate | Scale all components by -1
 cast | Cast a type to another type

@@ -1,5 +1,6 @@
 const std = @import("std");
 const root = @import("main.zig");
+const meta = std.meta;
 const generic_vector = @import("generic_vector.zig");
 const mat4 = @import("mat4.zig");
 const math = std.math;
@@ -21,7 +22,9 @@ pub fn Quaternion(comptime T: type) type {
     if (@typeInfo(T) != .Float) {
         @compileError("Quaternion not implemented for " ++ @typeName(T));
     }
-    const Vector3 = std.meta.Vector(3, T);
+
+    const Vector3 = meta.Vector(3, T);
+
     return extern struct {
         w: T,
         x: T,
