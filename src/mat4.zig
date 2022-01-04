@@ -1,15 +1,14 @@
 const std = @import("std");
-const root = @import("main.zig");
-const vec4 = @import("vec4.zig");
-const vec3 = @import("vec3.zig");
-const quat = @import("quaternion.zig");
 const math = std.math;
 const mem = std.mem;
 const expectEqual = std.testing.expectEqual;
 const print = std.debug.print;
-const Vec3 = vec3.Vec3;
-const Vector3 = vec3.Vector3;
-const Vector4 = vec4.Vector4;
+const root = @import("main.zig");
+const generic_vector = @import("generic_vector.zig");
+const quat = @import("quaternion.zig");
+
+const Vec3 = generic_vector.Vec3;
+const GenericVector = generic_vector.GenericVector;
 const Quaternion = quat.Quaternion;
 const Quat = quat.Quat;
 
@@ -25,12 +24,14 @@ pub fn Mat4x4(comptime T: type) type {
     if (@typeInfo(T) != .Float) {
         @compileError("Mat4x4 not implemented for " ++ @typeName(T));
     }
-
+    const Vector3 = std.meta.Vector(3, T);
+    const Vector4 = std.meta.Vector(4, T);
     return extern struct {
         data: [4][4]T = mem.zeroes([4][4]T),
 
         const Self = @This();
 
+        /// Shorthand for identity matrix.
         pub fn identity() Self {
             return .{
                 .data = .{
@@ -96,6 +97,7 @@ pub fn Mat4x4(comptime T: type) type {
             return @ptrCast(*const T, &mat.data);
         }
 
+        /// Return true if two matrices are equals.
         pub fn eql(left: Self, right: Self) bool {
             var col: usize = 0;
 
@@ -111,99 +113,100 @@ pub fn Mat4x4(comptime T: type) type {
             return true;
         }
 
-        pub fn multByVec4(mat: Self, v: Vector4(T)) Vector4(T) {
-            var result: Vector4(T) = undefined;
+        pub fn multByVec4(mat: Self, v: Vector4) Vector4 {
+            const x = (mat.data[0][0] * v[0]) + (mat.data[1][0] * v[1]) + (mat.data[2][0] * v[2]) + (mat.data[3][0] * v[3]);
+            const y = (mat.data[0][1] * v[0]) + (mat.data[1][1] * v[1]) + (mat.data[2][1] * v[2]) + (mat.data[3][1] * v[3]);
+            const z = (mat.data[0][2] * v[0]) + (mat.data[1][2] * v[1]) + (mat.data[2][2] * v[2]) + (mat.data[3][2] * v[3]);
+            const w = (mat.data[0][3] * v[0]) + (mat.data[1][3] * v[1]) + (mat.data[2][3] * v[2]) + (mat.data[3][3] * v[3]);
 
-            result.x = (mat.data[0][0] * v.x) + (mat.data[1][0] * v.y) + (mat.data[2][0] * v.z) + (mat.data[3][0] * v.w);
-            result.y = (mat.data[0][1] * v.x) + (mat.data[1][1] * v.y) + (mat.data[2][1] * v.z) + (mat.data[3][1] * v.w);
-            result.z = (mat.data[0][2] * v.x) + (mat.data[1][2] * v.y) + (mat.data[2][2] * v.z) + (mat.data[3][2] * v.w);
-            result.w = (mat.data[0][3] * v.x) + (mat.data[1][3] * v.y) + (mat.data[2][3] * v.z) + (mat.data[3][3] * v.w);
-
-            return result;
+            return [4]T{ x, y, z, w };
         }
 
         /// Construct 4x4 translation matrix by multiplying identity matrix and
         /// given translation vector.
-        pub fn fromTranslate(axis: Vector3(T)) Self {
+        pub fn fromTranslate(axis: Vector3) Self {
             var mat = Self.identity();
-
-            mat.data[3][0] = axis.x;
-            mat.data[3][1] = axis.y;
-            mat.data[3][2] = axis.z;
+            mat.data[3][0] = axis[0];
+            mat.data[3][1] = axis[1];
+            mat.data[3][2] = axis[2];
 
             return mat;
         }
 
         /// Make a translation between the given matrix and the given axis.
-        pub fn translate(mat: Self, axis: Vector3(T)) Self {
+        pub fn translate(mat: Self, axis: Vector3) Self {
             const trans_mat = Self.fromTranslate(axis);
             return Self.mult(trans_mat, mat);
         }
 
         /// Get translation Vec3 from current matrix.
-        pub fn extractTranslation(self: Self) Vector3(T) {
-            return Vector3(T).new(self.data[3][0], self.data[3][1], self.data[3][2]);
+        pub fn extractTranslation(self: Self) Vector3 {
+            return [3]T{ self.data[3][0], self.data[3][1], self.data[3][2] };
         }
 
         /// Construct a 4x4 matrix from given axis and angle (in degrees).
-        pub fn fromRotation(angle_in_degrees: T, axis: Vector3(T)) Self {
+        pub fn fromRotation(angle_in_degrees: T, axis: Vector3) Self {
             var mat = Self.identity();
 
-            const norm_axis = axis.norm();
+            const norm_axis = GenericVector(3, T).norm(axis);
 
             const sin_theta = @sin(root.toRadians(angle_in_degrees));
             const cos_theta = @cos(root.toRadians(angle_in_degrees));
             const cos_value = 1.0 - cos_theta;
 
-            mat.data[0][0] = (norm_axis.x * norm_axis.x * cos_value) + cos_theta;
-            mat.data[0][1] = (norm_axis.x * norm_axis.y * cos_value) + (norm_axis.z * sin_theta);
-            mat.data[0][2] = (norm_axis.x * norm_axis.z * cos_value) - (norm_axis.y * sin_theta);
+            const x = norm_axis[0];
+            const y = norm_axis[1];
+            const z = norm_axis[2];
 
-            mat.data[1][0] = (norm_axis.y * norm_axis.x * cos_value) - (norm_axis.z * sin_theta);
-            mat.data[1][1] = (norm_axis.y * norm_axis.y * cos_value) + cos_theta;
-            mat.data[1][2] = (norm_axis.y * norm_axis.z * cos_value) + (norm_axis.x * sin_theta);
+            mat.data[0][0] = (x * x * cos_value) + cos_theta;
+            mat.data[0][1] = (x * y * cos_value) + (z * sin_theta);
+            mat.data[0][2] = (x * z * cos_value) - (y * sin_theta);
 
-            mat.data[2][0] = (norm_axis.z * norm_axis.x * cos_value) + (norm_axis.y * sin_theta);
-            mat.data[2][1] = (norm_axis.z * norm_axis.y * cos_value) - (norm_axis.x * sin_theta);
-            mat.data[2][2] = (norm_axis.z * norm_axis.z * cos_value) + cos_theta;
+            mat.data[1][0] = (y * x * cos_value) - (z * sin_theta);
+            mat.data[1][1] = (y * y * cos_value) + cos_theta;
+            mat.data[1][2] = (y * z * cos_value) + (x * sin_theta);
+
+            mat.data[2][0] = (z * x * cos_value) + (y * sin_theta);
+            mat.data[2][1] = (z * y * cos_value) - (x * sin_theta);
+            mat.data[2][2] = (z * z * cos_value) + cos_theta;
 
             return mat;
         }
 
-        pub fn rotate(mat: Self, angle_in_degrees: T, axis: Vector3(T)) Self {
+        pub fn rotate(mat: Self, angle_in_degrees: T, axis: Vector3) Self {
             const rotation_mat = Self.fromRotation(angle_in_degrees, axis);
             return Self.mult(mat, rotation_mat);
         }
 
         /// Construct a rotation matrix from euler angles (X * Y * Z).
         /// Order matters because matrix multiplication are NOT commutative.
-        pub fn fromEulerAngle(euler_angle: Vector3(T)) Self {
-            const x = Self.fromRotation(euler_angle.x, Vec3.right());
-            const y = Self.fromRotation(euler_angle.y, Vec3.up());
-            const z = Self.fromRotation(euler_angle.z, Vec3.forward());
+        pub fn fromEulerAngle(euler_angle: Vector3) Self {
+            const x = Self.fromRotation(euler_angle[0], GenericVector(3, T).right());
+            const y = Self.fromRotation(euler_angle[1], GenericVector(3, T).up());
+            const z = Self.fromRotation(euler_angle[2], GenericVector(3, T).forward());
 
             return z.mult(y.mult(x));
         }
 
         /// Ortho normalize given matrix.
         pub fn orthoNormalize(mat: Self) Self {
-            const column_1 = Vec3.new(mat.data[0][0], mat.data[0][1], mat.data[0][2]).norm();
-            const column_2 = Vec3.new(mat.data[1][0], mat.data[1][1], mat.data[1][2]).norm();
-            const column_3 = Vec3.new(mat.data[2][0], mat.data[2][1], mat.data[2][2]).norm();
+            const column_1 = GenericVector(3, T).norm([3]T{ mat.data[0][0], mat.data[0][1], mat.data[0][2] });
+            const column_2 = GenericVector(3, T).norm([3]T{ mat.data[1][0], mat.data[1][1], mat.data[1][2] });
+            const column_3 = GenericVector(3, T).norm([3]T{ mat.data[2][0], mat.data[2][1], mat.data[2][2] });
 
             var result = mat;
 
-            result.data[0][0] = column_1.x;
-            result.data[0][1] = column_1.y;
-            result.data[0][2] = column_1.z;
+            result.data[0][0] = column_1[0];
+            result.data[0][1] = column_1[1];
+            result.data[0][2] = column_1[2];
 
-            result.data[1][0] = column_2.x;
-            result.data[1][1] = column_2.y;
-            result.data[1][2] = column_2.z;
+            result.data[1][0] = column_2[0];
+            result.data[1][1] = column_2[1];
+            result.data[1][2] = column_2[2];
 
-            result.data[2][0] = column_3.x;
-            result.data[2][1] = column_3.y;
-            result.data[2][2] = column_3.z;
+            result.data[2][0] = column_3[0];
+            result.data[2][1] = column_3[1];
+            result.data[2][2] = column_3[2];
 
             return result;
         }
@@ -211,7 +214,7 @@ pub fn Mat4x4(comptime T: type) type {
         /// Return the rotation as Euler angles in degrees.
         /// Taken from Mike Day at Insomniac Games (and `glm` as the same function).
         /// For more details: https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf
-        pub fn extractRotation(self: Self) Vector3(T) {
+        pub fn extractRotation(self: Self) Vector3 {
             const m = self.orthoNormalize();
 
             const theta_x = math.atan2(T, m.data[1][2], m.data[2][2]);
@@ -221,30 +224,30 @@ pub fn Mat4x4(comptime T: type) type {
             const c1 = @cos(theta_x);
             const theta_z = math.atan2(T, s1 * m.data[2][0] - c1 * m.data[1][0], c1 * m.data[1][1] - s1 * m.data[2][1]);
 
-            return Vec3.new(root.toDegrees(theta_x), root.toDegrees(theta_y), root.toDegrees(theta_z));
+            return [3]T{ root.toDegrees(theta_x), root.toDegrees(theta_y), root.toDegrees(theta_z) };
         }
 
-        pub fn fromScale(axis: Vector3(T)) Self {
+        pub fn fromScale(axis: Vector3) Self {
             var mat = Self.identity();
 
-            mat.data[0][0] = axis.x;
-            mat.data[1][1] = axis.y;
-            mat.data[2][2] = axis.z;
+            mat.data[0][0] = axis[0];
+            mat.data[1][1] = axis[1];
+            mat.data[2][2] = axis[2];
 
             return mat;
         }
 
-        pub fn scale(mat: Self, axis: Vector3(T)) Self {
+        pub fn scale(mat: Self, axis: Vector3) Self {
             const scale_mat = Self.fromScale(axis);
             return Self.mult(scale_mat, mat);
         }
 
-        pub fn extractScale(mat: Self) Vector3(T) {
-            const scale_x = Vec3.new(mat.data[0][0], mat.data[0][1], mat.data[0][2]).length();
-            const scale_y = Vec3.new(mat.data[1][0], mat.data[1][1], mat.data[1][2]).length();
-            const scale_z = Vec3.new(mat.data[2][0], mat.data[2][1], mat.data[2][2]).length();
+        pub fn extractScale(mat: Self) Vector3 {
+            const scale_x = [3]T{ mat.data[0][0], mat.data[0][1], mat.data[0][2] };
+            const scale_y = [3]T{ mat.data[1][0], mat.data[1][1], mat.data[1][2] };
+            const scale_z = [3]T{ mat.data[2][0], mat.data[2][1], mat.data[2][2] };
 
-            return Vector3(T).new(scale_x, scale_y, scale_z);
+            return [3]T{ GenericVector(3, T).length(scale_x), GenericVector(3, T).length(scale_y), GenericVector(3, T).length(scale_z) };
         }
 
         /// Construct a perspective 4x4 matrix.
@@ -282,36 +285,36 @@ pub fn Mat4x4(comptime T: type) type {
         }
 
         /// Right-handed lookAt function.
-        pub fn lookAt(eye: Vector3(T), target: Vector3(T), up: Vector3(T)) Self {
-            const f = Vector3(T).norm(Vector3(T).sub(target, eye));
-            const s = Vector3(T).norm(Vector3(T).cross(f, up));
-            const u = Vector3(T).cross(s, f);
+        pub fn lookAt(eye: Vector3, target: Vector3, up: Vector3) Self {
+            const f = GenericVector(3, T).norm(target - eye);
+            const s = GenericVector(3, T).norm(GenericVector(3, T).cross(f, up));
+            const u = GenericVector(3, T).cross(s, f);
 
             var mat: Self = undefined;
-            mat.data[0][0] = s.x;
-            mat.data[0][1] = u.x;
-            mat.data[0][2] = -f.x;
+            mat.data[0][0] = s[0];
+            mat.data[0][1] = u[0];
+            mat.data[0][2] = -f[0];
             mat.data[0][3] = 0.0;
 
-            mat.data[1][0] = s.y;
-            mat.data[1][1] = u.y;
-            mat.data[1][2] = -f.y;
+            mat.data[1][0] = s[1];
+            mat.data[1][1] = u[1];
+            mat.data[1][2] = -f[1];
             mat.data[1][3] = 0.0;
 
-            mat.data[2][0] = s.z;
-            mat.data[2][1] = u.z;
-            mat.data[2][2] = -f.z;
+            mat.data[2][0] = s[2];
+            mat.data[2][1] = u[2];
+            mat.data[2][2] = -f[2];
             mat.data[2][3] = 0.0;
 
-            mat.data[3][0] = -Vector3(T).dot(s, eye);
-            mat.data[3][1] = -Vector3(T).dot(u, eye);
-            mat.data[3][2] = Vector3(T).dot(f, eye);
+            mat.data[3][0] = -GenericVector(3, T).dot(s, eye);
+            mat.data[3][1] = -GenericVector(3, T).dot(u, eye);
+            mat.data[3][2] = GenericVector(3, T).dot(f, eye);
             mat.data[3][3] = 1.0;
 
             return mat;
         }
 
-        /// Matrices multiplication.
+        /// Matrices' multiplication.
         /// Produce a new matrix from given two matrices.
         pub fn mult(left: Self, right: Self) Self {
             var mat = Self.identity();
@@ -330,7 +333,6 @@ pub fn Mat4x4(comptime T: type) type {
                     mat.data[columns][rows] = sum;
                 }
             }
-
             return mat;
         }
 
@@ -398,16 +400,17 @@ pub fn Mat4x4(comptime T: type) type {
             return inv_mat;
         }
 
-        /// Return 4x4 matrix from given all transform components; `translation`, `rotation` and `sclale`.
+        /// Return 4x4 matrix from given all transform components; `translation`, `rotation` and `scale`.
         /// The final order is T * R * S.
         /// Note: `rotation` could be `Vec3` (Euler angles) or a `quat`.
-        pub fn recompose(translation: Vector3(T), rotation: anytype, scaler: Vector3(T)) Self {
+        pub fn recompose(translation: Vector3, rotation: anytype, scalar: Vector3) Self {
             const t = Self.fromTranslate(translation);
-            const s = Self.fromScale(scaler);
+            const s = Self.fromScale(scalar);
 
             const r = switch (@TypeOf(rotation)) {
                 Quaternion(T) => Quaternion(T).toMat4(rotation),
-                Vector3(T) => Self.fromEulerAngle(rotation),
+                std.meta.Vector(3, T) => Self.fromEulerAngle(rotation),
+                [3]T => Self.fromEulerAngle(rotation),
                 else => @compileError("Recompose not implemented for " ++ @typeName(@TypeOf(rotation))),
             };
 
@@ -418,7 +421,7 @@ pub fn Mat4x4(comptime T: type) type {
         /// For now, the rotation returned is a quaternion. If you want to get Euler angles
         /// from it, just do: `returned_quat.extractRotation()`.
         /// Note: We ortho nornalize the given matrix before extracting the rotation.
-        pub fn decompose(mat: Self) struct { t: Vector3(T), r: Quaternion(T), s: Vector3(T) } {
+        pub fn decompose(mat: Self) struct { t: Vector3, r: Quaternion(T), s: Vector3 } {
             const t = mat.extractTranslation();
             const s = mat.extractScale();
             const r = Quat.fromMat4(mat.orthoNormalize());
@@ -543,7 +546,7 @@ test "zalgebra.Mat4.fromSlice" {
 }
 
 test "zalgebra.Mat4.fromTranslate" {
-    const a = Mat4.fromTranslate(Vec3.new(2, 3, 4));
+    const a = Mat4.fromTranslate([3]f32{ 2, 3, 4 });
 
     try expectEqual(Mat4.eql(a, Mat4{
         .data = .{
@@ -556,8 +559,8 @@ test "zalgebra.Mat4.fromTranslate" {
 }
 
 test "zalgebra.Mat4.translate" {
-    const a = Mat4.fromTranslate(Vec3.new(2, 3, 2));
-    const result = Mat4.translate(a, Vec3.new(2, 3, 4));
+    const a = Mat4.fromTranslate([3]f32{ 2, 3, 2 });
+    const result = Mat4.translate(a, [3]f32{ 2, 3, 4 });
 
     try expectEqual(Mat4.eql(result, Mat4{
         .data = .{
@@ -570,7 +573,7 @@ test "zalgebra.Mat4.translate" {
 }
 
 test "zalgebra.Mat4.fromScale" {
-    const a = Mat4.fromScale(Vec3.new(2, 3, 4));
+    const a = Mat4.fromScale([3]f32{ 2, 3, 4 });
 
     try expectEqual(Mat4.eql(a, Mat4{
         .data = .{
@@ -583,8 +586,8 @@ test "zalgebra.Mat4.fromScale" {
 }
 
 test "zalgebra.Mat4.scale" {
-    const a = Mat4.fromScale(Vec3.new(2, 3, 4));
-    const result = Mat4.scale(a, Vec3.new(2, 2, 2));
+    const a = Mat4.fromScale([3]f32{ 2, 3, 4 });
+    const result = Mat4.scale(a, [3]f32{ 2, 2, 2 });
 
     try expectEqual(Mat4.eql(result, Mat4{
         .data = .{
@@ -617,32 +620,32 @@ test "zalgebra.Mat4.inv" {
 }
 
 test "zalgebra.Mat4.extractTranslation" {
-    var a = Mat4.fromTranslate(Vec3.new(2, 3, 2));
-    a = a.translate(Vec3.new(2, 3, 2));
+    var a = Mat4.fromTranslate([3]f32{ 2, 3, 2 });
+    a = a.translate([3]f32{ 2, 3, 2 });
 
-    try expectEqual(Vec3.eql(a.extractTranslation(), Vec3.new(4, 6, 4)), true);
+    try expectEqual(Vec3.eql(a.extractTranslation(), [3]f32{ 4, 6, 4 }), true);
 }
 
 test "zalgebra.Mat4.extractRotation" {
-    const a = Mat4.fromEulerAngle(Vec3.new(45, -5, 20));
+    const a = Mat4.fromEulerAngle([3]f32{ 45, -5, 20 });
     try expectEqual(Vec3.eql(
         a.extractRotation(),
-        Vec3.new(45.000003814697266, -4.99052524, 19.999998092651367),
+        [3]f32{ 45.000003814697266, -4.99052524, 19.999998092651367 },
     ), true);
 }
 
 test "zalgebra.Mat4.extractScale" {
-    var a = Mat4.fromScale(Vec3.new(2, 4, 8));
-    a = a.scale(Vec3.new(2, 4, 8));
+    var a = Mat4.fromScale([3]f32{ 2, 4, 8 });
+    a = a.scale([3]f32{ 2, 4, 8 });
 
-    try expectEqual(Vec3.eql(a.extractScale(), Vec3.new(4, 16, 64)), true);
+    try expectEqual(Vec3.eql(a.extractScale(), [3]f32{ 4, 16, 64 }), true);
 }
 
 test "zalgebra.Mat4.recompose" {
     const result = Mat4.recompose(
-        Vec3.new(2, 2, 2),
-        Vec3.new(45, 5, 0),
-        Vec3.new(1, 1, 1),
+        Vec3.set(2),
+        [3]f32{ 45, 5, 0 },
+        Vec3.one(),
     );
 
     try expectEqual(Mat4.eql(result, Mat4{ .data = .{
@@ -655,14 +658,14 @@ test "zalgebra.Mat4.recompose" {
 
 test "zalgebra.Mat4.decompose" {
     const a = Mat4.recompose(
-        Vec3.new(10, 5, 5),
-        Vec3.new(45, 5, 0),
-        Vec3.new(1, 1, 1),
+        [3]f32{ 10, 5, 5 },
+        [3]f32{ 45, 5, 0 },
+        Vec3.set(1),
     );
 
     const result = a.decompose();
 
-    try expectEqual(result.t.eql(Vec3.new(10, 5, 5)), true);
-    try expectEqual(result.s.eql(Vec3.new(1, 1, 1)), true);
-    try expectEqual(result.r.extractRotation().eql(Vec3.new(45, 5, 0.00000010712935250012379)), true);
+    try expectEqual(Vec3.eql(result.t, [3]f32{ 10, 5, 5 }), true);
+    try expectEqual(Vec3.eql(result.s, Vec3.set(1)), true);
+    try expectEqual(Vec3.eql(result.r.extractRotation(), [3]f32{ 45, 5, 0.00000010712935250012379 }), true);
 }
