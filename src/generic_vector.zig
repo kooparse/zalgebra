@@ -36,8 +36,17 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         const Self = @This();
 
         usingnamespace switch (dimensions) {
+            2 => extern struct {
+                /// Construct new vector.
+                pub fn new(x: T, y: T) Vector {
+                    return [2]T{x, y};
+                }
+            },
             3 => extern struct {
-                pub usingnamespace Self;
+                /// Construct new vector.
+                pub fn new(x: T, y: T, z: T) Vector {
+                    return [3]T{x, y, z};
+                }
 
                 /// Shorthand for (0, 0, -1).
                 pub fn back() Vector {
@@ -58,13 +67,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     };
                 }
             },
-            else => Self,
+            4 => extern struct {
+                /// Construct new vector.
+                pub fn new(x: T, y: T, z: T, w: T) Vector {
+                    return [4]T{x, y, z, w};
+                }
+            },
+            else => {},
         };
-
-        /// Construct new vector.
-        pub fn new(values: [dimensions]T) Vector {
-            return values;
-        }
 
         /// Set all components to the same given value.
         pub fn set(val: T) Vector {
@@ -236,17 +246,17 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
 test "zalgebra.Vectors.add" {
     // Vec2
-    const a = Vec2.new(.{ 1, 1 });
+    const a = Vec2.new(1, 1);
     const b = Vec2.set(1);
     try expectEqual(a + b, Vec2.set(2));
 
     // Vec3
-    const c = Vec3.new(.{ 1, 1, 1 });
+    const c = Vec3.new(1, 1, 1);
     const d = Vec3.set(1);
     try expectEqual(c + d, Vec3.set(2));
 
     // Vec4
-    const e = Vec4.new(.{ 1, 1, 1, 1 });
+    const e = Vec4.new(1, 1, 1, 1);
     const f = Vec4.set(1);
     try expectEqual(e + f, Vec4.set(2));
 }
