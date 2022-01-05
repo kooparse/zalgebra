@@ -265,7 +265,6 @@ test "zalgebra.Vectors.set" {
     // Vec2
     const a = [2]f32{ 2.5, 2.5 };
     const b = Vec2.set(2.5);
-
     try expectEqual(Vec2.eql(a, b), true);
 
     // Vec3
