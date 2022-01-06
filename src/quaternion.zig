@@ -270,6 +270,32 @@ pub fn Quaternion(comptime T: type) type {
             return [3]T{ root.toDegrees(yaw), root.toDegrees(pitch), root.toDegrees(roll) };
         }
 
+        /// Get the rotation angle (degrees) and axis for a given quaternion.
+        // Taken from https://github.com/raysan5/raylib/blob/master/src/raymath.h#L1755
+        pub fn extractAxisAngle(self: Self) struct { axis: Vec3, angle: f32 } {
+            var copy = self;
+            if (math.fabs(self.w) > 1.0) copy = copy.norm();
+
+            var res_axis = Vec3.set(0.0);
+            var res_angle: f32 = 2.0 * math.acos(copy.w);
+            var den: f32 = math.sqrt(1.0 - copy.w * copy.w);
+
+            if (den > 0.0001) {
+                res_axis.x = copy.x / den;
+                res_axis.y = copy.y / den;
+                res_axis.z = copy.z / den;
+            } else {
+                // This occurs when the angle is zero.
+                // Not a problem: just set an arbitrary normalized axis.
+                res_axis.x = 1.0;
+            }
+
+            return .{
+                .axis = res_axis,
+                .angle = root.toDegrees(res_angle),
+            };
+        }
+
         /// Linear interpolation between two quaternions.
         pub fn lerp(left: Self, right: Self, t: f32) Self {
             const w = root.lerp(T, left.w, right.w, t);
@@ -377,13 +403,13 @@ test "zalgebra.Quaternion.extractAxisAngle" {
     const axis = Vec3.new(44, 120, 8).norm();
     const q1 = Quat.fromAxis(45, axis);
     const res = q1.extractAxisAngle();
-    const eps_value = comptime std.math.epsilon(f32);
+    const eps_value = comptime math.epsilon(f32);
 
     try expect(math.approxEqRel(f32, axis.x, res.axis.x, eps_value) and
         math.approxEqRel(f32, axis.y, res.axis.y, eps_value) and
         math.approxEqRel(f32, axis.z, res.axis.z, eps_value));
 
-    try expectApproxEqRel(@as(f32, 45.0000076), root.toDegrees(res.angle), eps_value);
+    try expectApproxEqRel(@as(f32, 45.0000076), res.angle, eps_value);
 }
 
 test "zalgebra.Quaternion.extractRotation" {

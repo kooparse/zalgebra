@@ -137,6 +137,7 @@ dot | Return the dot product between two quaternions
 toMat4 | Convert given quat to rotation 4x4 matrix
 fromEulerAngle | Construct quaternion from Euler angle
 fromAxis | Construct quat from angle around specified axis
+extractAxisAngle | Get the rotation angle and axis for a given quaternion
 extractRotation | Get euler angles from given quaternion
 rotateVec | Rotate given vector
 
