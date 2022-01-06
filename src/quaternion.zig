@@ -254,7 +254,7 @@ pub fn Quaternion(comptime T: type) type {
             return Vector3(T).new(root.toDegrees(yaw), root.toDegrees(pitch), root.toDegrees(roll));
         }
 
-        /// Get the rotation angle (radians) and axis for a given quaternion.
+        /// Get the rotation angle (degrees) and axis for a given quaternion.
         // Taken from https://github.com/raysan5/raylib/blob/master/src/raymath.h#L1755
         pub fn extractAxisAngle(self: Self) struct { axis: Vec3, angle: f32 } {
             var copy = self;
@@ -276,7 +276,7 @@ pub fn Quaternion(comptime T: type) type {
 
             return .{
                 .axis = res_axis,
-                .angle = res_angle,
+                .angle = root.toDegrees(res_angle),
             };
         }
 
@@ -387,13 +387,13 @@ test "zalgebra.Quaternion.extractAxisAngle" {
     const axis = Vec3.new(44, 120, 8).norm();
     const q1 = Quat.fromAxis(45, axis);
     const res = q1.extractAxisAngle();
-    const eps_value = comptime std.math.epsilon(f32);
+    const eps_value = comptime math.epsilon(f32);
 
     try expect(math.approxEqRel(f32, axis.x, res.axis.x, eps_value) and
         math.approxEqRel(f32, axis.y, res.axis.y, eps_value) and
         math.approxEqRel(f32, axis.z, res.axis.z, eps_value));
 
-    try expectApproxEqRel(@as(f32, 45.0000076), root.toDegrees(res.angle), eps_value);
+    try expectApproxEqRel(@as(f32, 45.0000076), res.angle, eps_value);
 }
 
 test "zalgebra.Quaternion.extractRotation" {
