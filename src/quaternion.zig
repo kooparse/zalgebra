@@ -215,11 +215,11 @@ pub fn Quaternion(comptime T: type) type {
             return Self.scale(result, 0.5 / math.sqrt(t));
         }
 
-        /// Convert all Euler angles to quaternion.
-        pub fn fromEulerAngle(axis: Vector3(T)) Self {
-            const x = Self.fromAxis(axis.x, Vec3.right());
-            const y = Self.fromAxis(axis.y, Vec3.up());
-            const z = Self.fromAxis(axis.z, Vec3.forward());
+        /// Convert all Euler angles (in degrees) to quaternion.
+        pub fn fromEulerAngles(axis_in_degrees: Vector3(T)) Self {
+            const x = Self.fromAxis(axis_in_degrees.x, Vec3.right());
+            const y = Self.fromAxis(axis_in_degrees.y, Vec3.up());
+            const z = Self.fromAxis(axis_in_degrees.z, Vec3.forward());
 
             return z.mult(y.mult(x));
         }
@@ -235,8 +235,8 @@ pub fn Quaternion(comptime T: type) type {
             return Self.fromVec3(w, quat_axis);
         }
 
-        /// Extract euler angles from quaternion.
-        pub fn extractRotation(self: Self) Vector3(T) {
+        /// Extract euler angles (degrees) from quaternion.
+        pub fn extractEulerAngles(self: Self) Vector3(T) {
             const yaw = math.atan2(
                 T,
                 2.0 * (self.y * self.z + self.w * self.x),
@@ -365,12 +365,12 @@ test "zalgebra.Quaternion.norm" {
     try expectEqual(q1.norm().eql(q2), true);
 }
 
-test "zalgebra.Quaternion.fromEulerAngle" {
-    const q1 = Quat.fromEulerAngle(Vec3.new(10, 5, 45));
-    const rot1 = q1.extractRotation();
+test "zalgebra.Quaternion.fromEulerAngles" {
+    const q1 = Quat.fromEulerAngles(Vec3.new(10, 5, 45));
+    const rot1 = q1.extractEulerAngles();
 
-    const q2 = Quat.fromEulerAngle(Vec3.new(0, 55, 22));
-    const rot2 = q2.toMat4().extractRotation();
+    const q2 = Quat.fromEulerAngles(Vec3.new(0, 55, 22));
+    const rot2 = q2.toMat4().extractEulerAngles();
 
     try expectEqual(Vec3.eql(rot1, Vec3.new(9.999999046325684, 5.000000476837158, 45)), true);
     try expectEqual(Vec3.eql(rot2, Vec3.new(0, 47.2450294, 22)), true);
@@ -378,7 +378,7 @@ test "zalgebra.Quaternion.fromEulerAngle" {
 
 test "zalgebra.Quaternion.fromAxis" {
     const q1 = Quat.fromAxis(45, Vec3.new(0, 1, 0));
-    const res_q1 = q1.extractRotation();
+    const res_q1 = q1.extractEulerAngles();
 
     try expectEqual(Vec3.eql(res_q1, Vec3.new(0, 45.0000076, 0)), true);
 }
@@ -396,16 +396,16 @@ test "zalgebra.Quaternion.extractAxisAngle" {
     try expectApproxEqRel(@as(f32, 45.0000076), res.angle, eps_value);
 }
 
-test "zalgebra.Quaternion.extractRotation" {
+test "zalgebra.Quaternion.extractEulerAngles" {
     const q1 = Quat.fromVec3(0.5, Vec3.new(0.5, 1, 0.3));
-    const res_q1 = q1.extractRotation();
+    const res_q1 = q1.extractEulerAngles();
 
     try expectEqual(Vec3.eql(res_q1, Vec3.new(129.6000213623047, 44.427005767822266, 114.41073608398438)), true);
 }
 
 test "zalgebra.Quaternion.rotateVec" {
     const eps_value = comptime std.math.epsilon(f32);
-    const q = Quat.fromEulerAngle(Vec3.new(45, 45, 45));
+    const q = Quat.fromEulerAngles(Vec3.new(45, 45, 45));
     const m = q.toMat4();
 
     const v = Vec3.new(0, 1, 0);

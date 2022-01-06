@@ -99,13 +99,13 @@ multByVec4 | Multiply a given vec4 by matrix (only for mat4)
 fromTranslate | Construct a translation matrix
 translate | Construct a translation from the given matrix according to given axis (vec3)
 fromRotation | Construct a rotation matrix
-fromEulerAngle | Construct a rotation matrix from pitch/yaw/roll in degrees (X * Y * Z)
+fromEulerAngles | Construct a rotation matrix from pitch/yaw/roll in degrees (X * Y * Z)
 rotate | Construct a rotation from the given matrix according to given axis (vec3)
 fromScale | Construct a scale matrix
 scale | Construct a scale from the given matrix according to given axis (vec3)
 extractTranslation | Return a vector with proper translation
 orthoNormalize | Ortho normalize the given matrix.
-extractRotation | Return a vector with proper pitch/yaw/roll 
+extractEulerAngles | Return a vector with Euler angles in degrees (pitch/yaw/roll)
 extractScale | Return a vector with proper scale
 perspective | Construct a perspective matrix from given fovy, aspect ratio, near/far inputs
 orthographic| Construct an orthographic matrix from given left, right, bottom, top, near/far inputs
@@ -132,9 +132,9 @@ mult | Construct quaternion resulting from the multiplication of two given ones
 scale | Construct quaternion resulting from the multiplication of all components of the given quat
 dot | Return the dot product between two quaternions
 toMat4 | Convert given quat to rotation 4x4 matrix
-fromEulerAngle | Construct quaternion from Euler angle
+fromEulerAngles | Construct quaternion from Euler angles
 fromAxis | Construct quat from angle around specified axis
-extractAxisAngle | Get the rotation angle and axis for a given quaternion
+extractAxisAngles | Get the rotation angle and axis for a given quaternion
 extractRotation | Get euler angles from given quaternion
 rotateVec | Rotate given vector
 
