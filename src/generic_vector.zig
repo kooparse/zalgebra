@@ -39,13 +39,13 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             2 => extern struct {
                 /// Construct new vector.
                 pub fn new(x: T, y: T) Vector {
-                    return [2]T{x, y};
+                    return [2]T{ x, y };
                 }
             },
             3 => extern struct {
                 /// Construct new vector.
                 pub fn new(x: T, y: T, z: T) Vector {
-                    return [3]T{x, y, z};
+                    return [3]T{ x, y, z };
                 }
 
                 /// Shorthand for (0, 0, -1).
@@ -70,7 +70,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             4 => extern struct {
                 /// Construct new vector.
                 pub fn new(x: T, y: T, z: T, w: T) Vector {
-                    return [4]T{x, y, z, w};
+                    return [4]T{ x, y, z, w };
                 }
             },
             else => {},

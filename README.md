@@ -24,6 +24,13 @@ pub fn main () void {
 }
 ```
 
+Note: You can also use operators like `+`/`-`/`*`/`/` between vectors. It uses `std.meta.Vectors` underneath. 
+```
+const a = Vec2.new(1, 1);
+const b = Vec2.new(2, 2);
+const result = a + b; // (3, 3)
+```
+
 ## Quick reference
 
 ### Aliases
