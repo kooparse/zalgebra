@@ -183,10 +183,10 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Construct a rotation matrix from euler angles (X * Y * Z).
         /// Order matters because matrix multiplication are NOT commutative.
-        pub fn fromEulerAngle(euler_angle: Vector3) Self {
-            const x = Self.fromRotation(euler_angle[0], GenericVector(3, T).right());
-            const y = Self.fromRotation(euler_angle[1], GenericVector(3, T).up());
-            const z = Self.fromRotation(euler_angle[2], GenericVector(3, T).forward());
+        pub fn fromEulerAngles(euler_angle: Vector3(T)) Self {
+            const x = Self.fromRotation(euler_angle.x, GenericVector(3, T).right());
+            const y = Self.fromRotation(euler_angle.y, GenericVector(3, T).up());
+            const z = Self.fromRotation(euler_angle.z, GenericVector(3, T).forward());
 
             return z.mult(y.mult(x));
         }
@@ -217,7 +217,7 @@ pub fn Mat4x4(comptime T: type) type {
         /// Return the rotation as Euler angles in degrees.
         /// Taken from Mike Day at Insomniac Games (and `glm` as the same function).
         /// For more details: https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf
-        pub fn extractRotation(self: Self) Vector3 {
+        pub fn extractEulerAngles(self: Self) Vector3 {
             const m = self.orthoNormalize();
 
             const theta_x = math.atan2(T, m.data[1][2], m.data[2][2]);
@@ -412,8 +412,8 @@ pub fn Mat4x4(comptime T: type) type {
 
             const r = switch (@TypeOf(rotation)) {
                 Quaternion(T) => Quaternion(T).toMat4(rotation),
-                meta.Vector(3, T) => Self.fromEulerAngle(rotation),
-                [3]T => Self.fromEulerAngle(rotation),
+                meta.Vector(3, T) => Self.fromEulerAngles(rotation),
+                [3]T => Self.fromEulerAngles(rotation),
                 else => @compileError("Recompose not implemented for " ++ @typeName(@TypeOf(rotation))),
             };
 
@@ -422,7 +422,7 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Return `translation`, `rotation` and `scale` components from given matrix.
         /// For now, the rotation returned is a quaternion. If you want to get Euler angles
-        /// from it, just do: `returned_quat.extractRotation()`.
+        /// from it, just do: `returned_quat.extractEulerAngles()`.
         /// Note: We ortho nornalize the given matrix before extracting the rotation.
         pub fn decompose(mat: Self) struct { t: Vector3, r: Quaternion(T), s: Vector3 } {
             const t = mat.extractTranslation();
@@ -629,11 +629,11 @@ test "zalgebra.Mat4.extractTranslation" {
     try expectEqual(Vec3.eql(a.extractTranslation(), [3]f32{ 4, 6, 4 }), true);
 }
 
-test "zalgebra.Mat4.extractRotation" {
-    const a = Mat4.fromEulerAngle([3]f32{ 45, -5, 20 });
+test "zalgebra.Mat4.extractEulerAngles" {
+    const a = Mat4.fromEulerAngles(Vec3.new(45, -5, 20));
     try expectEqual(Vec3.eql(
-        a.extractRotation(),
-        [3]f32{ 45.000003814697266, -4.99052524, 19.999998092651367 },
+        a.extractEulerAngles(),
+        Vec3.new(45.000003814697266, -4.99052524, 19.999998092651367),
     ), true);
 }
 
@@ -668,7 +668,7 @@ test "zalgebra.Mat4.decompose" {
 
     const result = a.decompose();
 
-    try expectEqual(Vec3.eql(result.t, [3]f32{ 10, 5, 5 }), true);
-    try expectEqual(Vec3.eql(result.s, Vec3.set(1)), true);
-    try expectEqual(Vec3.eql(result.r.extractRotation(), [3]f32{ 45, 5, 0.00000010712935250012379 }), true);
+    try expectEqual(result.t.eql(Vec3.new(10, 5, 5)), true);
+    try expectEqual(result.s.eql(Vec3.new(1, 1, 1)), true);
+    try expectEqual(result.r.extractEulerAngles().eql(Vec3.new(45, 5, 0.00000010712935250012379)), true);
 }
