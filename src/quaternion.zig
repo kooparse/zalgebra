@@ -4,6 +4,7 @@ const meta = std.meta;
 const generic_vector = @import("generic_vector.zig");
 const mat4 = @import("mat4.zig");
 const math = std.math;
+const expectApproxEqRel = std.testing.expectApproxEqRel;
 const expectEqual = std.testing.expectEqual;
 const expect = std.testing.expect;
 const assert = std.debug.assert;
@@ -370,6 +371,19 @@ test "zalgebra.Quaternion.fromAxis" {
     const res_q1 = q1.extractRotation();
 
     try expectEqual(Vec3.eql(res_q1, [3]f32{ 0, 45.0000076, 0 }), true);
+}
+
+test "zalgebra.Quaternion.extractAxisAngle" {
+    const axis = Vec3.new(44, 120, 8).norm();
+    const q1 = Quat.fromAxis(45, axis);
+    const res = q1.extractAxisAngle();
+    const eps_value = comptime std.math.epsilon(f32);
+
+    try expect(math.approxEqRel(f32, axis.x, res.axis.x, eps_value) and
+        math.approxEqRel(f32, axis.y, res.axis.y, eps_value) and
+        math.approxEqRel(f32, axis.z, res.axis.z, eps_value));
+
+    try expectApproxEqRel(@as(f32, 45.0000076), root.toDegrees(res.angle), eps_value);
 }
 
 test "zalgebra.Quaternion.extractRotation" {
