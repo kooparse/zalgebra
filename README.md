@@ -16,11 +16,11 @@ const Vec3 = za.Vec3;
 const Mat4 = za.Mat4;
 
 pub fn main () void {
-  const projection = za.perspective(45.0, 800.0 / 600.0, 0.1, 100.0);
-  const view = za.lookAt(Vec3.new(0.0, 0.0, -3.0), Vec3.zero(), Vec3.up());
-  const model = Mat4.fromTranslate([3]f32{0.2, 0.5, 0.0});
+  var projection = za.perspective(45.0, 800.0 / 600.0, 0.1, 100.0);
+  var view = za.lookAt(Vec3.new(0.0, 0.0, -3.), Vec3.zero(), Vec3.up());
+  var model = Mat4.fromTranslate(Vec3.new(0.2, 0.5, 0.0));
   
-  const mvp = Mat4.mult(projection, view.mult(model));
+  var mvp = Mat4.mult(projection, view.mult(model));
 }
 ```
 
@@ -54,30 +54,34 @@ lookAt | LookAt function for `f32` 4x4 mat4
 
 Methods | Description
 ------------ | -------------
-new | Construct vector with given values
+new | Construct a vector from 2 to 4 components
+at | Return component from given index
 set | Set all components to the same given value
 negate | Scale all components by -1
 cast | Cast a type to another type
-fromSlice | Return new vector from slice
-zero | Shorthand for `(0..)`
-one | Shorthand for `(1..)`
-up | Shorthand for `(0, 1)`
-down | Shorthand for `(0, -1)`
-right | Shorthand for `(1, 0)`
-left | Shorthand for `(-1, 0)`
+fromSlice | Construct new vectors from slice
+zero | Shorthand for `(0, 0, 0)`
+one | Shorthand for `(1, 1, 1)`
+up | Shorthand for `(0, 1, 0)` (only for vec3)
+down | Shorthand for `(0, -1, 0)` (only for vec3)
+right | Shorthand for `(1, 0, 0)` (only for vec3)
+left | Shorthand for `(-1, 0, 0)` (only for vec3)
 forward | Shorthand for `(0, 0, 1)` (only for vec3)
 back | Shorthand for `(0, 0, -1)` (only for vec3)
-getAngle | Return the angle (in degrees) between two vectors
-length | Return the length (magnitude) of given vector
+toArray | Return an array of same size.
+getAngle | Return angle in degrees between two vectors (only for vec2 and vec3)
+length | Return the magnitude of the current vector
 distance | Return the distance between two points
-norm | Construct new normalized vector from a given one
+norm | Construct a new normalized vector based on the given one
 eql | Return `true` if two vectors are equals
+sub | Construct new vector resulting from the substraction between two vectors
+add | Construct new vector resulting from the addition between two vectors
 scale | Construct new vector after multiplying each components by the given scalar
 cross | Construct the cross product (as vector) from two vectors (only for vec3)
 dot | Return the dot product between two vectors
 lerp | Linear interpolation between two vectors
-min | Construct vector from the min components in two vectors
-max | Construct vector from the max components in two vectors
+min | Construct vector from the min components between two vectors
+max | Construct vector from the max components between two vectors
 
 ### Matrices
 Note: All matrices are column-major.

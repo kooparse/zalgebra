@@ -4,7 +4,9 @@ const std = @import("std");
 const expectEqual = std.testing.expectEqual;
 const math = std.math;
 
-pub usingnamespace @import("generic_vector.zig");
+pub usingnamespace @import("vec2.zig");
+pub usingnamespace @import("vec3.zig");
+pub usingnamespace @import("vec4.zig");
 pub usingnamespace @import("mat4.zig");
 pub usingnamespace @import("quaternion.zig");
 
