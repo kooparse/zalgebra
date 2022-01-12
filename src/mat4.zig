@@ -183,10 +183,10 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Construct a rotation matrix from euler angles (X * Y * Z).
         /// Order matters because matrix multiplication are NOT commutative.
-        pub fn fromEulerAngles(euler_angle: Vector3(T)) Self {
-            const x = Self.fromRotation(euler_angle.x, GenericVector(3, T).right());
-            const y = Self.fromRotation(euler_angle.y, GenericVector(3, T).up());
-            const z = Self.fromRotation(euler_angle.z, GenericVector(3, T).forward());
+        pub fn fromEulerAngles(euler_angle: Vector3) Self {
+            const x = Self.fromRotation(euler_angle[0], GenericVector(3, T).right());
+            const y = Self.fromRotation(euler_angle[1], GenericVector(3, T).up());
+            const z = Self.fromRotation(euler_angle[2], GenericVector(3, T).forward());
 
             return z.mult(y.mult(x));
         }
@@ -668,7 +668,7 @@ test "zalgebra.Mat4.decompose" {
 
     const result = a.decompose();
 
-    try expectEqual(result.t.eql(Vec3.new(10, 5, 5)), true);
-    try expectEqual(result.s.eql(Vec3.new(1, 1, 1)), true);
-    try expectEqual(result.r.extractEulerAngles().eql(Vec3.new(45, 5, 0.00000010712935250012379)), true);
+    try expectEqual(Vec3.eql(result.t, Vec3.new(10, 5, 5)), true);
+    try expectEqual(Vec3.eql(result.s, Vec3.new(1, 1, 1)), true);
+    try expectEqual(Vec3.eql(result.r.extractEulerAngles(), [3]f32{ 45, 5, 0.00000010712935250012379 }), true);
 }

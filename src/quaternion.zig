@@ -232,10 +232,10 @@ pub fn Quaternion(comptime T: type) type {
         }
 
         /// Convert all Euler angles (in degrees) to quaternion.
-        pub fn fromEulerAngles(axis_in_degrees: Vector3(T)) Self {
-            const x = Self.fromAxis(axis_in_degrees.x, GenericVector(3, T).right());
-            const y = Self.fromAxis(axis_in_degrees.y, GenericVector(3, T).up());
-            const z = Self.fromAxis(axis_in_degrees.z, GenericVector(3, T).forward());
+        pub fn fromEulerAngles(axis_in_degrees: Vector3) Self {
+            const x = Self.fromAxis(axis_in_degrees[0], GenericVector(3, T).right());
+            const y = Self.fromAxis(axis_in_degrees[1], GenericVector(3, T).up());
+            const z = Self.fromAxis(axis_in_degrees[2], GenericVector(3, T).forward());
 
             return z.mult(y.mult(x));
         }
@@ -252,7 +252,7 @@ pub fn Quaternion(comptime T: type) type {
         }
 
         /// Extract euler angles (degrees) from quaternion.
-        pub fn extractEulerAngles(self: Self) Vector3(T) {
+        pub fn extractEulerAngles(self: Self) Vector3 {
             const yaw = math.atan2(
                 T,
                 2.0 * (self.y * self.z + self.w * self.x),
@@ -272,7 +272,7 @@ pub fn Quaternion(comptime T: type) type {
 
         /// Get the rotation angle (degrees) and axis for a given quaternion.
         // Taken from https://github.com/raysan5/raylib/blob/master/src/raymath.h#L1755
-        pub fn extractAxisAngle(self: Self) struct { axis: GenericVector(3, T), angle: f32 } {
+        pub fn extractAxisAngle(self: Self) struct { axis: Vector3, angle: f32 } {
             var copy = self;
             if (math.fabs(self.w) > 1.0) copy = copy.norm();
 
@@ -281,13 +281,13 @@ pub fn Quaternion(comptime T: type) type {
             var den: f32 = math.sqrt(1.0 - copy.w * copy.w);
 
             if (den > 0.0001) {
-                res_axis.x = copy.x / den;
-                res_axis.y = copy.y / den;
-                res_axis.z = copy.z / den;
+                res_axis[0] = copy.x / den;
+                res_axis[1] = copy.y / den;
+                res_axis[2] = copy.z / den;
             } else {
                 // This occurs when the angle is zero.
                 // Not a problem: just set an arbitrary normalized axis.
-                res_axis.x = 1.0;
+                res_axis[0] = 1.0;
             }
 
             return .{
@@ -382,11 +382,13 @@ test "zalgebra.Quaternion.norm" {
 }
 
 test "zalgebra.Quaternion.fromEulerAngles" {
-    const q1 = Quat.fromEulerAngles(Vec3.new(10, 5, 45));
-    const rot1 = q1.extractEulerAngles();
+    const q1 = Quat.fromEulerAngles([3]f32{ 10, 5, 45 });
+    const res_q1 = q1.extractEulerAngles();
 
-    const q2 = Quat.fromEulerAngles(Vec3.new(0, 55, 22));
-    const rot2 = q2.toMat4().extractEulerAngles();
+    const q2 = Quat.fromEulerAngles([3]f32{ 0, 55, 22 });
+    const res_q2 = q2.toMat4().extractEulerAngles();
+
+    try expectEqual(Vec3.eql(res_q1, [3]f32{ 9.999999046325684, 5.000000476837158, 45 }), true);
     try expectEqual(Vec3.eql(res_q2, [3]f32{ 0, 47.2450294, 22 }), true);
 }
 
@@ -398,14 +400,14 @@ test "zalgebra.Quaternion.fromAxis" {
 }
 
 test "zalgebra.Quaternion.extractAxisAngle" {
-    const axis = Vec3.new(44, 120, 8).norm();
+    const axis = Vec3.norm([3]f32{ 44, 120, 8 });
     const q1 = Quat.fromAxis(45, axis);
     const res = q1.extractAxisAngle();
     const eps_value = comptime math.epsilon(f32);
 
-    try expect(math.approxEqRel(f32, axis.x, res.axis.x, eps_value) and
-        math.approxEqRel(f32, axis.y, res.axis.y, eps_value) and
-        math.approxEqRel(f32, axis.z, res.axis.z, eps_value));
+    try expect(math.approxEqRel(f32, axis[0], res.axis[0], eps_value) and
+        math.approxEqRel(f32, axis[1], res.axis[1], eps_value) and
+        math.approxEqRel(f32, axis[2], res.axis[2], eps_value));
 
     try expectApproxEqRel(@as(f32, 45.0000076), res.angle, eps_value);
 }
