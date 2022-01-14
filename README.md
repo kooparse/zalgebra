@@ -55,6 +55,10 @@ lookAt | LookAt function for `f32` 4x4 mat4
 Methods | Description
 ------------ | -------------
 new | Construct a vector from 2 to 4 components
+x | Return first component
+y | Return second component
+z | Return third component (only for vec3, vec4)
+w | Return fourth component (only for vec4)
 at | Return component from given index
 set | Set all components to the same given value
 negate | Scale all components by -1

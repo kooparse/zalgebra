@@ -129,15 +129,10 @@ pub fn Mat4x4(comptime T: type) type {
         }
 
         pub fn multByVec4(mat: Self, v: Vector4) Vector4 {
-            const vx = v.data[0];
-            const vy = v.data[1];
-            const vz = v.data[2];
-            const vw = v.data[3];
-
-            const x = (mat.data[0][0] * vx) + (mat.data[1][0] * vy) + (mat.data[2][0] * vz) + (mat.data[3][0] * vw);
-            const y = (mat.data[0][1] * vx) + (mat.data[1][1] * vy) + (mat.data[2][1] * vz) + (mat.data[3][1] * vw);
-            const z = (mat.data[0][2] * vx) + (mat.data[1][2] * vy) + (mat.data[2][2] * vz) + (mat.data[3][2] * vw);
-            const w = (mat.data[0][3] * vx) + (mat.data[1][3] * vy) + (mat.data[2][3] * vz) + (mat.data[3][3] * vw);
+            const x = (mat.data[0][0] * v.x()) + (mat.data[1][0] * v.y()) + (mat.data[2][0] * v.z()) + (mat.data[3][0] * v.w());
+            const y = (mat.data[0][1] * v.x()) + (mat.data[1][1] * v.y()) + (mat.data[2][1] * v.z()) + (mat.data[3][1] * v.w());
+            const z = (mat.data[0][2] * v.x()) + (mat.data[1][2] * v.y()) + (mat.data[2][2] * v.z()) + (mat.data[3][2] * v.w());
+            const w = (mat.data[0][3] * v.x()) + (mat.data[1][3] * v.y()) + (mat.data[2][3] * v.z()) + (mat.data[3][3] * v.w());
 
             return Vector4.new(x, y, z, w);
         }
@@ -174,9 +169,9 @@ pub fn Mat4x4(comptime T: type) type {
             const cos_theta = @cos(root.toRadians(angle_in_degrees));
             const cos_value = 1.0 - cos_theta;
 
-            const x = norm_axis.data[0];
-            const y = norm_axis.data[1];
-            const z = norm_axis.data[2];
+            const x = norm_axis.x();
+            const y = norm_axis.y();
+            const z = norm_axis.z();
 
             mat.data[0][0] = (x * x * cos_value) + cos_theta;
             mat.data[0][1] = (x * y * cos_value) + (z * sin_theta);
@@ -201,9 +196,9 @@ pub fn Mat4x4(comptime T: type) type {
         /// Construct a rotation matrix from euler angles (X * Y * Z).
         /// Order matters because matrix multiplication are NOT commutative.
         pub fn fromEulerAngles(euler_angle: Vector3) Self {
-            const x = Self.fromRotation(euler_angle.data[0], Vector3.right());
-            const y = Self.fromRotation(euler_angle.data[1], Vector3.up());
-            const z = Self.fromRotation(euler_angle.data[2], Vector3.forward());
+            const x = Self.fromRotation(euler_angle.x(), Vector3.right());
+            const y = Self.fromRotation(euler_angle.y(), Vector3.up());
+            const z = Self.fromRotation(euler_angle.z(), Vector3.forward());
 
             return z.mult(y.mult(x));
         }
@@ -216,17 +211,17 @@ pub fn Mat4x4(comptime T: type) type {
 
             var result = mat;
 
-            result.data[0][0] = column_1.data[0];
-            result.data[0][1] = column_1.data[1];
-            result.data[0][2] = column_1.data[2];
+            result.data[0][0] = column_1.x();
+            result.data[0][1] = column_1.y();
+            result.data[0][2] = column_1.z();
 
-            result.data[1][0] = column_2.data[0];
-            result.data[1][1] = column_2.data[1];
-            result.data[1][2] = column_2.data[2];
+            result.data[1][0] = column_2.x();
+            result.data[1][1] = column_2.y();
+            result.data[1][2] = column_2.z();
 
-            result.data[2][0] = column_3.data[0];
-            result.data[2][1] = column_3.data[1];
-            result.data[2][2] = column_3.data[2];
+            result.data[2][0] = column_3.x();
+            result.data[2][1] = column_3.y();
+            result.data[2][2] = column_3.z();
 
             return result;
         }
@@ -250,9 +245,9 @@ pub fn Mat4x4(comptime T: type) type {
         pub fn fromScale(axis: Vector3) Self {
             var mat = Self.identity();
 
-            mat.data[0][0] = axis.data[0];
-            mat.data[1][1] = axis.data[1];
-            mat.data[2][2] = axis.data[2];
+            mat.data[0][0] = axis.x();
+            mat.data[1][1] = axis.y();
+            mat.data[2][2] = axis.z();
 
             return mat;
         }
@@ -311,19 +306,19 @@ pub fn Mat4x4(comptime T: type) type {
             const u = Vector3.cross(s, f);
 
             var mat: Self = undefined;
-            mat.data[0][0] = s.data[0];
-            mat.data[0][1] = u.data[0];
-            mat.data[0][2] = -f.data[0];
+            mat.data[0][0] = s.x();
+            mat.data[0][1] = u.x();
+            mat.data[0][2] = -f.x();
             mat.data[0][3] = 0;
 
-            mat.data[1][0] = s.data[1];
-            mat.data[1][1] = u.data[1];
-            mat.data[1][2] = -f.data[1];
+            mat.data[1][0] = s.y();
+            mat.data[1][1] = u.y();
+            mat.data[1][2] = -f.y();
             mat.data[1][3] = 0;
 
-            mat.data[2][0] = s.data[2];
-            mat.data[2][1] = u.data[2];
-            mat.data[2][2] = -f.data[2];
+            mat.data[2][0] = s.z();
+            mat.data[2][1] = u.z();
+            mat.data[2][2] = -f.z();
             mat.data[2][3] = 0;
 
             mat.data[3][0] = -Vector3.dot(s, eye);

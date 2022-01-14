@@ -33,19 +33,39 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
     return extern struct {
         const Self = @This();
-
         data: meta.Vector(dimensions, T),
+
         usingnamespace switch (dimensions) {
             2 => extern struct {
                 /// Construct new vector.
-                pub fn new(x: T, y: T) Self {
-                    return .{ .data = [2]T{ x, y } };
+                pub fn new(vx: T, vy: T) Self {
+                    return .{ .data = [2]T{ vx, vy } };
+                }
+
+                pub fn x(self: Self) T {
+                    return self.data[0];
+                }
+
+                pub fn y(self: Self) T {
+                    return self.data[1];
                 }
             },
             3 => extern struct {
                 /// Construct new vector.
-                pub fn new(x: T, y: T, z: T) Self {
-                    return .{ .data = [3]T{ x, y, z } };
+                pub fn new(vx: T, vy: T, vz: T) Self {
+                    return .{ .data = [3]T{ vx, vy, vz } };
+                }
+
+                pub fn x(self: Self) T {
+                    return self.data[0];
+                }
+
+                pub fn y(self: Self) T {
+                    return self.data[1];
+                }
+
+                pub fn z(self: Self) T {
+                    return self.data[2];
                 }
 
                 /// Shorthand for (0, 0, 1).
@@ -60,24 +80,40 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
                 /// Construct the cross product (as vector) from two vectors.
                 pub fn cross(lhs: Self, rhs: Self) Self {
-                    const lx = lhs.data[0];
-                    const ly = lhs.data[1];
-                    const lz = lhs.data[2];
+                    const lx = lhs.x();
+                    const ly = lhs.y();
+                    const lz = lhs.z();
 
-                    const rx = rhs.data[0];
-                    const ry = rhs.data[1];
-                    const rz = rhs.data[2];
+                    const rx = rhs.x();
+                    const ry = rhs.y();
+                    const rz = rhs.z();
 
-                    const x = (ly * rz) - (lz * ry);
-                    const y = (lz * rx) - (lx * rz);
-                    const z = (lx * ry) - (ly * rx);
-                    return new(x, y, z);
+                    const vx = (ly * rz) - (lz * ry);
+                    const vy = (lz * rx) - (lx * rz);
+                    const vz = (lx * ry) - (ly * rx);
+                    return new(vx, vy, vz);
                 }
             },
             4 => extern struct {
                 /// Construct new vector.
-                pub fn new(x: T, y: T, z: T, w: T) Self {
-                    return .{ .data = [4]T{ x, y, z, w } };
+                pub fn new(vx: T, vy: T, vz: T, vw: T) Self {
+                    return .{ .data = [4]T{ vx, vy, vz, vw } };
+                }
+
+                pub fn x(self: Self) T {
+                    return self.data[0];
+                }
+
+                pub fn y(self: Self) T {
+                    return self.data[1];
+                }
+
+                pub fn z(self: Self) T {
+                    return self.data[2];
+                }
+
+                pub fn w(self: Self) T {
+                    return self.data[3];
                 }
             },
             else => {},

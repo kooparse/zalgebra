@@ -59,9 +59,9 @@ pub fn Quaternion(comptime T: type) type {
         pub fn fromVec3(w: T, axis: Vector3) Self {
             return .{
                 .w = w,
-                .x = axis.data[0],
-                .y = axis.data[1],
-                .z = axis.data[2],
+                .x = axis.x(),
+                .y = axis.y(),
+                .z = axis.z(),
             };
         }
 
@@ -233,9 +233,9 @@ pub fn Quaternion(comptime T: type) type {
 
         /// Convert all Euler angles (in degrees) to quaternion.
         pub fn fromEulerAngles(axis_in_degrees: Vector3) Self {
-            const x = Self.fromAxis(axis_in_degrees.data[0], Vector3.right());
-            const y = Self.fromAxis(axis_in_degrees.data[1], Vector3.up());
-            const z = Self.fromAxis(axis_in_degrees.data[2], Vector3.forward());
+            const x = Self.fromAxis(axis_in_degrees.x(), Vector3.right());
+            const y = Self.fromAxis(axis_in_degrees.y(), Vector3.up());
+            const z = Self.fromAxis(axis_in_degrees.z(), Vector3.forward());
 
             return z.mult(y.mult(x));
         }
@@ -414,9 +414,9 @@ test "zalgebra.Quaternion.extractAxisAngle" {
     const res = q1.extractAxisAngle();
     const eps_value = comptime math.epsilon(f32);
 
-    try expect(math.approxEqRel(f32, axis.data[0], res.axis.data[0], eps_value) and
-        math.approxEqRel(f32, axis.data[1], res.axis.data[1], eps_value) and
-        math.approxEqRel(f32, axis.data[1], res.axis.data[1], eps_value));
+    try expect(math.approxEqRel(f32, axis.x(), res.axis.x(), eps_value) and
+        math.approxEqRel(f32, axis.y(), res.axis.y(), eps_value) and
+        math.approxEqRel(f32, axis.z(), res.axis.z(), eps_value));
 
     try expectApproxEqRel(@as(f32, 45.0000076), res.angle, eps_value);
 }
@@ -435,15 +435,15 @@ test "zalgebra.Quaternion.rotateVec" {
 
     const v = Vec3.up();
     const v1 = q.rotateVec(v);
-    const v2 = m.multByVec4(Vec4.new(v.data[0], v.data[1], v.data[2], 1.0));
+    const v2 = m.multByVec4(Vec4.new(v.x(), v.y(), v.z(), 1.0));
 
-    try expect(std.math.approxEqAbs(f32, v1.data[0], -1.46446585e-01, eps_value));
-    try expect(std.math.approxEqAbs(f32, v1.data[1], 8.53553473e-01, eps_value));
-    try expect(std.math.approxEqAbs(f32, v1.data[2], 0.5, eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.x(), -1.46446585e-01, eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.y(), 8.53553473e-01, eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.z(), 0.5, eps_value));
 
-    try expect(std.math.approxEqAbs(f32, v1.data[0], v2.data[0], eps_value));
-    try expect(std.math.approxEqAbs(f32, v1.data[1], v2.data[1], eps_value));
-    try expect(std.math.approxEqAbs(f32, v1.data[2], v2.data[2], eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.x(), v2.data[0], eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.y(), v2.data[1], eps_value));
+    try expect(std.math.approxEqAbs(f32, v1.z(), v2.data[2], eps_value));
 }
 
 test "zalgebra.Quaternion.lerp" {
