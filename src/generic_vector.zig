@@ -41,27 +41,11 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                 pub fn new(vx: T, vy: T) Self {
                     return .{ .data = [2]T{ vx, vy } };
                 }
-
-                pub fn x(self: Self) T {
-                    return self.data[0];
-                }
-
-                pub fn y(self: Self) T {
-                    return self.data[1];
-                }
             },
             3 => extern struct {
                 /// Construct new vector.
                 pub fn new(vx: T, vy: T, vz: T) Self {
                     return .{ .data = [3]T{ vx, vy, vz } };
-                }
-
-                pub fn x(self: Self) T {
-                    return self.data[0];
-                }
-
-                pub fn y(self: Self) T {
-                    return self.data[1];
                 }
 
                 pub fn z(self: Self) T {
@@ -100,12 +84,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     return .{ .data = [4]T{ vx, vy, vz, vw } };
                 }
 
-                pub fn x(self: Self) T {
-                    return self.data[0];
+                /// Shorthand for (0, 0, 1, 0).
+                pub fn forward() Self {
+                    return new(0, 0, 1, 0);
                 }
 
-                pub fn y(self: Self) T {
-                    return self.data[1];
+                /// Shorthand for (0, 0, -1, 0).
+                pub fn back() Self {
+                    return forward().negate();
                 }
 
                 pub fn z(self: Self) T {
@@ -118,6 +104,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             },
             else => {},
         };
+
+        pub fn x(self: Self) T {
+            return self.data[0];
+        }
+
+        pub fn y(self: Self) T {
+            return self.data[1];
+        }
 
         /// Set all components to the same given value.
         pub fn set(val: T) Self {
