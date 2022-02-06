@@ -26,7 +26,7 @@ pub fn Quaternion(comptime T: type) type {
 
     const Vector3 = GenericVector(3, T);
 
-    return extern struct {
+    return struct {
         w: T,
         x: T,
         y: T,
@@ -42,6 +42,11 @@ pub fn Quaternion(comptime T: type) type {
                 .y = y,
                 .z = z,
             };
+        }
+
+        /// Set all components to the same given value.
+        pub fn set(val: T) Self {
+            return new(val, val, val, val);
         }
 
         /// Shorthand for (1, 0, 0, 0).
@@ -67,17 +72,15 @@ pub fn Quaternion(comptime T: type) type {
 
         /// Return true if two quaternions are equal.
         pub fn eql(left: Self, right: Self) bool {
-            return (left.w == right.w and
-                left.x == right.x and
-                left.y == right.y and
-                left.z == right.z);
+            return meta.eql(left, right);
         }
 
         /// Construct new normalized quaternion from a given one.
         pub fn norm(self: Self) Self {
             const l = length(self);
-            assert(l != 0);
-
+            if (l == 0) {
+                return self;
+            }
             return Self.new(
                 self.w / l,
                 self.x / l,
@@ -339,6 +342,23 @@ pub fn Quaternion(comptime T: type) type {
 
             return v.scale(q.w * q.w - b2).add(b.scale(v.dot(b) * 2.0)).add(b.cross(v).scale(q.w * 2.0));
         }
+
+        /// Cast a type to another type.
+        /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
+        pub fn cast(self: Self, dest_type: anytype) Quaternion(dest_type) {
+            const dest_info = @typeInfo(dest_type);
+
+            if (dest_info != .Float) {
+                std.debug.panic("Error, dest type should be float.\n", .{});
+            }
+
+            var result: Quaternion(dest_type) = undefined;
+            result.w = @floatCast(dest_type, self.w);
+            result.x = @floatCast(dest_type, self.x);
+            result.y = @floatCast(dest_type, self.y);
+            result.z = @floatCast(dest_type, self.z);
+            return result;
+        }
     };
 }
 
@@ -349,6 +369,13 @@ test "zalgebra.Quaternion.new" {
     try expectEqual(q.x, 2.6);
     try expectEqual(q.y, 3.7);
     try expectEqual(q.z, 4.7);
+}
+
+test "zalgebra.Quaternion.set" {
+    const a = Quat.set(12);
+    const b = Quat.new(12, 12, 12, 12);
+
+    try expectEqual(a, b);
 }
 
 test "zalgebra.Quaternion.eql" {
@@ -470,4 +497,11 @@ test "zalgebra.Quaternion.slerp" {
     try expect(std.math.approxEqAbs(f32, v3.x, v4.x, eps_value));
     try expect(std.math.approxEqAbs(f32, v3.y, v4.y, eps_value));
     try expect(std.math.approxEqAbs(f32, v3.z, v4.z, eps_value));
+}
+
+test "zalgebra.Quaternion.cast" {
+    const a = Quat.new(3.5, 4.5, 5.5, 6.5);
+    const a_f64 = Quat_f64.new(3.5, 4.5, 5.5, 6.5);
+    try expectEqual(a.cast(f64), a_f64);
+    try expectEqual(a_f64.cast(f32), a);
 }

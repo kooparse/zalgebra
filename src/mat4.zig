@@ -9,6 +9,7 @@ const generic_vector = @import("generic_vector.zig");
 const quat = @import("quaternion.zig");
 
 const Vec3 = generic_vector.Vec3;
+const Vec3_f64 = generic_vector.Vec3_f64;
 const GenericVector = generic_vector.GenericVector;
 const Quaternion = quat.Quaternion;
 const Quat = quat.Quat;
@@ -29,7 +30,7 @@ pub fn Mat4x4(comptime T: type) type {
     const Vector3 = GenericVector(3, T);
     const Vector4 = GenericVector(4, T);
 
-    return extern struct {
+    return struct {
         data: [4][4]T = mem.zeroes([4][4]T),
 
         const Self = @This();
@@ -80,30 +81,23 @@ pub fn Mat4x4(comptime T: type) type {
         /// Negate the given matrix.
         pub fn negate(mat: Self) Self {
             var result = mat;
-            var col: usize = 0;
-
-            while (col < 4) : (col += 1) {
-                var row: usize = 0;
-                while (row < 4) : (row += 1) {
-                    result.data[col][row] = -mat.data[col][row];
+            for (result.data) |_, column| {
+                for (result.data[column]) |_, row| {
+                    result.data[column][row] = -result.data[column][row];
                 }
             }
-
             return result;
         }
 
         /// Transpose the given matrix.
         pub fn transpose(mat: Self) Self {
             var result = mat;
-            var col: usize = 0;
-
-            while (col < 4) : (col += 1) {
-                var row: usize = col;
+            for (result.data) |_, column| {
+                var row: usize = column;
                 while (row < 4) : (row += 1) {
-                    std.mem.swap(T, &result.data[col][row], &result.data[row][col]);
+                    std.mem.swap(T, &result.data[column][row], &result.data[row][column]);
                 }
             }
-
             return result;
         }
 
@@ -114,18 +108,7 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Return true if two matrices are equals.
         pub fn eql(left: Self, right: Self) bool {
-            var col: usize = 0;
-
-            while (col < 4) : (col += 1) {
-                var row: usize = 0;
-                while (row < 4) : (row += 1) {
-                    if (left.data[col][row] != right.data[col][row]) {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
+            return meta.eql(left, right);
         }
 
         pub fn multByVec4(mat: Self, v: Vector4) Vector4 {
@@ -332,23 +315,20 @@ pub fn Mat4x4(comptime T: type) type {
         /// Matrices' multiplication.
         /// Produce a new matrix from given two matrices.
         pub fn mult(left: Self, right: Self) Self {
-            var mat = Self.identity();
-            var columns: usize = 0;
+            var result = Self.identity();
+            for (result.data) |_, column| {
+                for (result.data[column]) |_, row| {
+                    var sum: T = 0;
+                    var left_column: usize = 0;
 
-            while (columns < 4) : (columns += 1) {
-                var rows: usize = 0;
-                while (rows < 4) : (rows += 1) {
-                    var sum: T = 0.0;
-                    var current_mat: usize = 0;
-
-                    while (current_mat < 4) : (current_mat += 1) {
-                        sum += left.data[current_mat][rows] * right.data[columns][current_mat];
+                    while (left_column < 4) : (left_column += 1) {
+                        sum += left.data[left_column][row] * right.data[column][left_column];
                     }
 
-                    mat.data[columns][rows] = sum;
+                    result.data[column][row] = sum;
                 }
             }
-            return mat;
+            return result;
         }
 
         /// Construct inverse 4x4 from given matrix.
@@ -476,6 +456,24 @@ pub fn Mat4x4(comptime T: type) type {
                 self.data[2][3],
                 self.data[3][3],
             });
+        }
+
+        /// Cast a type to another type.
+        /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
+        pub fn cast(self: Self, dest_type: anytype) Mat4x4(dest_type) {
+            const dest_info = @typeInfo(dest_type);
+
+            if (dest_info != .Float) {
+                std.debug.panic("Error, dest type should be float.\n", .{});
+            }
+
+            var result: Mat4x4(dest_type) = undefined;
+            for (result.data) |_, column| {
+                for (result.data[column]) |_, row| {
+                    result.data[column][row] = @floatCast(dest_type, self.data[column][row]);
+                }
+            }
+            return result;
         }
     };
 }
@@ -672,4 +670,21 @@ test "zalgebra.Mat4.decompose" {
     try expectEqual(result.t, Vec3.new(10, 5, 5));
     try expectEqual(result.s, Vec3.set(1));
     try expectEqual(result.r.extractEulerAngles(), Vec3.new(45, 5, 0.00000010712935250012379));
+}
+
+test "zalgebra.Mat4.cast" {
+    const a = Mat4{ .data = .{
+        .{ 0.9961947202682495, 0, -0.08715573698282242, 0 },
+        .{ 0.06162841245532036, 0.7071067690849304, 0.704416036605835, 0 },
+        .{ 0.06162841245532036, -0.7071067690849304, 0.704416036605835, 0 },
+        .{ 2, 2, 2, 1 },
+    } };
+    const a_f64 = Mat4_f64{ .data = .{
+        .{ 0.9961947202682495, 0, -0.08715573698282242, 0 },
+        .{ 0.06162841245532036, 0.7071067690849304, 0.704416036605835, 0 },
+        .{ 0.06162841245532036, -0.7071067690849304, 0.704416036605835, 0 },
+        .{ 2, 2, 2, 1 },
+    } };
+    try expectEqual(a.cast(f64), a_f64);
+    try expectEqual(a_f64.cast(f32), a);
 }

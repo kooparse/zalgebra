@@ -66,12 +66,12 @@ cast | Cast a type to another type
 fromSlice | Construct new vectors from slice
 zero | Shorthand for `(0, 0, 0)`
 one | Shorthand for `(1, 1, 1)`
-up | Shorthand for `(0, 1, 0)` (only for vec3)
-down | Shorthand for `(0, -1, 0)` (only for vec3)
-right | Shorthand for `(1, 0, 0)` (only for vec3)
-left | Shorthand for `(-1, 0, 0)` (only for vec3)
-forward | Shorthand for `(0, 0, 1)` (only for vec3)
-back | Shorthand for `(0, 0, -1)` (only for vec3)
+up | Shorthand for `(0, 1, 0)`
+down | Shorthand for `(0, -1, 0)`
+right | Shorthand for `(1, 0, 0)`
+left | Shorthand for `(-1, 0, 0)`
+forward | Shorthand for `(0, 0, 1)` (only for vec3 and vec4)
+back | Shorthand for `(0, 0, -1)` (only for vec3 and vec4)
 toArray | Return an array of same size.
 getAngle | Return angle in degrees between two vectors (only for vec2 and vec3)
 length | Return the magnitude of the current vector
@@ -98,6 +98,7 @@ fromSlice | Construct new matrix from given slice of data
 getData | Return a pointer to the inner data
 transpose | Return the transpose matrix
 negate | Scale all components by -1
+cast | Cast a type to another type
 eql | Return `true` if two matrices are equals
 multByVec4 | Multiply a given vec4 by matrix (only for mat4)
 fromTranslate | Construct a translation matrix
@@ -124,7 +125,9 @@ debugPrint | Print the matrix data for debug purpose
 Methods | Description
 ------------ | -------------
 new | Construct new quat from given floats
+set | Set all components to the same given value
 zero | Construct quat as `(1, 0, 0, 0)`
+cast | Cast a type to another type
 fromSlice | Construct new quaternion from slice
 fromVec3 | Construct quaternion from vec3
 eql | Return `true` if two quaternions are equal
