@@ -234,14 +234,17 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
         /// Construct new normalized vector from a given one.
         pub fn norm(vector: Self) Self {
-            const l = @splat(dimensions, vector.length());
-            const result = vector.data / l;
+            const l = vector.length();
+            if (l == 0) {
+                return vector;
+            }
+            const result = vector.data / @splat(dimensions, l);
             return .{ .data = result };
         }
 
         /// Return true if two vectors are equals.
         pub fn eql(left_vector: Self, right_vector: Self) bool {
-            return meta.eql(left_vector, right_vector);
+            return @reduce(.And, left_vector.data == right_vector.data);
         }
 
         /// Substraction between two given vector.

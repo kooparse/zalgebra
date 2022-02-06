@@ -78,8 +78,9 @@ pub fn Quaternion(comptime T: type) type {
         /// Construct new normalized quaternion from a given one.
         pub fn norm(self: Self) Self {
             const l = length(self);
-            assert(l != 0);
-
+            if (l == 0) {
+                return self;
+            }
             return Self.new(
                 self.w / l,
                 self.x / l,
