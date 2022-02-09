@@ -20,7 +20,7 @@ pub fn main () void {
   var view = za.lookAt(Vec3.new(0.0, 0.0, -3.), Vec3.zero(), Vec3.up());
   var model = Mat4.fromTranslate(Vec3.new(0.2, 0.5, 0.0));
 
-  var mvp = Mat4.mult(projection, view.mult(model));
+  var mvp = Mat4.mul(projection, view.mul(model));
 }
 ```
 
@@ -100,7 +100,7 @@ transpose | Return the transpose matrix
 negate | Scale all components by -1
 cast | Cast a type to another type
 eql | Return `true` if two matrices are equals
-multByVec4 | Multiply a given vec4 by matrix (only for mat4)
+mulByVec4 | Multiply a given vec4 by matrix (only for mat4)
 fromTranslate | Construct a translation matrix
 translate | Construct a translation from the given matrix according to given axis (vec3)
 fromRotation | Construct a rotation matrix
@@ -115,7 +115,7 @@ extractScale | Return a vector with proper scale
 perspective | Construct a perspective matrix from given fovy, aspect ratio, near/far inputs
 orthographic| Construct an orthographic matrix from given left, right, bottom, top, near/far inputs
 lookAt | Construct a right-handed lookAt matrix from given position (eye) and target
-mult | Multiply two matrices
+mul | Multiply two matrices
 inv | Inverse the given matrix
 recompose | Return matrix from given `translation`, `rotation` and `scale` components
 decompose | Return components `translation`, `rotation` and `scale` from given matrix.
@@ -135,7 +135,7 @@ norm | Normalize given quaternion
 length | Return the magniture of the given quaternion
 sub | Construct quaternion resulting from the subtraction of two given ones
 add | Construct quaternion resulting from the addition of two given ones
-mult | Construct quaternion resulting from the multiplication of two given ones
+mul | Construct quaternion resulting from the multiplication of two given ones
 scale | Construct quaternion resulting from the multiplication of all components of the given quat
 dot | Return the dot product between two quaternions
 toMat4 | Convert given quat to rotation 4x4 matrix

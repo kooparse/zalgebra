@@ -111,7 +111,7 @@ pub fn Mat4x4(comptime T: type) type {
             return meta.eql(left, right);
         }
 
-        pub fn multByVec4(mat: Self, v: Vector4) Vector4 {
+        pub fn mulByVec4(mat: Self, v: Vector4) Vector4 {
             const x = (mat.data[0][0] * v.x()) + (mat.data[1][0] * v.y()) + (mat.data[2][0] * v.z()) + (mat.data[3][0] * v.w());
             const y = (mat.data[0][1] * v.x()) + (mat.data[1][1] * v.y()) + (mat.data[2][1] * v.z()) + (mat.data[3][1] * v.w());
             const z = (mat.data[0][2] * v.x()) + (mat.data[1][2] * v.y()) + (mat.data[2][2] * v.z()) + (mat.data[3][2] * v.w());
@@ -134,7 +134,7 @@ pub fn Mat4x4(comptime T: type) type {
         /// Make a translation between the given matrix and the given axis.
         pub fn translate(mat: Self, axis: Vector3) Self {
             const trans_mat = Self.fromTranslate(axis);
-            return Self.mult(trans_mat, mat);
+            return Self.mul(trans_mat, mat);
         }
 
         /// Get translation Vec3 from current matrix.
@@ -173,7 +173,7 @@ pub fn Mat4x4(comptime T: type) type {
 
         pub fn rotate(mat: Self, angle_in_degrees: T, axis: Vector3) Self {
             const rotation_mat = Self.fromRotation(angle_in_degrees, axis);
-            return Self.mult(mat, rotation_mat);
+            return Self.mul(mat, rotation_mat);
         }
 
         /// Construct a rotation matrix from euler angles (X * Y * Z).
@@ -183,7 +183,7 @@ pub fn Mat4x4(comptime T: type) type {
             const y = Self.fromRotation(euler_angle.y(), Vector3.up());
             const z = Self.fromRotation(euler_angle.z(), Vector3.forward());
 
-            return z.mult(y.mult(x));
+            return z.mul(y.mul(x));
         }
 
         /// Ortho normalize given matrix.
@@ -237,7 +237,7 @@ pub fn Mat4x4(comptime T: type) type {
 
         pub fn scale(mat: Self, axis: Vector3) Self {
             const scale_mat = Self.fromScale(axis);
-            return Self.mult(scale_mat, mat);
+            return Self.mul(scale_mat, mat);
         }
 
         pub fn extractScale(mat: Self) Vector3 {
@@ -314,7 +314,7 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Matrices' multiplication.
         /// Produce a new matrix from given two matrices.
-        pub fn mult(left: Self, right: Self) Self {
+        pub fn mul(left: Self, right: Self) Self {
             var result = Self.identity();
             for (result.data) |_, column| {
                 for (result.data[column]) |_, row| {
@@ -408,7 +408,7 @@ pub fn Mat4x4(comptime T: type) type {
                 else => @compileError("Recompose not implemented for " ++ @typeName(@TypeOf(rotation))),
             };
 
-            return t.mult(r.mult(s));
+            return t.mul(r.mul(s));
         }
 
         /// Return `translation`, `rotation` and `scale` components from given matrix.

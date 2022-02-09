@@ -116,7 +116,7 @@ pub fn Quaternion(comptime T: type) type {
 
         /// Quaternions' multiplication.
         /// Produce a new quaternion from given two quaternions.
-        pub fn mult(left: Self, right: Self) Self {
+        pub fn mul(left: Self, right: Self) Self {
             var q: Self = undefined;
 
             q.x = (left.x * right.w) + (left.y * right.z) - (left.z * right.y) + (left.w * right.x);
@@ -240,7 +240,7 @@ pub fn Quaternion(comptime T: type) type {
             const y = Self.fromAxis(axis_in_degrees.y(), Vector3.up());
             const z = Self.fromAxis(axis_in_degrees.z(), Vector3.forward());
 
-            return z.mult(y.mult(x));
+            return z.mul(y.mul(x));
         }
 
         /// Convert Euler angle around specified axis to quaternion.
@@ -462,7 +462,7 @@ test "zalgebra.Quaternion.rotateVec" {
 
     const v = Vec3.up();
     const v1 = q.rotateVec(v);
-    const v2 = m.multByVec4(Vec4.new(v.x(), v.y(), v.z(), 1.0));
+    const v2 = m.mulByVec4(Vec4.new(v.x(), v.y(), v.z(), 1.0));
 
     try expect(std.math.approxEqAbs(f32, v1.x(), -1.46446585e-01, eps_value));
     try expect(std.math.approxEqAbs(f32, v1.y(), 8.53553473e-01, eps_value));
