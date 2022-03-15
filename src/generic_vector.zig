@@ -1,7 +1,6 @@
 const std = @import("std");
 const root = @import("main.zig");
 const math = std.math;
-const meta = std.meta;
 const expectEqual = std.testing.expectEqual;
 const expect = std.testing.expect;
 const panic = std.debug.panic;
@@ -31,9 +30,9 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         @compileError("Dimensions must be 2, 3 or 4!");
     }
 
-    return struct {
+    return extern struct {
         const Self = @This();
-        data: meta.Vector(dimensions, T),
+        data: @Vector(dimensions, T),
 
         usingnamespace switch (dimensions) {
             2 => extern struct {
