@@ -258,6 +258,12 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return .{ .data = result };
         }
 
+        /// Component wise multiplication betwen two given vector.
+        pub fn mul(lhs: Self, rhs: Self) Self {
+            const result = lhs.data * rhs.data;
+            return .{ .data = result };
+        }
+
         /// Construct vector from the max components in two vectors
         pub fn max(a: Self, b: Self) Self {
             const result = @maximum(a.data, b.data);

@@ -34,6 +34,15 @@ pub fn Quaternion(comptime T: type) type {
 
         const Self = @This();
 
+        pub fn identity() Self {
+            return .{
+                .w = 1,
+                .x = 0,
+                .y = 0,
+                .z = 0,
+            };
+        }
+
         /// Construct new quaternion from floats.
         pub fn new(w: T, x: T, y: T, z: T) Self {
             return .{
@@ -299,6 +308,12 @@ pub fn Quaternion(comptime T: type) type {
             };
         }
 
+        /// Construct inverse quaternion
+        pub fn inv(left: Self) Self {
+            const res = Self.new(left.w, -left.x, -left.y, -left.z);
+            return Quat.scale(res, 1.0 / left.dot(left));
+        }
+
         /// Linear interpolation between two quaternions.
         pub fn lerp(left: Self, right: Self, t: f32) Self {
             const w = root.lerp(T, left.w, right.w, t);
@@ -504,4 +519,14 @@ test "zalgebra.Quaternion.cast" {
     const a_f64 = Quat_f64.new(3.5, 4.5, 5.5, 6.5);
     try expectEqual(a.cast(f64), a_f64);
     try expectEqual(a_f64.cast(f32), a);
+}
+
+test "zalgebra.Quaternion.inv" {
+    const eps_value = comptime std.math.epsilon(f32);
+    const out = Quat.new(7, 4, 5, 9).inv();
+    const answ = Quat.new(0.0409357, -0.0233918, -0.0292398, -0.0526316);
+    try expect(std.math.approxEqAbs(f32, out.w, answ.w, eps_value));
+    try expect(std.math.approxEqAbs(f32, out.x, answ.x, eps_value));
+    try expect(std.math.approxEqAbs(f32, out.y, answ.y, eps_value));
+    try expect(std.math.approxEqAbs(f32, out.z, answ.z, eps_value));
 }

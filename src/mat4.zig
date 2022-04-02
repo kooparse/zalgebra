@@ -30,7 +30,7 @@ pub fn Mat4x4(comptime T: type) type {
     const Vector3 = GenericVector(3, T);
     const Vector4 = GenericVector(4, T);
 
-    return struct {
+    return extern struct {
         data: [4][4]T = mem.zeroes([4][4]T),
 
         const Self = @This();
