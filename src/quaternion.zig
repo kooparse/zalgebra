@@ -26,7 +26,7 @@ pub fn Quaternion(comptime T: type) type {
 
     const Vector3 = GenericVector(3, T);
 
-    return struct {
+    return extern struct {
         w: T,
         x: T,
         y: T,
