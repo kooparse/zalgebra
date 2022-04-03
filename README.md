@@ -80,7 +80,8 @@ norm | Construct a new normalized vector based on the given one
 eql | Return `true` if two vectors are equals
 sub | Construct new vector resulting from the substraction between two vectors
 add | Construct new vector resulting from the addition between two vectors
-scale | Construct new vector after multiplying each components by the given scalar
+mul | Construct new vector resulting from the multiplication between two vectors
+scale | Construct new vector after multiplying each components by a given scalar
 cross | Construct the cross product (as vector) from two vectors (only for vec3)
 dot | Return the dot product between two vectors
 lerp | Linear interpolation between two vectors
@@ -125,18 +126,19 @@ debugPrint | Print the matrix data for debug purpose
 Methods | Description
 ------------ | -------------
 new | Construct new quat from given floats
+identity | Construct quat as `(1, 0, 0, 0)`
 set | Set all components to the same given value
-zero | Construct quat as `(1, 0, 0, 0)`
 cast | Cast a type to another type
 fromSlice | Construct new quaternion from slice
 fromVec3 | Construct quaternion from vec3
 eql | Return `true` if two quaternions are equal
 norm | Normalize given quaternion
 length | Return the magniture of the given quaternion
+inv | Construct inverse quaternion
 sub | Construct quaternion resulting from the subtraction of two given ones
 add | Construct quaternion resulting from the addition of two given ones
 mul | Construct quaternion resulting from the multiplication of two given ones
-scale | Construct quaternion resulting from the multiplication of all components of the given quat
+scale | Construct new quaternion resulting from the multiplication of all components by a given scalar
 dot | Return the dot product between two quaternions
 toMat4 | Convert given quat to rotation 4x4 matrix
 fromEulerAngles | Construct quaternion from Euler angles

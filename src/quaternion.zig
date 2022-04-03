@@ -34,15 +34,6 @@ pub fn Quaternion(comptime T: type) type {
 
         const Self = @This();
 
-        pub fn identity() Self {
-            return .{
-                .w = 1,
-                .x = 0,
-                .y = 0,
-                .z = 0,
-            };
-        }
-
         /// Construct new quaternion from floats.
         pub fn new(w: T, x: T, y: T, z: T) Self {
             return .{
@@ -53,14 +44,19 @@ pub fn Quaternion(comptime T: type) type {
             };
         }
 
+        /// Shorthand for (1, 0, 0, 0).
+        pub fn identity() Self {
+            return .{
+                .w = 1,
+                .x = 0,
+                .y = 0,
+                .z = 0,
+            };
+        }
+
         /// Set all components to the same given value.
         pub fn set(val: T) Self {
             return new(val, val, val, val);
-        }
-
-        /// Shorthand for (1, 0, 0, 0).
-        pub fn zero() Self {
-            return Self.new(1, 0, 0, 0);
         }
 
         /// Construct new quaternion from slice.
@@ -490,7 +486,7 @@ test "zalgebra.Quaternion.rotateVec" {
 
 test "zalgebra.Quaternion.lerp" {
     const eps_value = comptime std.math.epsilon(f32);
-    var v1 = Quat.zero();
+    var v1 = Quat.identity();
     var v2 = Quat.fromAxis(180, Vec3.up());
     try expectEqual(Quat.lerp(v1, v2, 1.0), v2);
     var v3 = Quat.lerp(v1, v2, 0.5);
@@ -503,7 +499,7 @@ test "zalgebra.Quaternion.lerp" {
 
 test "zalgebra.Quaternion.slerp" {
     const eps_value = comptime std.math.epsilon(f32);
-    var v1 = Quat.zero();
+    var v1 = Quat.identity();
     var v2 = Quat.fromAxis(180, Vec3.up());
     try expectEqual(Quat.slerp(v1, v2, 1.0), Quat.new(7.54979012e-08, 0, -1, 0));
     var v3 = Quat.slerp(v1, v2, 0.5);

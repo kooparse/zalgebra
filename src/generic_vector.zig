@@ -276,7 +276,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return .{ .data = result };
         }
 
-        /// Construct new vector after multiplying each components by the given scalar
+        /// Construct new vector after multiplying each components by a given scalar
         pub fn scale(vector: Self, scalar: T) Self {
             const result = vector.data * @splat(dimensions, scalar);
             return .{ .data = result };
