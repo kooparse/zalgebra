@@ -268,10 +268,10 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
         /// Linear interpolation between two vectors
         pub fn lerp(left_vector: Self, right_vector: Self, t: T) Self {
-            var result: [dimensions]T = undefined;
-            for (result) |_, i| {
-                result[i] = root.lerp(T, left_vector.data[i], right_vector.data[i], t);
-            }
+            const from = left_vector.data;
+            const to = right_vector.data;
+
+            const result = from + (to - from) * @splat(dimensions, t);
             return .{ .data = result };
         }
     };
