@@ -198,11 +198,13 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         /// Return the length (magnitude) of given vector.
+        /// √[x^2 + y^2 + z^2 ...]
         pub fn length(vector: Self) T {
             return @sqrt(vector.dot(vector));
         }
 
         /// Return the distance between two points.
+        /// √[(x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2 ...]
         pub fn distance(a: Self, b: Self) T {
             return length(b.sub(a));
         }
@@ -259,6 +261,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         /// Return the dot product between two given vector.
+        /// (x1 * x2) + (y1 * y2) + (z1 * z2) ...
         pub fn dot(left_vector: Self, right_vector: Self) T {
             return @reduce(.Add, left_vector.data * right_vector.data);
         }
