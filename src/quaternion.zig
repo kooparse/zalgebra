@@ -4,6 +4,8 @@ const meta = std.meta;
 const generic_vector = @import("generic_vector.zig");
 const mat4 = @import("mat4.zig");
 const math = std.math;
+const eps_value = math.floatEps(f32);
+const expectApproxEqAbs = std.testing.expectApproxEqAbs;
 const expectApproxEqRel = std.testing.expectApproxEqRel;
 const expectEqual = std.testing.expectEqual;
 const expect = std.testing.expect;
@@ -450,11 +452,10 @@ test "zalgebra.Quaternion.extractAxisAngle" {
     const axis = Vec3.new(44, 120, 8).norm();
     const q1 = Quat.fromAxis(45, axis);
     const res = q1.extractAxisAngle();
-    const eps_value = comptime math.epsilon(f32);
 
-    try expect(math.approxEqRel(f32, axis.x(), res.axis.x(), eps_value) and
-        math.approxEqRel(f32, axis.y(), res.axis.y(), eps_value) and
-        math.approxEqRel(f32, axis.z(), res.axis.z(), eps_value));
+    try expectApproxEqRel(axis.x(), res.axis.x(), eps_value);
+    try expectApproxEqRel(axis.y(), res.axis.y(), eps_value);
+    try expectApproxEqRel(axis.z(), res.axis.z(), eps_value);
 
     try expectApproxEqRel(@as(f32, 45.0000076), res.angle, eps_value);
 }
@@ -467,7 +468,6 @@ test "zalgebra.Quaternion.extractEulerAngles" {
 }
 
 test "zalgebra.Quaternion.rotateVec" {
-    const eps_value = comptime std.math.epsilon(f32);
     const q = Quat.fromEulerAngles(Vec3.set(45));
     const m = q.toMat4();
 
@@ -475,39 +475,37 @@ test "zalgebra.Quaternion.rotateVec" {
     const v1 = q.rotateVec(v);
     const v2 = m.mulByVec4(Vec4.new(v.x(), v.y(), v.z(), 1.0));
 
-    try expect(std.math.approxEqAbs(f32, v1.x(), -1.46446585e-01, eps_value));
-    try expect(std.math.approxEqAbs(f32, v1.y(), 8.53553473e-01, eps_value));
-    try expect(std.math.approxEqAbs(f32, v1.z(), 0.5, eps_value));
+    try expectApproxEqAbs(v1.x(), -1.46446585e-01, eps_value);
+    try expectApproxEqAbs(v1.y(), 8.53553473e-01, eps_value);
+    try expectApproxEqAbs(v1.z(), 0.5, eps_value);
 
-    try expect(std.math.approxEqAbs(f32, v1.x(), v2.data[0], eps_value));
-    try expect(std.math.approxEqAbs(f32, v1.y(), v2.data[1], eps_value));
-    try expect(std.math.approxEqAbs(f32, v1.z(), v2.data[2], eps_value));
+    try expectApproxEqAbs(v1.x(), v2.data[0], eps_value);
+    try expectApproxEqAbs(v1.y(), v2.data[1], eps_value);
+    try expectApproxEqAbs(v1.z(), v2.data[2], eps_value);
 }
 
 test "zalgebra.Quaternion.lerp" {
-    const eps_value = comptime std.math.epsilon(f32);
     var v1 = Quat.identity();
     var v2 = Quat.fromAxis(180, Vec3.up());
     try expectEqual(Quat.lerp(v1, v2, 1.0), v2);
     var v3 = Quat.lerp(v1, v2, 0.5);
     var v4 = Quat.new(4.99999970e-01, 0, 4.99999970e-01, 0);
-    try expect(std.math.approxEqAbs(f32, v3.w, v4.w, eps_value));
-    try expect(std.math.approxEqAbs(f32, v3.x, v4.x, eps_value));
-    try expect(std.math.approxEqAbs(f32, v3.y, v4.y, eps_value));
-    try expect(std.math.approxEqAbs(f32, v3.z, v4.z, eps_value));
+    try expectApproxEqAbs(v3.w, v4.w, eps_value);
+    try expectApproxEqAbs(v3.x, v4.x, eps_value);
+    try expectApproxEqAbs(v3.y, v4.y, eps_value);
+    try expectApproxEqAbs(v3.z, v4.z, eps_value);
 }
 
 test "zalgebra.Quaternion.slerp" {
-    const eps_value = comptime std.math.epsilon(f32);
     var v1 = Quat.identity();
     var v2 = Quat.fromAxis(180, Vec3.up());
     try expectEqual(Quat.slerp(v1, v2, 1.0), Quat.new(7.54979012e-08, 0, -1, 0));
     var v3 = Quat.slerp(v1, v2, 0.5);
     var v4 = Quat.new(7.071067e-01, 0, -7.071067e-01, 0);
-    try expect(std.math.approxEqAbs(f32, v3.w, v4.w, eps_value));
-    try expect(std.math.approxEqAbs(f32, v3.x, v4.x, eps_value));
-    try expect(std.math.approxEqAbs(f32, v3.y, v4.y, eps_value));
-    try expect(std.math.approxEqAbs(f32, v3.z, v4.z, eps_value));
+    try expectApproxEqAbs(v3.w, v4.w, eps_value);
+    try expectApproxEqAbs(v3.x, v4.x, eps_value);
+    try expectApproxEqAbs(v3.y, v4.y, eps_value);
+    try expectApproxEqAbs(v3.z, v4.z, eps_value);
 }
 
 test "zalgebra.Quaternion.cast" {
@@ -518,11 +516,10 @@ test "zalgebra.Quaternion.cast" {
 }
 
 test "zalgebra.Quaternion.inv" {
-    const eps_value = comptime std.math.epsilon(f32);
     const out = Quat.new(7, 4, 5, 9).inv();
     const answ = Quat.new(0.0409357, -0.0233918, -0.0292398, -0.0526316);
-    try expect(std.math.approxEqAbs(f32, out.w, answ.w, eps_value));
-    try expect(std.math.approxEqAbs(f32, out.x, answ.x, eps_value));
-    try expect(std.math.approxEqAbs(f32, out.y, answ.y, eps_value));
-    try expect(std.math.approxEqAbs(f32, out.z, answ.z, eps_value));
+    try expectApproxEqAbs(out.w, answ.w, eps_value);
+    try expectApproxEqAbs(out.x, answ.x, eps_value);
+    try expectApproxEqAbs(out.y, answ.y, eps_value);
+    try expectApproxEqAbs(out.z, answ.z, eps_value);
 }
