@@ -166,7 +166,6 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         /// Cast a type to another type.
         /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
         pub fn cast(self: Self, dest_type: anytype) GenericVector(dimensions, dest_type) {
-            const source_info = @typeInfo(T);
             const dest_info = @typeInfo(dest_type);
 
             if (dest_info != .Float and dest_info != .Int) {
@@ -175,33 +174,10 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
             var result: [dimensions]dest_type = undefined;
 
-            if (source_info == .Float and dest_info == .Int) {
-                for (result) |_, i| {
-                    result[i] = @floatToInt(dest_type, self.data[i]);
-                }
-                return .{ .data = result };
+            for (result) |_, i| {
+                result[i] = math.lossyCast(dest_type, self.data[i]);
             }
-
-            if (source_info == .Int and dest_info == .Float) {
-                for (result) |_, i| {
-                    result[i] = @intToFloat(dest_type, self.data[i]);
-                }
-                return .{ .data = result };
-            }
-
-            if (source_info == .Float and dest_info == .Float) {
-                for (result) |_, i| {
-                    result[i] = @floatCast(dest_type, self.data[i]);
-                }
-                return .{ .data = result };
-            }
-
-            if (source_info == .Int and dest_info == .Int) {
-                for (result) |_, i| {
-                    result[i] = @intCast(dest_type, self.data[i]);
-                }
-                return .{ .data = result };
-            }
+            return .{ .data = result };
         }
 
         /// Construct new vector from slice.
