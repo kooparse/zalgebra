@@ -3,7 +3,6 @@ const math = std.math;
 const meta = std.meta;
 const mem = std.mem;
 const expectEqual = std.testing.expectEqual;
-const print = std.debug.print;
 const root = @import("main.zig");
 const generic_vector = @import("generic_vector.zig");
 const quat = @import("quaternion.zig");
@@ -31,7 +30,7 @@ pub fn Mat4x4(comptime T: type) type {
     const Vector4 = GenericVector(4, T);
 
     return extern struct {
-        data: [4][4]T = mem.zeroes([4][4]T),
+        data: [4][4]T,
 
         const Self = @This();
 
@@ -47,22 +46,14 @@ pub fn Mat4x4(comptime T: type) type {
             };
         }
 
-        /// Shorthand for matrix with all zeros.    
+        /// Shorthand for matrix with all zeros.
         pub fn zero() Self {
-            return .{
-                .data = .{
-                    .{ 0, 0, 0, 0 },
-                    .{ 0, 0, 0, 0 },
-                    .{ 0, 0, 0, 0 },
-                    .{ 0, 0, 0, 0 },
-                },
-            };
+            return Self.set(0);
         }
 
         /// Set all mat4 values to given value.
         pub fn set(value: T) Self {
-            var data: [16]T = undefined;
-            mem.set(T, &data, value);
+            const data: [16]T = .{value} ** 16;
             return Self.fromSlice(&data);
         }
 
@@ -79,8 +70,8 @@ pub fn Mat4x4(comptime T: type) type {
         }
 
         /// Negate the given matrix.
-        pub fn negate(mat: Self) Self {
-            var result = mat;
+        pub fn negate(self: Self) Self {
+            var result = self;
             for (result.data) |_, column| {
                 for (result.data[column]) |_, row| {
                     result.data[column][row] = -result.data[column][row];
@@ -90,8 +81,8 @@ pub fn Mat4x4(comptime T: type) type {
         }
 
         /// Transpose the given matrix.
-        pub fn transpose(mat: Self) Self {
-            var result = mat;
+        pub fn transpose(self: Self) Self {
+            var result = self;
             for (result.data) |_, column| {
                 var row: usize = column;
                 while (row < 4) : (row += 1) {
@@ -102,8 +93,8 @@ pub fn Mat4x4(comptime T: type) type {
         }
 
         /// Return a pointer to the inner data of the matrix.
-        pub fn getData(mat: *const Self) *const T {
-            return @ptrCast(*const T, &mat.data);
+        pub fn getData(self: *const Self) *const T {
+            return @ptrCast(*const T, &self.data);
         }
 
         /// Return true if two matrices are equals.
@@ -111,11 +102,11 @@ pub fn Mat4x4(comptime T: type) type {
             return meta.eql(left, right);
         }
 
-        pub fn mulByVec4(mat: Self, v: Vector4) Vector4 {
-            const x = (mat.data[0][0] * v.x()) + (mat.data[1][0] * v.y()) + (mat.data[2][0] * v.z()) + (mat.data[3][0] * v.w());
-            const y = (mat.data[0][1] * v.x()) + (mat.data[1][1] * v.y()) + (mat.data[2][1] * v.z()) + (mat.data[3][1] * v.w());
-            const z = (mat.data[0][2] * v.x()) + (mat.data[1][2] * v.y()) + (mat.data[2][2] * v.z()) + (mat.data[3][2] * v.w());
-            const w = (mat.data[0][3] * v.x()) + (mat.data[1][3] * v.y()) + (mat.data[2][3] * v.z()) + (mat.data[3][3] * v.w());
+        pub fn mulByVec4(self: Self, v: Vector4) Vector4 {
+            const x = (self.data[0][0] * v.x()) + (self.data[1][0] * v.y()) + (self.data[2][0] * v.z()) + (self.data[3][0] * v.w());
+            const y = (self.data[0][1] * v.x()) + (self.data[1][1] * v.y()) + (self.data[2][1] * v.z()) + (self.data[3][1] * v.w());
+            const z = (self.data[0][2] * v.x()) + (self.data[1][2] * v.y()) + (self.data[2][2] * v.z()) + (self.data[3][2] * v.w());
+            const w = (self.data[0][3] * v.x()) + (self.data[1][3] * v.y()) + (self.data[2][3] * v.z()) + (self.data[3][3] * v.w());
 
             return Vector4.new(x, y, z, w);
         }
@@ -123,18 +114,18 @@ pub fn Mat4x4(comptime T: type) type {
         /// Construct 4x4 translation matrix by multiplying identity matrix and
         /// given translation vector.
         pub fn fromTranslate(axis: Vector3) Self {
-            var mat = Self.identity();
-            mat.data[3][0] = axis.data[0];
-            mat.data[3][1] = axis.data[1];
-            mat.data[3][2] = axis.data[2];
+            var result = Self.identity();
+            result.data[3][0] = axis.data[0];
+            result.data[3][1] = axis.data[1];
+            result.data[3][2] = axis.data[2];
 
-            return mat;
+            return result;
         }
 
         /// Make a translation between the given matrix and the given axis.
-        pub fn translate(mat: Self, axis: Vector3) Self {
+        pub fn translate(self: Self, axis: Vector3) Self {
             const trans_mat = Self.fromTranslate(axis);
-            return Self.mul(trans_mat, mat);
+            return Self.mul(trans_mat, self);
         }
 
         /// Get translation Vec3 from current matrix.
@@ -144,36 +135,36 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Construct a 4x4 matrix from given axis and angle (in degrees).
         pub fn fromRotation(angle_in_degrees: T, axis: Vector3) Self {
-            var mat = Self.identity();
+            var result = Self.identity();
 
             const norm_axis = axis.norm();
 
             const sin_theta = @sin(root.toRadians(angle_in_degrees));
             const cos_theta = @cos(root.toRadians(angle_in_degrees));
-            const cos_value = 1.0 - cos_theta;
+            const cos_value = 1 - cos_theta;
 
             const x = norm_axis.x();
             const y = norm_axis.y();
             const z = norm_axis.z();
 
-            mat.data[0][0] = (x * x * cos_value) + cos_theta;
-            mat.data[0][1] = (x * y * cos_value) + (z * sin_theta);
-            mat.data[0][2] = (x * z * cos_value) - (y * sin_theta);
+            result.data[0][0] = (x * x * cos_value) + cos_theta;
+            result.data[0][1] = (x * y * cos_value) + (z * sin_theta);
+            result.data[0][2] = (x * z * cos_value) - (y * sin_theta);
 
-            mat.data[1][0] = (y * x * cos_value) - (z * sin_theta);
-            mat.data[1][1] = (y * y * cos_value) + cos_theta;
-            mat.data[1][2] = (y * z * cos_value) + (x * sin_theta);
+            result.data[1][0] = (y * x * cos_value) - (z * sin_theta);
+            result.data[1][1] = (y * y * cos_value) + cos_theta;
+            result.data[1][2] = (y * z * cos_value) + (x * sin_theta);
 
-            mat.data[2][0] = (z * x * cos_value) + (y * sin_theta);
-            mat.data[2][1] = (z * y * cos_value) - (x * sin_theta);
-            mat.data[2][2] = (z * z * cos_value) + cos_theta;
+            result.data[2][0] = (z * x * cos_value) + (y * sin_theta);
+            result.data[2][1] = (z * y * cos_value) - (x * sin_theta);
+            result.data[2][2] = (z * z * cos_value) + cos_theta;
 
-            return mat;
+            return result;
         }
 
-        pub fn rotate(mat: Self, angle_in_degrees: T, axis: Vector3) Self {
+        pub fn rotate(self: Self, angle_in_degrees: T, axis: Vector3) Self {
             const rotation_mat = Self.fromRotation(angle_in_degrees, axis);
-            return Self.mul(mat, rotation_mat);
+            return Self.mul(self, rotation_mat);
         }
 
         /// Construct a rotation matrix from euler angles (X * Y * Z).
@@ -187,12 +178,12 @@ pub fn Mat4x4(comptime T: type) type {
         }
 
         /// Ortho normalize given matrix.
-        pub fn orthoNormalize(mat: Self) Self {
-            const column_1 = Vector3.new(mat.data[0][0], mat.data[0][1], mat.data[0][2]).norm();
-            const column_2 = Vector3.new(mat.data[1][0], mat.data[1][1], mat.data[1][2]).norm();
-            const column_3 = Vector3.new(mat.data[2][0], mat.data[2][1], mat.data[2][2]).norm();
+        pub fn orthoNormalize(self: Self) Self {
+            const column_1 = Vector3.new(self.data[0][0], self.data[0][1], self.data[0][2]).norm();
+            const column_2 = Vector3.new(self.data[1][0], self.data[1][1], self.data[1][2]).norm();
+            const column_3 = Vector3.new(self.data[2][0], self.data[2][1], self.data[2][2]).norm();
 
-            var result = mat;
+            var result = self;
 
             result.data[0][0] = column_1.x();
             result.data[0][1] = column_1.y();
@@ -216,7 +207,7 @@ pub fn Mat4x4(comptime T: type) type {
             const m = self.orthoNormalize();
 
             const theta_x = math.atan2(T, m.data[1][2], m.data[2][2]);
-            const c2 = @sqrt(math.pow(f32, m.data[0][0], 2) + math.pow(f32, m.data[0][1], 2));
+            const c2 = @sqrt(math.pow(T, m.data[0][0], 2) + math.pow(T, m.data[0][1], 2));
             const theta_y = math.atan2(T, -m.data[0][2], @sqrt(c2));
             const s1 = @sin(theta_x);
             const c1 = @cos(theta_x);
@@ -226,24 +217,24 @@ pub fn Mat4x4(comptime T: type) type {
         }
 
         pub fn fromScale(axis: Vector3) Self {
-            var mat = Self.identity();
+            var result = Self.identity();
 
-            mat.data[0][0] = axis.x();
-            mat.data[1][1] = axis.y();
-            mat.data[2][2] = axis.z();
+            result.data[0][0] = axis.x();
+            result.data[1][1] = axis.y();
+            result.data[2][2] = axis.z();
 
-            return mat;
+            return result;
         }
 
-        pub fn scale(mat: Self, axis: Vector3) Self {
+        pub fn scale(self: Self, axis: Vector3) Self {
             const scale_mat = Self.fromScale(axis);
-            return Self.mul(scale_mat, mat);
+            return Self.mul(scale_mat, self);
         }
 
-        pub fn extractScale(mat: Self) Vector3 {
-            const scale_x = Vector3.new(mat.data[0][0], mat.data[0][1], mat.data[0][2]);
-            const scale_y = Vector3.new(mat.data[1][0], mat.data[1][1], mat.data[1][2]);
-            const scale_z = Vector3.new(mat.data[2][0], mat.data[2][1], mat.data[2][2]);
+        pub fn extractScale(self: Self) Vector3 {
+            const scale_x = Vector3.new(self.data[0][0], self.data[0][1], self.data[0][2]);
+            const scale_y = Vector3.new(self.data[1][0], self.data[1][1], self.data[1][2]);
+            const scale_z = Vector3.new(self.data[2][0], self.data[2][1], self.data[2][2]);
 
             return Vector3.new(scale_x.length(), scale_y.length(), scale_z.length());
         }
@@ -252,34 +243,34 @@ pub fn Mat4x4(comptime T: type) type {
         /// Note: Field of view is given in degrees.
         /// Also for more details https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml.
         pub fn perspective(fovy_in_degrees: T, aspect_ratio: T, z_near: T, z_far: T) Self {
-            var mat: Self = Self.identity();
+            var result = Self.identity();
 
-            const f = 1.0 / math.tan(root.toRadians(fovy_in_degrees) * 0.5);
+            const f = 1 / @tan(root.toRadians(fovy_in_degrees) * 0.5);
 
-            mat.data[0][0] = f / aspect_ratio;
-            mat.data[1][1] = f;
-            mat.data[2][2] = (z_near + z_far) / (z_near - z_far);
-            mat.data[2][3] = -1;
-            mat.data[3][2] = 2 * z_far * z_near / (z_near - z_far);
-            mat.data[3][3] = 0;
+            result.data[0][0] = f / aspect_ratio;
+            result.data[1][1] = f;
+            result.data[2][2] = (z_near + z_far) / (z_near - z_far);
+            result.data[2][3] = -1;
+            result.data[3][2] = 2 * z_far * z_near / (z_near - z_far);
+            result.data[3][3] = 0;
 
-            return mat;
+            return result;
         }
 
         /// Construct an orthographic 4x4 matrix.
         pub fn orthographic(left: T, right: T, bottom: T, top: T, z_near: T, z_far: T) Self {
-            var mat = Self{};
+            var result = Self.zero();
 
-            mat.data[0][0] = 2.0 / (right - left);
-            mat.data[1][1] = 2.0 / (top - bottom);
-            mat.data[2][2] = 2.0 / (z_near - z_far);
-            mat.data[3][3] = 1.0;
+            result.data[0][0] = 2 / (right - left);
+            result.data[1][1] = 2 / (top - bottom);
+            result.data[2][2] = 2 / (z_near - z_far);
+            result.data[3][3] = 1;
 
-            mat.data[3][0] = (left + right) / (left - right);
-            mat.data[3][1] = (bottom + top) / (bottom - top);
-            mat.data[3][2] = (z_far + z_near) / (z_near - z_far);
+            result.data[3][0] = (left + right) / (left - right);
+            result.data[3][1] = (bottom + top) / (bottom - top);
+            result.data[3][2] = (z_far + z_near) / (z_near - z_far);
 
-            return mat;
+            return result;
         }
 
         /// Right-handed lookAt function.
@@ -288,28 +279,28 @@ pub fn Mat4x4(comptime T: type) type {
             const s = Vector3.cross(f, up).norm();
             const u = Vector3.cross(s, f);
 
-            var mat: Self = undefined;
-            mat.data[0][0] = s.x();
-            mat.data[0][1] = u.x();
-            mat.data[0][2] = -f.x();
-            mat.data[0][3] = 0;
+            var result: Self = undefined;
+            result.data[0][0] = s.x();
+            result.data[0][1] = u.x();
+            result.data[0][2] = -f.x();
+            result.data[0][3] = 0;
 
-            mat.data[1][0] = s.y();
-            mat.data[1][1] = u.y();
-            mat.data[1][2] = -f.y();
-            mat.data[1][3] = 0;
+            result.data[1][0] = s.y();
+            result.data[1][1] = u.y();
+            result.data[1][2] = -f.y();
+            result.data[1][3] = 0;
 
-            mat.data[2][0] = s.z();
-            mat.data[2][1] = u.z();
-            mat.data[2][2] = -f.z();
-            mat.data[2][3] = 0;
+            result.data[2][0] = s.z();
+            result.data[2][1] = u.z();
+            result.data[2][2] = -f.z();
+            result.data[2][3] = 0;
 
-            mat.data[3][0] = -Vector3.dot(s, eye);
-            mat.data[3][1] = -Vector3.dot(u, eye);
-            mat.data[3][2] = Vector3.dot(f, eye);
-            mat.data[3][3] = 1;
+            result.data[3][0] = -Vector3.dot(s, eye);
+            result.data[3][1] = -Vector3.dot(u, eye);
+            result.data[3][2] = Vector3.dot(f, eye);
+            result.data[3][3] = 1;
 
-            return mat;
+            return result;
         }
 
         /// Matrices' multiplication.
@@ -319,9 +310,8 @@ pub fn Mat4x4(comptime T: type) type {
             for (result.data) |_, column| {
                 for (result.data[column]) |_, row| {
                     var sum: T = 0;
-                    var left_column: usize = 0;
 
-                    while (left_column < 4) : (left_column += 1) {
+                    for (left.data) |_, left_column| {
                         sum += left.data[left_column][row] * right.data[column][left_column];
                     }
 
@@ -334,63 +324,63 @@ pub fn Mat4x4(comptime T: type) type {
         /// Construct inverse 4x4 from given matrix.
         /// Note: This is not the most efficient way to do this.
         /// TODO: Make it more efficient.
-        pub fn inv(mat: Self) Self {
+        pub fn inv(self: Self) Self {
             var inv_mat: Self = undefined;
 
             var s: [6]T = undefined;
             var c: [6]T = undefined;
 
-            s[0] = mat.data[0][0] * mat.data[1][1] - mat.data[1][0] * mat.data[0][1];
-            s[1] = mat.data[0][0] * mat.data[1][2] - mat.data[1][0] * mat.data[0][2];
-            s[2] = mat.data[0][0] * mat.data[1][3] - mat.data[1][0] * mat.data[0][3];
-            s[3] = mat.data[0][1] * mat.data[1][2] - mat.data[1][1] * mat.data[0][2];
-            s[4] = mat.data[0][1] * mat.data[1][3] - mat.data[1][1] * mat.data[0][3];
-            s[5] = mat.data[0][2] * mat.data[1][3] - mat.data[1][2] * mat.data[0][3];
+            s[0] = self.data[0][0] * self.data[1][1] - self.data[1][0] * self.data[0][1];
+            s[1] = self.data[0][0] * self.data[1][2] - self.data[1][0] * self.data[0][2];
+            s[2] = self.data[0][0] * self.data[1][3] - self.data[1][0] * self.data[0][3];
+            s[3] = self.data[0][1] * self.data[1][2] - self.data[1][1] * self.data[0][2];
+            s[4] = self.data[0][1] * self.data[1][3] - self.data[1][1] * self.data[0][3];
+            s[5] = self.data[0][2] * self.data[1][3] - self.data[1][2] * self.data[0][3];
 
-            c[0] = mat.data[2][0] * mat.data[3][1] - mat.data[3][0] * mat.data[2][1];
-            c[1] = mat.data[2][0] * mat.data[3][2] - mat.data[3][0] * mat.data[2][2];
-            c[2] = mat.data[2][0] * mat.data[3][3] - mat.data[3][0] * mat.data[2][3];
-            c[3] = mat.data[2][1] * mat.data[3][2] - mat.data[3][1] * mat.data[2][2];
-            c[4] = mat.data[2][1] * mat.data[3][3] - mat.data[3][1] * mat.data[2][3];
-            c[5] = mat.data[2][2] * mat.data[3][3] - mat.data[3][2] * mat.data[2][3];
+            c[0] = self.data[2][0] * self.data[3][1] - self.data[3][0] * self.data[2][1];
+            c[1] = self.data[2][0] * self.data[3][2] - self.data[3][0] * self.data[2][2];
+            c[2] = self.data[2][0] * self.data[3][3] - self.data[3][0] * self.data[2][3];
+            c[3] = self.data[2][1] * self.data[3][2] - self.data[3][1] * self.data[2][2];
+            c[4] = self.data[2][1] * self.data[3][3] - self.data[3][1] * self.data[2][3];
+            c[5] = self.data[2][2] * self.data[3][3] - self.data[3][2] * self.data[2][3];
 
-            const determ = 1.0 / (s[0] * c[5] - s[1] * c[4] + s[2] * c[3] + s[3] * c[2] - s[4] * c[1] + s[5] * c[0]);
+            const determ = 1 / (s[0] * c[5] - s[1] * c[4] + s[2] * c[3] + s[3] * c[2] - s[4] * c[1] + s[5] * c[0]);
 
             inv_mat.data[0][0] =
-                (mat.data[1][1] * c[5] - mat.data[1][2] * c[4] + mat.data[1][3] * c[3]) * determ;
+                (self.data[1][1] * c[5] - self.data[1][2] * c[4] + self.data[1][3] * c[3]) * determ;
             inv_mat.data[0][1] =
-                (-mat.data[0][1] * c[5] + mat.data[0][2] * c[4] - mat.data[0][3] * c[3]) * determ;
+                (-self.data[0][1] * c[5] + self.data[0][2] * c[4] - self.data[0][3] * c[3]) * determ;
             inv_mat.data[0][2] =
-                (mat.data[3][1] * s[5] - mat.data[3][2] * s[4] + mat.data[3][3] * s[3]) * determ;
+                (self.data[3][1] * s[5] - self.data[3][2] * s[4] + self.data[3][3] * s[3]) * determ;
             inv_mat.data[0][3] =
-                (-mat.data[2][1] * s[5] + mat.data[2][2] * s[4] - mat.data[2][3] * s[3]) * determ;
+                (-self.data[2][1] * s[5] + self.data[2][2] * s[4] - self.data[2][3] * s[3]) * determ;
 
             inv_mat.data[1][0] =
-                (-mat.data[1][0] * c[5] + mat.data[1][2] * c[2] - mat.data[1][3] * c[1]) * determ;
+                (-self.data[1][0] * c[5] + self.data[1][2] * c[2] - self.data[1][3] * c[1]) * determ;
             inv_mat.data[1][1] =
-                (mat.data[0][0] * c[5] - mat.data[0][2] * c[2] + mat.data[0][3] * c[1]) * determ;
+                (self.data[0][0] * c[5] - self.data[0][2] * c[2] + self.data[0][3] * c[1]) * determ;
             inv_mat.data[1][2] =
-                (-mat.data[3][0] * s[5] + mat.data[3][2] * s[2] - mat.data[3][3] * s[1]) * determ;
+                (-self.data[3][0] * s[5] + self.data[3][2] * s[2] - self.data[3][3] * s[1]) * determ;
             inv_mat.data[1][3] =
-                (mat.data[2][0] * s[5] - mat.data[2][2] * s[2] + mat.data[2][3] * s[1]) * determ;
+                (self.data[2][0] * s[5] - self.data[2][2] * s[2] + self.data[2][3] * s[1]) * determ;
 
             inv_mat.data[2][0] =
-                (mat.data[1][0] * c[4] - mat.data[1][1] * c[2] + mat.data[1][3] * c[0]) * determ;
+                (self.data[1][0] * c[4] - self.data[1][1] * c[2] + self.data[1][3] * c[0]) * determ;
             inv_mat.data[2][1] =
-                (-mat.data[0][0] * c[4] + mat.data[0][1] * c[2] - mat.data[0][3] * c[0]) * determ;
+                (-self.data[0][0] * c[4] + self.data[0][1] * c[2] - self.data[0][3] * c[0]) * determ;
             inv_mat.data[2][2] =
-                (mat.data[3][0] * s[4] - mat.data[3][1] * s[2] + mat.data[3][3] * s[0]) * determ;
+                (self.data[3][0] * s[4] - self.data[3][1] * s[2] + self.data[3][3] * s[0]) * determ;
             inv_mat.data[2][3] =
-                (-mat.data[2][0] * s[4] + mat.data[2][1] * s[2] - mat.data[2][3] * s[0]) * determ;
+                (-self.data[2][0] * s[4] + self.data[2][1] * s[2] - self.data[2][3] * s[0]) * determ;
 
             inv_mat.data[3][0] =
-                (-mat.data[1][0] * c[3] + mat.data[1][1] * c[1] - mat.data[1][2] * c[0]) * determ;
+                (-self.data[1][0] * c[3] + self.data[1][1] * c[1] - self.data[1][2] * c[0]) * determ;
             inv_mat.data[3][1] =
-                (mat.data[0][0] * c[3] - mat.data[0][1] * c[1] + mat.data[0][2] * c[0]) * determ;
+                (self.data[0][0] * c[3] - self.data[0][1] * c[1] + self.data[0][2] * c[0]) * determ;
             inv_mat.data[3][2] =
-                (-mat.data[3][0] * s[3] + mat.data[3][1] * s[1] - mat.data[3][2] * s[0]) * determ;
+                (-self.data[3][0] * s[3] + self.data[3][1] * s[1] - self.data[3][2] * s[0]) * determ;
             inv_mat.data[3][3] =
-                (mat.data[2][0] * s[3] - mat.data[2][1] * s[1] + mat.data[2][2] * s[0]) * determ;
+                (self.data[2][0] * s[3] - self.data[2][1] * s[1] + self.data[2][2] * s[0]) * determ;
 
             return inv_mat;
         }
@@ -415,10 +405,10 @@ pub fn Mat4x4(comptime T: type) type {
         /// For now, the rotation returned is a quaternion. If you want to get Euler angles
         /// from it, just do: `returned_quat.extractEulerAngles()`.
         /// Note: We ortho nornalize the given matrix before extracting the rotation.
-        pub fn decompose(mat: Self) struct { t: Vector3, r: Quaternion(T), s: Vector3 } {
-            const t = mat.extractTranslation();
-            const s = mat.extractScale();
-            const r = Quat.fromMat4(mat.orthoNormalize());
+        pub fn decompose(self: Self) struct { t: Vector3, r: Quaternion(T), s: Vector3 } {
+            const t = self.extractTranslation();
+            const s = self.extractScale();
+            const r = Quaternion(T).fromMat4(self.orthoNormalize());
 
             return .{
                 .t = t,
@@ -429,6 +419,8 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Print the 4x4 to stderr.
         pub fn debugPrint(self: Self) void {
+            const print = std.debug.print;
+
             print("({d}, {d}, {d}, {d})\n", .{
                 self.data[0][0],
                 self.data[1][0],

@@ -12,42 +12,53 @@ pub usingnamespace @import("quaternion.zig");
 pub fn toRadians(degrees: anytype) @TypeOf(degrees) {
     const T = @TypeOf(degrees);
 
-    return switch (@typeInfo(T)) {
-        .Float => degrees * (math.pi / 180.0),
-        else => @compileError("Radians not implemented for " ++ @typeName(T)),
-    };
+    if (@typeInfo(T) != .Float) {
+        @compileError("Radians not implemented for " ++ @typeName(T));
+    }
+
+    return degrees * (math.pi / 180.0);
 }
 
 /// Convert radians to degrees.
 pub fn toDegrees(radians: anytype) @TypeOf(radians) {
     const T = @TypeOf(radians);
 
-    return switch (@typeInfo(T)) {
-        .Float => radians * (180.0 / math.pi),
-        else => @compileError("Degrees not implemented for " ++ @typeName(T)),
-    };
+    if (@typeInfo(T) != .Float) {
+        @compileError("Radians not implemented for " ++ @typeName(T));
+    }
+
+    return radians * (180.0 / math.pi);
 }
 
 /// Linear interpolation between two floats.
 /// `t` is used to interpolate between `from` and `to`.
 pub fn lerp(comptime T: type, from: T, to: T, t: T) T {
-    return switch (@typeInfo(T)) {
-        .Float => (1 - t) * from + t * to,
-        else => @compileError("Lerp not implemented for " ++ @typeName(T)),
-    };
+    if (@typeInfo(T) != .Float) {
+        @compileError("Lerp not implemented for " ++ @typeName(T));
+    }
+
+    return (1 - t) * from + t * to;
 }
 
 test "zalgebra.toRadians" {
-    try expectEqual(toRadians(@as(f32, 90)), 1.57079637);
-    try expectEqual(toRadians(@as(f32, 45)), 0.785398185);
-    try expectEqual(toRadians(@as(f32, 360)), 6.28318548);
-    try expectEqual(toRadians(@as(f32, 0)), 0.0);
+    try expectEqual(toRadians(@as(f32, 0)), 0);
+    try expectEqual(toRadians(@as(f32, 30)), 0.523598790);
+    try expectEqual(toRadians(@as(f32, 45)), 0.78539818);
+    try expectEqual(toRadians(@as(f32, 60)), 1.04719758);
+    try expectEqual(toRadians(@as(f32, 90)), 1.57079637); //math.pi / 2
+    try expectEqual(toRadians(@as(f32, 180)), 3.14159274); //math.pi
+    try expectEqual(toRadians(@as(f32, 270)), 4.71238899);
+    try expectEqual(toRadians(@as(f32, 360)), 6.28318548); //math.pi * 2
 }
 
 test "zalgebra.toDegrees" {
+    try expectEqual(toDegrees(@as(f32, 0)), 0);
     try expectEqual(toDegrees(@as(f32, 0.5)), 28.6478900);
-    try expectEqual(toDegrees(@as(f32, 1.0)), 57.2957801);
-    try expectEqual(toDegrees(@as(f32, 0.0)), 0.0);
+    try expectEqual(toDegrees(@as(f32, 1)), 57.2957801);
+    try expectEqual(toDegrees(@as(f32, 1.57079637)), 90); //math.pi / 2
+    try expectEqual(toDegrees(@as(f32, 3.14159274)), 180); //math.pi
+    try expectEqual(toDegrees(@as(f32, 4.71238899)), 270);
+    try expectEqual(toDegrees(@as(f32, 6.28318548)), 360); //math.pi * 2
 }
 
 test "zalgebra.lerp" {
