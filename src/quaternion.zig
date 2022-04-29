@@ -345,7 +345,7 @@ pub fn Quaternion(comptime T: type) type {
 
         /// Cast a type to another type.
         /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
-        pub fn cast(self: Self, dest_type: anytype) Quaternion(dest_type) {
+        pub fn cast(self: Self, comptime dest_type: type) Quaternion(dest_type) {
             const dest_info = @typeInfo(dest_type);
 
             if (dest_info != .Float) {

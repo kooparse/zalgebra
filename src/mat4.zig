@@ -452,7 +452,7 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Cast a type to another type.
         /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
-        pub fn cast(self: Self, dest_type: anytype) Mat4x4(dest_type) {
+        pub fn cast(self: Self, comptime dest_type: type) Mat4x4(dest_type) {
             const dest_info = @typeInfo(dest_type);
 
             if (dest_info != .Float) {
