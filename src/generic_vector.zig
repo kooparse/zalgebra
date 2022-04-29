@@ -62,19 +62,19 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                 }
 
                 /// Construct the cross product (as vector) from two vectors.
-                pub fn cross(lhs: Self, rhs: Self) Self {
-                    const lx = lhs.x();
-                    const ly = lhs.y();
-                    const lz = lhs.z();
+                pub fn cross(first_vector: Self, second_vector: Self) Self {
+                    const x1 = first_vector.x();
+                    const y1 = first_vector.y();
+                    const z1 = first_vector.z();
 
-                    const rx = rhs.x();
-                    const ry = rhs.y();
-                    const rz = rhs.z();
+                    const x2 = second_vector.x();
+                    const y2 = second_vector.y();
+                    const z2 = second_vector.z();
 
-                    const vx = (ly * rz) - (lz * ry);
-                    const vy = (lz * rx) - (lx * rz);
-                    const vz = (lx * ry) - (ly * rx);
-                    return new(vx, vy, vz);
+                    const result_x = (y1 * z2) - (z1 * y2);
+                    const result_y = (z1 * x2) - (x1 * z2);
+                    const result_z = (x1 * y2) - (y1 * x2);
+                    return new(result_x, result_y, result_z);
                 }
             },
             4 => extern struct {
@@ -101,7 +101,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     return self.data[3];
                 }
             },
-            else => {},
+            else => unreachable,
         };
 
         pub fn x(self: Self) T {
@@ -159,13 +159,13 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         /// Negate the given vector.
-        pub fn negate(vector: Self) Self {
-            return vector.scale(-1);
+        pub fn negate(self: Self) Self {
+            return self.scale(-1);
         }
 
         /// Cast a type to another type.
         /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
-        pub fn cast(self: Self, dest_type: anytype) GenericVector(dimensions, dest_type) {
+        pub fn cast(self: Self, comptime dest_type: type) GenericVector(dimensions, dest_type) {
             const dest_info = @typeInfo(dest_type);
 
             if (dest_info != .Float and dest_info != .Int) {
@@ -192,84 +192,84 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         /// Return the angle (in degrees) between two vectors.
-        pub fn getAngle(left_vector: Self, right_vector: Self) T {
-            const dot_product = dot(norm(left_vector), norm(right_vector));
+        pub fn getAngle(first_vector: Self, second_vector: Self) T {
+            const dot_product = dot(norm(first_vector), norm(second_vector));
             return root.toDegrees(math.acos(dot_product));
         }
 
         /// Return the length (magnitude) of given vector.
         /// √[x^2 + y^2 + z^2 ...]
-        pub fn length(vector: Self) T {
-            return @sqrt(vector.dot(vector));
+        pub fn length(self: Self) T {
+            return @sqrt(self.dot(self));
         }
 
         /// Return the distance between two points.
         /// √[(x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2 ...]
-        pub fn distance(a: Self, b: Self) T {
-            return length(b.sub(a));
+        pub fn distance(first_vector: Self, second_vector: Self) T {
+            return length(first_vector.sub(second_vector));
         }
 
         /// Construct new normalized vector from a given one.
-        pub fn norm(vector: Self) Self {
-            const l = vector.length();
+        pub fn norm(self: Self) Self {
+            const l = self.length();
             if (l == 0) {
-                return vector;
+                return self;
             }
-            const result = vector.data / @splat(dimensions, l);
+            const result = self.data / @splat(dimensions, l);
             return .{ .data = result };
         }
 
         /// Return true if two vectors are equals.
-        pub fn eql(left_vector: Self, right_vector: Self) bool {
-            return @reduce(.And, left_vector.data == right_vector.data);
+        pub fn eql(first_vector: Self, second_vector: Self) bool {
+            return @reduce(.And, first_vector.data == second_vector.data);
         }
 
         /// Substraction between two given vector.
-        pub fn sub(lhs: Self, rhs: Self) Self {
-            const result = lhs.data - rhs.data;
+        pub fn sub(first_vector: Self, second_vector: Self) Self {
+            const result = first_vector.data - second_vector.data;
             return .{ .data = result };
         }
 
         /// Addition betwen two given vector.
-        pub fn add(lhs: Self, rhs: Self) Self {
-            const result = lhs.data + rhs.data;
+        pub fn add(first_vector: Self, second_vector: Self) Self {
+            const result = first_vector.data + second_vector.data;
             return .{ .data = result };
         }
 
         /// Component wise multiplication betwen two given vector.
-        pub fn mul(lhs: Self, rhs: Self) Self {
-            const result = lhs.data * rhs.data;
+        pub fn mul(first_vector: Self, second_vector: Self) Self {
+            const result = first_vector.data * second_vector.data;
             return .{ .data = result };
         }
 
         /// Construct vector from the max components in two vectors
-        pub fn max(a: Self, b: Self) Self {
-            const result = @maximum(a.data, b.data);
+        pub fn max(first_vector: Self, second_vector: Self) Self {
+            const result = @maximum(first_vector.data, second_vector.data);
             return .{ .data = result };
         }
 
         /// Construct vector from the min components in two vectors
-        pub fn min(a: Self, b: Self) Self {
-            const result = @minimum(a.data, b.data);
+        pub fn min(first_vector: Self, second_vector: Self) Self {
+            const result = @minimum(first_vector.data, second_vector.data);
             return .{ .data = result };
         }
 
         /// Construct new vector after multiplying each components by a given scalar
-        pub fn scale(vector: Self, scalar: T) Self {
-            const result = vector.data * @splat(dimensions, scalar);
+        pub fn scale(self: Self, scalar: T) Self {
+            const result = self.data * @splat(dimensions, scalar);
             return .{ .data = result };
         }
 
         /// Return the dot product between two given vector.
         /// (x1 * x2) + (y1 * y2) + (z1 * z2) ...
-        pub fn dot(left_vector: Self, right_vector: Self) T {
-            return @reduce(.Add, left_vector.data * right_vector.data);
+        pub fn dot(first_vector: Self, second_vector: Self) T {
+            return @reduce(.Add, first_vector.data * second_vector.data);
         }
 
         /// Linear interpolation between two vectors
-        pub fn lerp(left_vector: Self, right_vector: Self, t: T) Self {
-            const from = left_vector.data;
-            const to = right_vector.data;
+        pub fn lerp(first_vector: Self, second_vector: Self, t: T) Self {
+            const from = first_vector.data;
+            const to = second_vector.data;
 
             const result = from + (to - from) * @splat(dimensions, t);
             return .{ .data = result };
