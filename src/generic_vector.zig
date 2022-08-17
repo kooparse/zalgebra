@@ -34,7 +34,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         const Self = @This();
         data: @Vector(dimensions, T),
 
-        usingnamespace switch (dimensions) {
+        pub usingnamespace switch (dimensions) {
             2 => extern struct {
                 /// Construct new vector.
                 pub fn new(vx: T, vy: T) Self {
