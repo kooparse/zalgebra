@@ -13,19 +13,7 @@ Note: **Zig 0.11.x is required.**
 
 ## Examples
 
-```zig
-const za = @import("zalgebra");
-const Vec3 = za.Vec3;
-const Mat4 = za.Mat4;
-
-pub fn main () void {
-  var projection = za.perspective(45.0, 800.0 / 600.0, 0.1, 100.0);
-  var view = za.lookAt(Vec3.new(0.0, 0.0, -3.), Vec3.zero(), Vec3.up());
-  var model = Mat4.fromTranslate(Vec3.new(0.2, 0.5, 0.0));
-
-  var mvp = Mat4.mul(projection, view.mul(model));
-}
-```
+Example of usage is located at [example/](example/).
 
 ## Quick reference
 
