@@ -9,7 +9,7 @@ The goal is to become as complete and useful as the Unity one. I'm currently usi
 
 If you would like to contribute, don't hesitate! :)
 
-Note: **Zig 0.10.x is required.**
+Note: **Zig 0.11.x is required.**
 
 ## Examples
 
@@ -25,15 +25,6 @@ pub fn main () void {
 
   var mvp = Mat4.mul(projection, view.mul(model));
 }
-```
-
-## Install
-
-Import the `pkg` from `zalgebra` into your `build.zig`:
-
-```zig
-const za = @import("path-to-zalgebra/build.zig");
-exe.addPackage(za.pkg);
 ```
 
 ## Quick reference
