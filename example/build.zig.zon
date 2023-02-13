@@ -1,0 +1,10 @@
+.{
+    .name = "example",
+    .version = "0.0.1",
+    .dependencies = .{
+        .zalgebra = .{
+            .url = "https://github.com/kooparse/zalgebra/archive/65e4b99aab45c9c52597de7768121c4bd06aa6fc.tar.gz",
+            .hash = "122083a70de4ca9144df90d0068a4e2532d1c92139cde99c72fb7aff96ceab464afc",
+        },
+    },
+}
