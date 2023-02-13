@@ -1,9 +1,10 @@
 const std = @import("std");
+const Build = std.Build;
 
 // Although this function looks imperative, note that its job is to
 // declaratively construct a build graph that will be executed by an external
 // runner.
-pub fn build(b: *std.Build) void {
+pub fn build(b: *Build) void {
     // Standard target options allows the person running `zig build` to choose
     // what target to build for. Here we do not override the defaults, which
     // means any target is allowed, and the default is native. Other options
@@ -14,13 +15,6 @@ pub fn build(b: *std.Build) void {
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
-
-    const zalgebra_module = b.addModule(.{
-        .name = "zalgebra",
-        .source_file = .{ .path = "src/main.zig" },
-    });
-
-    _ = zalgebra_module;
 
     // Creates a step for unit testing.
     const main_tests = b.addTest(.{
