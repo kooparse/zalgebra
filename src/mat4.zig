@@ -72,8 +72,8 @@ pub fn Mat4x4(comptime T: type) type {
         /// Negate the given matrix.
         pub fn negate(self: Self) Self {
             var result = self;
-            for (result.data) |_, column| {
-                for (result.data[column]) |_, row| {
+            for (0..result.data.len) |column| {
+                for (0..result.data[column].len) |row| {
                     result.data[column][row] = -result.data[column][row];
                 }
             }
@@ -83,9 +83,8 @@ pub fn Mat4x4(comptime T: type) type {
         /// Transpose the given matrix.
         pub fn transpose(self: Self) Self {
             var result = self;
-            for (result.data) |_, column| {
-                var row: usize = column;
-                while (row < 4) : (row += 1) {
+            for (0..result.data.len) |column| {
+                for (column..4) |row| {
                     std.mem.swap(T, &result.data[column][row], &result.data[row][column]);
                 }
             }
@@ -307,11 +306,11 @@ pub fn Mat4x4(comptime T: type) type {
         /// Produce a new matrix from given two matrices.
         pub fn mul(left: Self, right: Self) Self {
             var result = Self.identity();
-            for (result.data) |_, column| {
-                for (result.data[column]) |_, row| {
+            for (0..result.data.len) |column| {
+                for (0..result.data[column].len) |row| {
                     var sum: T = 0;
 
-                    for (left.data) |_, left_column| {
+                    for (0..left.data.len) |left_column| {
                         sum += left.data[left_column][row] * right.data[column][left_column];
                     }
 
@@ -460,8 +459,8 @@ pub fn Mat4x4(comptime T: type) type {
             }
 
             var result: Mat4x4(dest_type) = undefined;
-            for (result.data) |_, column| {
-                for (result.data[column]) |_, row| {
+            for (0..result.data.len) |column| {
+                for (0..result.data[column].len) |row| {
                     result.data[column][row] = @floatCast(dest_type, self.data[column][row]);
                 }
             }

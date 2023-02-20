@@ -174,7 +174,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
             var result: [dimensions]dest_type = undefined;
 
-            for (result) |_, i| {
+            for (result, 0..) |_, i| {
                 result[i] = math.lossyCast(dest_type, self.data[i]);
             }
             return .{ .data = result };
