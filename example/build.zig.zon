@@ -3,8 +3,8 @@
     .version = "0.0.1",
     .dependencies = .{
         .zalgebra = .{
-            .url = "https://github.com/kooparse/zalgebra/archive/1e3c03202b1918ea877ad8d64477df1166ca3afd.tar.gz",
-            .hash = "122083a70de4ca9144df90d0068a4e2532d1c92139cde99c72fb7aff96ceab464afc",
+            .url = "https://github.com/kooparse/zalgebra/archive/229ee57d351c8d40f47100c06ace6325e4215571.tar.gz",
+            .hash = "1220509c1c3d47c37ec188a2d462d0328abbc212304ca8565c630d7f6e7deb40ad07",
         },
     },
 }
