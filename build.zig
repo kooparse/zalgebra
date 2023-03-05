@@ -16,8 +16,7 @@ pub fn build(b: *Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
 
-    _ = b.addModule(.{
-        .name = "zalgebra",
+    _ = b.addModule("zalgebra", .{
         .source_file = .{ .path = "src/main.zig" },
     });
 
