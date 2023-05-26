@@ -398,9 +398,7 @@ test "zalgebra.Quaternion.fromVec3" {
     try expectEqual(q.x, 2.6);
     try expectEqual(q.y, 3.7);
     try expectEqual(q.z, 4.7);
-}
 
-test "zalgebra.Quaternion.fromVec3" {
     const a = Quat.fromVec3(1.5, Vec3.new(2.6, 3.7, 4.7));
     const b = Quat.fromVec3(1.5, Vec3.new(2.6, 3.7, 4.7));
     const c = Quat.fromVec3(1, Vec3.new(2.6, 3.7, 4.7));
