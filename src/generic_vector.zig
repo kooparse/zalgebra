@@ -164,7 +164,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         /// Cast a type to another type.
-        /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
+        /// It's like builtins: @intCast, @floatCast, @floatFromInt, @intFromFloat.
         pub fn cast(self: Self, comptime dest_type: type) GenericVector(dimensions, dest_type) {
             const dest_info = @typeInfo(dest_type);
 

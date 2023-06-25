@@ -93,7 +93,7 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Return a pointer to the inner data of the matrix.
         pub fn getData(self: *const Self) *const T {
-            return @ptrCast(*const T, &self.data);
+            return @ptrCast(&self.data);
         }
 
         /// Return true if two matrices are equals.
@@ -450,7 +450,7 @@ pub fn Mat4x4(comptime T: type) type {
         }
 
         /// Cast a type to another type.
-        /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
+        /// It's like builtins: @intCast, @floatCast, @floatFromInt, @intFromFloat.
         pub fn cast(self: Self, comptime dest_type: type) Mat4x4(dest_type) {
             const dest_info = @typeInfo(dest_type);
 
@@ -461,7 +461,7 @@ pub fn Mat4x4(comptime T: type) type {
             var result: Mat4x4(dest_type) = undefined;
             for (0..result.data.len) |column| {
                 for (0..result.data[column].len) |row| {
-                    result.data[column][row] = @floatCast(dest_type, self.data[column][row]);
+                    result.data[column][row] = @floatCast(self.data[column][row]);
                 }
             }
             return result;

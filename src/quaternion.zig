@@ -344,7 +344,7 @@ pub fn Quaternion(comptime T: type) type {
         }
 
         /// Cast a type to another type.
-        /// It's like builtins: @intCast, @floatCast, @intToFloat, @floatToInt.
+        /// It's like builtins: @intCast, @floatCast, @floatFromInt, @intFromFloat.
         pub fn cast(self: Self, comptime dest_type: type) Quaternion(dest_type) {
             const dest_info = @typeInfo(dest_type);
 
@@ -352,10 +352,10 @@ pub fn Quaternion(comptime T: type) type {
                 std.debug.panic("Error, dest type should be float.\n", .{});
             }
 
-            const w = @floatCast(dest_type, self.w);
-            const x = @floatCast(dest_type, self.x);
-            const y = @floatCast(dest_type, self.y);
-            const z = @floatCast(dest_type, self.z);
+            const w: dest_type = @floatCast(self.w);
+            const x: dest_type = @floatCast(self.x);
+            const y: dest_type = @floatCast(self.y);
+            const z: dest_type = @floatCast(self.z);
             return Quaternion(dest_type).new(w, x, y, z);
         }
     };
