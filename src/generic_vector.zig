@@ -114,8 +114,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
         /// Set all components to the same given value.
         pub fn set(val: T) Self {
-            const result = @as(T, @splat(val));
-            return .{ .data = result };
+            return .{ .data = @splat(val) };
         }
 
         /// Shorthand for (0..).
