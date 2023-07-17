@@ -114,7 +114,8 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
         /// Set all components to the same given value.
         pub fn set(val: T) Self {
-            return .{ .data = @splat(val) };
+            const result: @Vector(dimensions, T) = @splat(val);
+            return .{ .data = result };
         }
 
         /// Shorthand for (0..).
@@ -214,7 +215,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             if (l == 0) {
                 return self;
             }
-            const result = self.data / @as(T, @splat(l));
+            const result = self.data / @as(@Vector(dimensions, T), @splat(l));
             return .{ .data = result };
         }
 
@@ -255,7 +256,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
         /// Construct new vector after multiplying each components by a given scalar
         pub fn scale(self: Self, scalar: T) Self {
-            const result = self.data * @as(T, @splat(scalar));
+            const result = self.data * @as(@Vector(dimensions, T), @splat(scalar));
             return .{ .data = result };
         }
 
@@ -270,7 +271,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             const from = first_vector.data;
             const to = second_vector.data;
 
-            const result = from + (to - from) * @as(T, @splat(t));
+            const result = from + (to - from) * @as(@Vector(dimensions, T), @splat(t));
             return .{ .data = result };
         }
     };
