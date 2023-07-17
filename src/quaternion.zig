@@ -242,7 +242,7 @@ pub fn Quaternion(comptime T: type) type {
             const radians = root.toRadians(degrees);
 
             const rot_sin = @sin(radians / 2);
-            const quat_axis = axis.norm().data * @splat(3, rot_sin);
+            const quat_axis = axis.norm().data * @as(@TypeOf(axis.data), @splat(rot_sin));
             const w = @cos(radians / 2);
 
             return Self.fromVec3(w, .{ .data = quat_axis });
