@@ -16,6 +16,7 @@ const Quat = quat.Quat;
 pub const Mat4 = Mat4x4(f32);
 pub const Mat4_f64 = Mat4x4(f64);
 pub const perspective = Mat4.perspective;
+pub const perspectiveReversedZ = Mat4.perspectiveReversedZ;
 pub const orthographic = Mat4.orthographic;
 pub const lookAt = Mat4.lookAt;
 
@@ -251,6 +252,25 @@ pub fn Mat4x4(comptime T: type) type {
             result.data[2][2] = (z_near + z_far) / (z_near - z_far);
             result.data[2][3] = -1;
             result.data[3][2] = 2 * z_far * z_near / (z_near - z_far);
+            result.data[3][3] = 0;
+
+            return result;
+        }
+
+        /// Construct a perspective 4x4 matrix with reverse Z and infinite far plane.
+        /// Note: Field of view is given in degrees.
+        /// Also for more details https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml.
+        /// For Reversed-Z details https://nlguillemot.wordpress.com/2016/12/07/reversed-z-in-opengl/
+        pub fn perspectiveReversedZ(fovy_in_degrees: T, aspect_ratio: T, z_near: T) Self {
+            var result = Self.identity();
+
+            const f = 1 / @tan(root.toRadians(fovy_in_degrees) * 0.5);
+
+            result.data[0][0] = f / aspect_ratio;
+            result.data[1][1] = f;
+            result.data[2][2] = 0;
+            result.data[2][3] = -1;
+            result.data[3][2] = z_near;
             result.data[3][3] = 0;
 
             return result;
