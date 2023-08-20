@@ -121,6 +121,7 @@ Note: All matrices are column-major.
 | extractEulerAngles | Return a vector with Euler angles in degrees (pitch/yaw/roll)                         |
 | extractScale       | Return a vector with proper scale                                                     |
 | perspective        | Construct a perspective matrix from given fovy, aspect ratio, near/far inputs         |
+| perspectiveReversedZ | Construct a perspective matrix with reverse Z and infinite far plane.               |
 | orthographic       | Construct an orthographic matrix from given left, right, bottom, top, near/far inputs |
 | lookAt             | Construct a right-handed lookAt matrix from given position (eye) and target           |
 | mul                | Multiply two matrices                                                                 |
