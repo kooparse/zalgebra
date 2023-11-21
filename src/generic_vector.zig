@@ -43,10 +43,13 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     return .{ .data = [2]T{ vx, vy } };
                 }
 
-                pub fn rotate(self: Self, angle: T) Self {
+                /// Rotate vector by angle (in degrees)
+                pub fn rotate(self: Self, angle_in_degrees: T) Self {
+                    const sin_theta = @sin(root.toRadians(angle_in_degrees));
+                    const cos_theta = @cos(root.toRadians(angle_in_degrees));
                     return .{ .data = [2]T{
-                        @cos(angle) * self.x() - @sin(angle) * self.y(),
-                        @sin(angle) * self.x() + @cos(angle) * self.y(),
+                        cos_theta * self.x() - sin_theta * self.y(),
+                        sin_theta * self.x() + cos_theta * self.y(),
                     } };
                 }
             },
