@@ -80,6 +80,7 @@ pub fn main () void {
 | back      | Shorthand for `(0, 0, -1)` (only for vec3 and vec4)                        |
 | toArray   | Return an array of same size.                                              |
 | getAngle  | Return angle in degrees between two vectors (only for vec2 and vec3)       |
+| rotate    | Rotate vector by angle (in degrees)                                        |
 | length    | Return the magnitude of the current vector                                 |
 | distance  | Return the distance between two points                                     |
 | norm      | Construct a new normalized vector based on the given one                   |
