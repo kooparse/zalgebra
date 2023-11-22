@@ -271,10 +271,10 @@ pub fn Quaternion(comptime T: type) type {
         // Taken from https://github.com/raysan5/raylib/blob/master/src/raymath.h#L1755
         pub fn extractAxisAngle(self: Self) struct { axis: Vector3, angle: T } {
             var copy = self;
-            if (@fabs(copy.w) > 1) copy = copy.norm();
+            if (@abs(copy.w) > 1) copy = copy.norm();
 
             var res_axis = Vector3.zero();
-            var res_angle: T = 2 * math.acos(copy.w);
+            const res_angle: T = 2 * math.acos(copy.w);
             const den: T = @sqrt(1 - copy.w * copy.w);
 
             if (den > 0.0001) {
@@ -326,7 +326,7 @@ pub fn Quaternion(comptime T: type) type {
                 // Use regular old lerp to avoid numerical instability
                 return lerp(left, right1, t);
             } else {
-                var theta = math.acos(math.clamp(cos_theta, -1, 1));
+                const theta = math.acos(math.clamp(cos_theta, -1, 1));
                 const thetap = theta * t;
                 var qperp = right1.sub(left.scale(cos_theta)).norm();
                 return left.scale(@cos(thetap)).add(qperp.scale(@sin(thetap)));
