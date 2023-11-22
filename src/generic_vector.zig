@@ -42,6 +42,16 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                 pub fn new(vx: T, vy: T) Self {
                     return .{ .data = [2]T{ vx, vy } };
                 }
+
+                /// Rotate vector by angle (in degrees)
+                pub fn rotate(self: Self, angle_in_degrees: T) Self {
+                    const sin_theta = @sin(root.toRadians(angle_in_degrees));
+                    const cos_theta = @cos(root.toRadians(angle_in_degrees));
+                    return .{ .data = [2]T{
+                        cos_theta * self.x() - sin_theta * self.y(),
+                        sin_theta * self.x() + cos_theta * self.y(),
+                    } };
+                }
             },
             3 => extern struct {
                 /// Construct new vector.
