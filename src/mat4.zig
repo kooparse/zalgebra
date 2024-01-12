@@ -374,25 +374,25 @@ pub fn Mat4x4(comptime T: type) type {
 
             const determ = 1 / (s[0] * s[11] - s[1] * s[10] + s[2] * s[9] + s[3] * s[8] - s[4] * s[7] + s[5] * s[6]);
 
-            inv_mat.data[0][0] = (self.data[1][1] * s[11] - self.data[1][2] * s[10] + self.data[1][3] * s[9]) * determ;
-            inv_mat.data[0][1] = (-self.data[0][1] * s[11] + self.data[0][2] * s[10] - self.data[0][3] * s[9]) * determ;
-            inv_mat.data[0][2] = (self.data[3][1] * s[5] - self.data[3][2] * s[4] + self.data[3][3] * s[3]) * determ;
-            inv_mat.data[0][3] = (-self.data[2][1] * s[5] + self.data[2][2] * s[4] - self.data[2][3] * s[3]) * determ;
+            inv_mat.data[0][0] = determ *  (self.data[1][1] * s[11] - self.data[1][2] * s[10] + self.data[1][3] * s[9]);
+            inv_mat.data[0][1] = determ * -(self.data[0][1] * s[11] - self.data[0][2] * s[10] + self.data[0][3] * s[9]);
+            inv_mat.data[0][2] = determ *  (self.data[3][1] * s[5] - self.data[3][2] * s[4] + self.data[3][3] * s[3]);
+            inv_mat.data[0][3] = determ * -(self.data[2][1] * s[5] - self.data[2][2] * s[4] + self.data[2][3] * s[3]);
 
-            inv_mat.data[1][0] = (-self.data[1][0] * s[11] + self.data[1][2] * s[8] - self.data[1][3] * s[7]) * determ;
-            inv_mat.data[1][1] = (self.data[0][0] * s[11] - self.data[0][2] * s[8] + self.data[0][3] * s[7]) * determ;
-            inv_mat.data[1][2] = (-self.data[3][0] * s[5] + self.data[3][2] * s[2] - self.data[3][3] * s[1]) * determ;
-            inv_mat.data[1][3] = (self.data[2][0] * s[5] - self.data[2][2] * s[2] + self.data[2][3] * s[1]) * determ;
+            inv_mat.data[1][0] = determ * -(self.data[1][0] * s[11] - self.data[1][2] * s[8] + self.data[1][3] * s[7]);
+            inv_mat.data[1][1] = determ *  (self.data[0][0] * s[11] - self.data[0][2] * s[8] + self.data[0][3] * s[7]);
+            inv_mat.data[1][2] = determ * -(self.data[3][0] * s[5] - self.data[3][2] * s[2] + self.data[3][3] * s[1]);
+            inv_mat.data[1][3] = determ *  (self.data[2][0] * s[5] - self.data[2][2] * s[2] + self.data[2][3] * s[1]);
 
-            inv_mat.data[2][0] = (self.data[1][0] * s[10] - self.data[1][1] * s[8] + self.data[1][3] * s[6]) * determ;
-            inv_mat.data[2][1] = (-self.data[0][0] * s[10] + self.data[0][1] * s[8] - self.data[0][3] * s[6]) * determ;
-            inv_mat.data[2][2] = (self.data[3][0] * s[4] - self.data[3][1] * s[2] + self.data[3][3] * s[0]) * determ;
-            inv_mat.data[2][3] = (-self.data[2][0] * s[4] + self.data[2][1] * s[2] - self.data[2][3] * s[0]) * determ;
+            inv_mat.data[2][0] = determ *  (self.data[1][0] * s[10] - self.data[1][1] * s[8] + self.data[1][3] * s[6]);
+            inv_mat.data[2][1] = determ * -(self.data[0][0] * s[10] - self.data[0][1] * s[8] + self.data[0][3] * s[6]);
+            inv_mat.data[2][2] = determ *  (self.data[3][0] * s[4] - self.data[3][1] * s[2] + self.data[3][3] * s[0]);
+            inv_mat.data[2][3] = determ * -(self.data[2][0] * s[4] - self.data[2][1] * s[2] + self.data[2][3] * s[0]);
 
-            inv_mat.data[3][0] = (-self.data[1][0] * s[9] + self.data[1][1] * s[7] - self.data[1][2] * s[6]) * determ;
-            inv_mat.data[3][1] = (self.data[0][0] * s[9] - self.data[0][1] * s[7] + self.data[0][2] * s[6]) * determ;
-            inv_mat.data[3][2] = (-self.data[3][0] * s[3] + self.data[3][1] * s[1] - self.data[3][2] * s[0]) * determ;
-            inv_mat.data[3][3] = (self.data[2][0] * s[3] - self.data[2][1] * s[1] + self.data[2][2] * s[0]) * determ;
+            inv_mat.data[3][0] = determ * -(self.data[1][0] * s[9] - self.data[1][1] * s[7] + self.data[1][2] * s[6]);
+            inv_mat.data[3][1] = determ *  (self.data[0][0] * s[9] - self.data[0][1] * s[7] + self.data[0][2] * s[6]);
+            inv_mat.data[3][2] = determ * -(self.data[3][0] * s[3] - self.data[3][1] * s[1] + self.data[3][2] * s[0]);
+            inv_mat.data[3][3] = determ *  (self.data[2][0] * s[3] - self.data[2][1] * s[1] + self.data[2][2] * s[0]);
 
             return inv_mat;
         }
