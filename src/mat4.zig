@@ -360,7 +360,7 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Calculate determinant of the given 4x4 matrix.
         pub fn det(self: Self) T {
-            var s = detsubs(self);
+            const s = detsubs(self);
             return s[0] * s[11] - s[1] * s[10] + s[2] * s[9] + s[3] * s[8] - s[4] * s[7] + s[5] * s[6];
         }
 
@@ -370,7 +370,7 @@ pub fn Mat4x4(comptime T: type) type {
         pub fn inv(self: Self) Self {
             var inv_mat: Self = undefined;
 
-            var s = detsubs(self);
+            const s = detsubs(self);
 
             const determ = 1 / (s[0] * s[11] - s[1] * s[10] + s[2] * s[9] + s[3] * s[8] - s[4] * s[7] + s[5] * s[6]);
 
