@@ -244,17 +244,17 @@ pub fn Mat3x3(comptime T: type) type {
 
             const determ = 1 / det(self);
 
-            inv_mat.data[0][0] = determ *  (self.data[1][1] * self.data[2][2] - self.data[1][2] * self.data[2][1]);
+            inv_mat.data[0][0] = determ * (self.data[1][1] * self.data[2][2] - self.data[1][2] * self.data[2][1]);
             inv_mat.data[0][1] = determ * -(self.data[0][1] * self.data[2][2] - self.data[0][2] * self.data[2][1]);
-            inv_mat.data[0][2] = determ *  (self.data[0][1] * self.data[1][2] - self.data[0][2] * self.data[1][1]);
+            inv_mat.data[0][2] = determ * (self.data[0][1] * self.data[1][2] - self.data[0][2] * self.data[1][1]);
 
             inv_mat.data[1][0] = determ * -(self.data[1][0] * self.data[2][2] - self.data[1][2] * self.data[2][0]);
-            inv_mat.data[1][1] = determ *  (self.data[0][0] * self.data[2][2] - self.data[0][2] * self.data[2][0]);
+            inv_mat.data[1][1] = determ * (self.data[0][0] * self.data[2][2] - self.data[0][2] * self.data[2][0]);
             inv_mat.data[1][2] = determ * -(self.data[0][0] * self.data[1][2] - self.data[0][2] * self.data[1][0]);
 
-            inv_mat.data[2][0] = determ *  (self.data[1][0] * self.data[2][1] - self.data[1][1] * self.data[2][0]);
+            inv_mat.data[2][0] = determ * (self.data[1][0] * self.data[2][1] - self.data[1][1] * self.data[2][0]);
             inv_mat.data[2][1] = determ * -(self.data[0][0] * self.data[2][1] - self.data[0][1] * self.data[2][0]);
-            inv_mat.data[2][2] = determ *  (self.data[0][0] * self.data[1][1] - self.data[0][1] * self.data[1][0]);
+            inv_mat.data[2][2] = determ * (self.data[0][0] * self.data[1][1] - self.data[0][1] * self.data[1][0]);
 
             return inv_mat;
         }
