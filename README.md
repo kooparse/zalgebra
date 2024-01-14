@@ -48,6 +48,8 @@ pub fn main () void {
 | Vec4_f64     | Four dimensional vector for `f64`        |
 | Vec4_i32     | Four dimensional vector for `i32`        |
 | Vec4_usize   | Four dimensional vector for `usize`      |
+| Mat3         | 3x3 matrix for `f32`                     |
+| Mat3_f64     | 3x3 matrix for `f64`                     |
 | Mat4         | 4x4 matrix for `f32`                     |
 | Mat4_f64     | 4x4 matrix for `f64`                     |
 | Quat         | Quaternion for `f32`                     |
@@ -127,8 +129,8 @@ Note: All matrices are column-major.
 | lookAt             | Construct a right-handed lookAt matrix from given position (eye) and target           |
 | mul                | Multiply two matrices                                                                 |
 | inv                | Inverse the given matrix                                                              |
-| recompose          | Return matrix from given `translation`, `rotation` and `scale` components             |
-| decompose          | Return components `translation`, `rotation` and `scale` from given matrix.            |
+| recompose          | Return mat4 matrix from given `translation`, `rotation` and `scale` components        |
+| decompose          | Return components `translation`, `rotation` and `scale` from given 4x4 matrix.        |
 | debugPrint         | Print the matrix data for debug purpose                                               |
 
 ### Quaternions
