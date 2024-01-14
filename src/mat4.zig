@@ -340,66 +340,59 @@ pub fn Mat4x4(comptime T: type) type {
             return result;
         }
 
+        fn detsubs(self: Self) [12]T {
+            return .{
+                self.data[0][0] * self.data[1][1] - self.data[1][0] * self.data[0][1],
+                self.data[0][0] * self.data[1][2] - self.data[1][0] * self.data[0][2],
+                self.data[0][0] * self.data[1][3] - self.data[1][0] * self.data[0][3],
+                self.data[0][1] * self.data[1][2] - self.data[1][1] * self.data[0][2],
+                self.data[0][1] * self.data[1][3] - self.data[1][1] * self.data[0][3],
+                self.data[0][2] * self.data[1][3] - self.data[1][2] * self.data[0][3],
+
+                self.data[2][0] * self.data[3][1] - self.data[3][0] * self.data[2][1],
+                self.data[2][0] * self.data[3][2] - self.data[3][0] * self.data[2][2],
+                self.data[2][0] * self.data[3][3] - self.data[3][0] * self.data[2][3],
+                self.data[2][1] * self.data[3][2] - self.data[3][1] * self.data[2][2],
+                self.data[2][1] * self.data[3][3] - self.data[3][1] * self.data[2][3],
+                self.data[2][2] * self.data[3][3] - self.data[3][2] * self.data[2][3],
+            };
+        }
+
+        /// Calculate determinant of the given 4x4 matrix.
+        pub fn det(self: Self) T {
+            const s = detsubs(self);
+            return s[0] * s[11] - s[1] * s[10] + s[2] * s[9] + s[3] * s[8] - s[4] * s[7] + s[5] * s[6];
+        }
+
         /// Construct inverse 4x4 from given matrix.
         /// Note: This is not the most efficient way to do this.
         /// TODO: Make it more efficient.
         pub fn inv(self: Self) Self {
             var inv_mat: Self = undefined;
 
-            var s: [6]T = undefined;
-            var c: [6]T = undefined;
+            const s = detsubs(self);
 
-            s[0] = self.data[0][0] * self.data[1][1] - self.data[1][0] * self.data[0][1];
-            s[1] = self.data[0][0] * self.data[1][2] - self.data[1][0] * self.data[0][2];
-            s[2] = self.data[0][0] * self.data[1][3] - self.data[1][0] * self.data[0][3];
-            s[3] = self.data[0][1] * self.data[1][2] - self.data[1][1] * self.data[0][2];
-            s[4] = self.data[0][1] * self.data[1][3] - self.data[1][1] * self.data[0][3];
-            s[5] = self.data[0][2] * self.data[1][3] - self.data[1][2] * self.data[0][3];
+            const determ = 1 / (s[0] * s[11] - s[1] * s[10] + s[2] * s[9] + s[3] * s[8] - s[4] * s[7] + s[5] * s[6]);
 
-            c[0] = self.data[2][0] * self.data[3][1] - self.data[3][0] * self.data[2][1];
-            c[1] = self.data[2][0] * self.data[3][2] - self.data[3][0] * self.data[2][2];
-            c[2] = self.data[2][0] * self.data[3][3] - self.data[3][0] * self.data[2][3];
-            c[3] = self.data[2][1] * self.data[3][2] - self.data[3][1] * self.data[2][2];
-            c[4] = self.data[2][1] * self.data[3][3] - self.data[3][1] * self.data[2][3];
-            c[5] = self.data[2][2] * self.data[3][3] - self.data[3][2] * self.data[2][3];
+            inv_mat.data[0][0] = determ * (self.data[1][1] * s[11] - self.data[1][2] * s[10] + self.data[1][3] * s[9]);
+            inv_mat.data[0][1] = determ * -(self.data[0][1] * s[11] - self.data[0][2] * s[10] + self.data[0][3] * s[9]);
+            inv_mat.data[0][2] = determ * (self.data[3][1] * s[5] - self.data[3][2] * s[4] + self.data[3][3] * s[3]);
+            inv_mat.data[0][3] = determ * -(self.data[2][1] * s[5] - self.data[2][2] * s[4] + self.data[2][3] * s[3]);
 
-            const determ = 1 / (s[0] * c[5] - s[1] * c[4] + s[2] * c[3] + s[3] * c[2] - s[4] * c[1] + s[5] * c[0]);
+            inv_mat.data[1][0] = determ * -(self.data[1][0] * s[11] - self.data[1][2] * s[8] + self.data[1][3] * s[7]);
+            inv_mat.data[1][1] = determ * (self.data[0][0] * s[11] - self.data[0][2] * s[8] + self.data[0][3] * s[7]);
+            inv_mat.data[1][2] = determ * -(self.data[3][0] * s[5] - self.data[3][2] * s[2] + self.data[3][3] * s[1]);
+            inv_mat.data[1][3] = determ * (self.data[2][0] * s[5] - self.data[2][2] * s[2] + self.data[2][3] * s[1]);
 
-            inv_mat.data[0][0] =
-                (self.data[1][1] * c[5] - self.data[1][2] * c[4] + self.data[1][3] * c[3]) * determ;
-            inv_mat.data[0][1] =
-                (-self.data[0][1] * c[5] + self.data[0][2] * c[4] - self.data[0][3] * c[3]) * determ;
-            inv_mat.data[0][2] =
-                (self.data[3][1] * s[5] - self.data[3][2] * s[4] + self.data[3][3] * s[3]) * determ;
-            inv_mat.data[0][3] =
-                (-self.data[2][1] * s[5] + self.data[2][2] * s[4] - self.data[2][3] * s[3]) * determ;
+            inv_mat.data[2][0] = determ * (self.data[1][0] * s[10] - self.data[1][1] * s[8] + self.data[1][3] * s[6]);
+            inv_mat.data[2][1] = determ * -(self.data[0][0] * s[10] - self.data[0][1] * s[8] + self.data[0][3] * s[6]);
+            inv_mat.data[2][2] = determ * (self.data[3][0] * s[4] - self.data[3][1] * s[2] + self.data[3][3] * s[0]);
+            inv_mat.data[2][3] = determ * -(self.data[2][0] * s[4] - self.data[2][1] * s[2] + self.data[2][3] * s[0]);
 
-            inv_mat.data[1][0] =
-                (-self.data[1][0] * c[5] + self.data[1][2] * c[2] - self.data[1][3] * c[1]) * determ;
-            inv_mat.data[1][1] =
-                (self.data[0][0] * c[5] - self.data[0][2] * c[2] + self.data[0][3] * c[1]) * determ;
-            inv_mat.data[1][2] =
-                (-self.data[3][0] * s[5] + self.data[3][2] * s[2] - self.data[3][3] * s[1]) * determ;
-            inv_mat.data[1][3] =
-                (self.data[2][0] * s[5] - self.data[2][2] * s[2] + self.data[2][3] * s[1]) * determ;
-
-            inv_mat.data[2][0] =
-                (self.data[1][0] * c[4] - self.data[1][1] * c[2] + self.data[1][3] * c[0]) * determ;
-            inv_mat.data[2][1] =
-                (-self.data[0][0] * c[4] + self.data[0][1] * c[2] - self.data[0][3] * c[0]) * determ;
-            inv_mat.data[2][2] =
-                (self.data[3][0] * s[4] - self.data[3][1] * s[2] + self.data[3][3] * s[0]) * determ;
-            inv_mat.data[2][3] =
-                (-self.data[2][0] * s[4] + self.data[2][1] * s[2] - self.data[2][3] * s[0]) * determ;
-
-            inv_mat.data[3][0] =
-                (-self.data[1][0] * c[3] + self.data[1][1] * c[1] - self.data[1][2] * c[0]) * determ;
-            inv_mat.data[3][1] =
-                (self.data[0][0] * c[3] - self.data[0][1] * c[1] + self.data[0][2] * c[0]) * determ;
-            inv_mat.data[3][2] =
-                (-self.data[3][0] * s[3] + self.data[3][1] * s[1] - self.data[3][2] * s[0]) * determ;
-            inv_mat.data[3][3] =
-                (self.data[2][0] * s[3] - self.data[2][1] * s[1] + self.data[2][2] * s[0]) * determ;
+            inv_mat.data[3][0] = determ * -(self.data[1][0] * s[9] - self.data[1][1] * s[7] + self.data[1][2] * s[6]);
+            inv_mat.data[3][1] = determ * (self.data[0][0] * s[9] - self.data[0][1] * s[7] + self.data[0][2] * s[6]);
+            inv_mat.data[3][2] = determ * -(self.data[3][0] * s[3] - self.data[3][1] * s[1] + self.data[3][2] * s[0]);
+            inv_mat.data[3][3] = determ * (self.data[2][0] * s[3] - self.data[2][1] * s[1] + self.data[2][2] * s[0]);
 
             return inv_mat;
         }
@@ -613,6 +606,19 @@ test "zalgebra.Mat4.scale" {
             .{ 0, 0, 0, 1 },
         },
     });
+}
+
+test "zalgebra.Mat4.det" {
+    const a: Mat4 = .{
+        .data = .{
+            .{ 2, 0, 0, 4 },
+            .{ 0, 2, 0, 0 },
+            .{ 0, 0, 2, 0 },
+            .{ 4, 0, 0, 2 },
+        },
+    };
+
+    try expectEqual(a.det(), -48);
 }
 
 test "zalgebra.Mat4.inv" {
