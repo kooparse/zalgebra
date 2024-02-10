@@ -63,6 +63,10 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     return self.data[2];
                 }
 
+                pub fn zMut(self: *Self) *T {
+                    return &self.data[2];
+                }
+
                 /// Shorthand for (0, 0, 1).
                 pub fn forward() Self {
                     return new(0, 0, 1);
@@ -112,6 +116,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                 pub fn w(self: Self) T {
                     return self.data[3];
                 }
+
+                pub fn zMut(self: *Self) *T {
+                    return &self.data[2];
+                }
+
+                pub fn wMut(self: *Self) *T {
+                    return &self.data[3];
+                }
             },
             else => unreachable,
         };
@@ -122,6 +134,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
         pub fn y(self: Self) T {
             return self.data[1];
+        }
+
+        pub fn xMut(self: *Self) *T {
+            return &self.data[0];
+        }
+
+        pub fn yMut(self: *Self) *T {
+            return &self.data[1];
         }
 
         /// Set all components to the same given value.
