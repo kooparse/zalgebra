@@ -60,6 +60,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     } };
                 }
 
+                pub inline fn toVec3(self: Self, vz: T) GenericVector(3, T) {
+                    return GenericVector(3, T).fromVec2(self, vz);
+                }
+
+                pub inline fn toVec4(self: Self, vz: T, vw: T) GenericVector(4, T) {
+                    return GenericVector(4, T).fromVec2(self, vz, vw);
+                }
+
                 pub inline fn fromVec3(vec3: GenericVector(3, T)) Self {
                     return Self.new(vec3.x(), vec3.y());
                 }
@@ -108,6 +116,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     return new(result_x, result_y, result_z);
                 }
 
+                pub inline fn toVec2(self: Self) GenericVector(2, T) {
+                    return GenericVector(2, T).fromVec3(self);
+                }
+
+                pub inline fn toVec4(self: Self, vw: T) GenericVector(4, T) {
+                    return GenericVector(4, T).fromVec3(self, vw);
+                }
+
                 pub inline fn fromVec2(vec2: GenericVector(2, T), vz: T) Self {
                     return Self.new(vec2.x(), vec2.y(), vz);
                 }
@@ -146,6 +162,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
                 pub inline fn wMut(self: *Self) *T {
                     return &self.data[3];
+                }
+
+                pub inline fn toVec2(self: Self) GenericVector(2, T) {
+                    return GenericVector(2, T).fromVec4(self);
+                }
+
+                pub inline fn toVec3(self: Self) GenericVector(3, T) {
+                    return GenericVector(3, T).fromVec4(self);
                 }
 
                 pub inline fn fromVec2(vec2: GenericVector(2, T), vz: T, vw: T) Self {
@@ -810,8 +834,14 @@ test "zalgebra.Vectors.cross" {
 
 test "vector conversions 2 -> 3 -> 4" {
     const v2 = Vec2.new(1, 2);
-    const v3 = Vec3.fromVec2(v2, 3);
-    const v4 = Vec4.fromVec3(v3, 4);
+    var v3 = Vec3.fromVec2(v2, 3);
+    var v4 = Vec4.fromVec3(v3, 4);
+
+    try expectEqual(v3, Vec3.new(1, 2, 3));
+    try expectEqual(v4, Vec4.new(1, 2, 3, 4));
+
+    v3 = v2.toVec3(3);
+    v4 = v2.toVec4(3, 4);
 
     try expectEqual(v3, Vec3.new(1, 2, 3));
     try expectEqual(v4, Vec4.new(1, 2, 3, 4));
@@ -819,8 +849,14 @@ test "vector conversions 2 -> 3 -> 4" {
 
 test "vector conversions 4 -> 3 -> 2" {
     const v4 = Vec4.new(1, 2, 3, 4);
-    const v3 = Vec3.fromVec4(v4);
-    const v2 = Vec2.fromVec3(v3);
+    var v3 = Vec3.fromVec4(v4);
+    var v2 = Vec2.fromVec3(v3);
+
+    try expectEqual(v3, Vec3.new(1, 2, 3));
+    try expectEqual(v2, Vec2.new(1, 2));
+
+    v3 = v4.toVec3();
+    v2 = v4.toVec2();
 
     try expectEqual(v3, Vec3.new(1, 2, 3));
     try expectEqual(v2, Vec2.new(1, 2));
@@ -828,14 +864,22 @@ test "vector conversions 4 -> 3 -> 2" {
 
 test "vector conversions 2 -> 4" {
     const v2 = Vec2.new(1, 2);
-    const v4 = Vec4.fromVec2(v2, 3, 4);
+    var v4 = Vec4.fromVec2(v2, 3, 4);
+
+    try expectEqual(v4, Vec4.new(1, 2, 3, 4));
+
+    v4 = v2.toVec4(3, 4);
 
     try expectEqual(v4, Vec4.new(1, 2, 3, 4));
 }
 
 test "vector conversions 4 -> 2" {
     const v4 = Vec4.new(1, 2, 3, 4);
-    const v2 = Vec2.fromVec4(v4);
+    var v2 = Vec2.fromVec4(v4);
+
+    try expectEqual(v2, Vec2.new(1, 2));
+
+    v2 = v4.toVec2();
 
     try expectEqual(v2, Vec2.new(1, 2));
 }
