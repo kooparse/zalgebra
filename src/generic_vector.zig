@@ -36,10 +36,17 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
         data: Data,
 
+        pub const Component = switch (dimensions) {
+            2 => enum { x, y },
+            3 => enum { x, y, z },
+            4 => enum { x, y, z, w },
+            else => unreachable,
+        };
+
         pub usingnamespace switch (dimensions) {
             2 => extern struct {
                 /// Construct new vector.
-                pub fn new(vx: T, vy: T) Self {
+                pub inline fn new(vx: T, vy: T) Self {
                     return .{ .data = [2]T{ vx, vy } };
                 }
 
@@ -52,18 +59,26 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                         sin_theta * self.x() + cos_theta * self.y(),
                     } };
                 }
+
+                pub inline fn fromVec3(vec3: GenericVector(3, T)) Self {
+                    return Self.new(vec3.x(), vec3.y());
+                }
+
+                pub inline fn fromVec4(vec4: GenericVector(4, T)) Self {
+                    return Self.new(vec4.x(), vec4.y());
+                }
             },
             3 => extern struct {
                 /// Construct new vector.
-                pub fn new(vx: T, vy: T, vz: T) Self {
+                pub inline fn new(vx: T, vy: T, vz: T) Self {
                     return .{ .data = [3]T{ vx, vy, vz } };
                 }
 
-                pub fn z(self: Self) T {
+                pub inline fn z(self: Self) T {
                     return self.data[2];
                 }
 
-                pub fn zMut(self: *Self) *T {
+                pub inline fn zMut(self: *Self) *T {
                     return &self.data[2];
                 }
 
@@ -92,10 +107,18 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     const result_z = (x1 * y2) - (y1 * x2);
                     return new(result_x, result_y, result_z);
                 }
+
+                pub inline fn fromVec2(vec2: GenericVector(2, T), vz: T) Self {
+                    return Self.new(vec2.x(), vec2.y(), vz);
+                }
+
+                pub inline fn fromVec4(vec4: GenericVector(4, T)) Self {
+                    return Self.new(vec4.x(), vec4.y(), vec4.z());
+                }
             },
             4 => extern struct {
                 /// Construct new vector.
-                pub fn new(vx: T, vy: T, vz: T, vw: T) Self {
+                pub inline fn new(vx: T, vy: T, vz: T, vw: T) Self {
                     return .{ .data = [4]T{ vx, vy, vz, vw } };
                 }
 
@@ -109,38 +132,46 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     return forward().negate();
                 }
 
-                pub fn z(self: Self) T {
+                pub inline fn z(self: Self) T {
                     return self.data[2];
                 }
 
-                pub fn w(self: Self) T {
+                pub inline fn w(self: Self) T {
                     return self.data[3];
                 }
 
-                pub fn zMut(self: *Self) *T {
+                pub inline fn zMut(self: *Self) *T {
                     return &self.data[2];
                 }
 
-                pub fn wMut(self: *Self) *T {
+                pub inline fn wMut(self: *Self) *T {
                     return &self.data[3];
+                }
+
+                pub inline fn fromVec2(vec2: GenericVector(2, T), vz: T, vw: T) Self {
+                    return Self.new(vec2.x(), vec2.y(), vz, vw);
+                }
+
+                pub inline fn fromVec3(vec3: GenericVector(3, T), vw: T) Self {
+                    return Self.new(vec3.x(), vec3.y(), vec3.z(), vw);
                 }
             },
             else => unreachable,
         };
 
-        pub fn x(self: Self) T {
+        pub inline fn x(self: Self) T {
             return self.data[0];
         }
 
-        pub fn y(self: Self) T {
+        pub inline fn y(self: Self) T {
             return self.data[1];
         }
 
-        pub fn xMut(self: *Self) *T {
+        pub inline fn xMut(self: *Self) *T {
             return &self.data[0];
         }
 
-        pub fn yMut(self: *Self) *T {
+        pub inline fn yMut(self: *Self) *T {
             return &self.data[1];
         }
 
@@ -305,6 +336,18 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
             const result = from + (to - from) * @as(Data, @splat(t));
             return .{ .data = result };
+        }
+
+        pub inline fn swizzle2(self: Self, comptime vx: Component, comptime vy: Component) GenericVector(2, T) {
+            return GenericVector(2, T).new(self.data[@intFromEnum(vx)], self.data[@intFromEnum(vy)]);
+        }
+
+        pub inline fn swizzle3(self: Self, comptime vx: Component, comptime vy: Component, comptime vz: Component) GenericVector(3, T) {
+            return GenericVector(3, T).new(self.data[@intFromEnum(vx)], self.data[@intFromEnum(vy)], self.data[@intFromEnum(vz)]);
+        }
+
+        pub inline fn swizzle4(self: Self, comptime vx: Component, comptime vy: Component, comptime vz: Component, comptime vw: Component) GenericVector(4, T) {
+            return GenericVector(4, T).new(self.data[@intFromEnum(vx)], self.data[@intFromEnum(vy)], self.data[@intFromEnum(vz)], self.data[@intFromEnum(vw)]);
         }
     };
 }
@@ -763,4 +806,86 @@ test "zalgebra.Vectors.cross" {
 
     try expectEqual(result_1, Vec3.zero());
     try expectEqual(result_2, Vec3.new(-10.1650009, 7.75, -1.32499980));
+}
+
+test "vector conversions 2 -> 3 -> 4" {
+    const v2 = Vec2.new(1, 2);
+    const v3 = Vec3.fromVec2(v2, 3);
+    const v4 = Vec4.fromVec3(v3, 4);
+
+    try expectEqual(v3, Vec3.new(1, 2, 3));
+    try expectEqual(v4, Vec4.new(1, 2, 3, 4));
+}
+
+test "vector conversions 4 -> 3 -> 2" {
+    const v4 = Vec4.new(1, 2, 3, 4);
+    const v3 = Vec3.fromVec4(v4);
+    const v2 = Vec2.fromVec3(v3);
+
+    try expectEqual(v3, Vec3.new(1, 2, 3));
+    try expectEqual(v2, Vec2.new(1, 2));
+}
+
+test "vector conversions 2 -> 4" {
+    const v2 = Vec2.new(1, 2);
+    const v4 = Vec4.fromVec2(v2, 3, 4);
+
+    try expectEqual(v4, Vec4.new(1, 2, 3, 4));
+}
+
+test "vector conversions 4 -> 2" {
+    const v4 = Vec4.new(1, 2, 3, 4);
+    const v2 = Vec2.fromVec4(v4);
+
+    try expectEqual(v2, Vec2.new(1, 2));
+}
+
+// Just touching every component
+// not testing every combination cause it's too many
+test "swizzle2" {
+    const v2 = Vec2.new(1, 2);
+    const yx = v2.swizzle2(.y, .x);
+    try expectEqual(Vec2.new(2, 1), yx);
+
+    const v3 = Vec3.new(1, 2, 3);
+    const zy = v3.swizzle2(.z, .y);
+    const xx = v3.swizzle2(.x, .x);
+    try expectEqual(Vec2.new(3, 2), zy);
+    try expectEqual(Vec2.new(1, 1), xx);
+
+    const v4 = Vec4.new(1, 2, 3, 4);
+    const wz = v4.swizzle2(.w, .z);
+    const xy = v4.swizzle2(.x, .y);
+    try expectEqual(Vec2.new(4, 3), wz);
+    try expectEqual(Vec2.new(1, 2), xy);
+}
+
+test "swizzle3" {
+    const v2 = Vec2.new(1, 2);
+    const yxy = v2.swizzle3(.y, .x, .y);
+    try expectEqual(Vec3.new(2, 1, 2), yxy);
+
+    const v3 = Vec3.new(1, 2, 3);
+    const zyx = v3.swizzle3(.z, .y, .x);
+    try expectEqual(Vec3.new(3, 2, 1), zyx);
+
+    const v4 = Vec4.new(1, 2, 3, 4);
+    const wzy = v4.swizzle3(.w, .z, .y);
+    const xxx = v4.swizzle3(.x, .x, .x);
+    try expectEqual(Vec3.new(4, 3, 2), wzy);
+    try expectEqual(Vec3.new(1, 1, 1), xxx);
+}
+
+test "swizzle4" {
+    const v2 = Vec2.new(1, 2);
+    const yxyx = v2.swizzle4(.y, .x, .y, .x);
+    try expectEqual(Vec4.new(2, 1, 2, 1), yxyx);
+
+    const v3 = Vec3.new(1, 2, 3);
+    const zyxz = v3.swizzle4(.z, .y, .x, .z);
+    try expectEqual(Vec4.new(3, 2, 1, 3), zyxz);
+
+    const v4 = Vec4.new(1, 2, 3, 4);
+    const wzyx = v4.swizzle4(.w, .z, .y, .x);
+    try expectEqual(Vec4.new(4, 3, 2, 1), wzyx);
 }
