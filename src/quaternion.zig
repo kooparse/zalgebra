@@ -251,7 +251,6 @@ pub fn Quaternion(comptime T: type) type {
         /// Extract euler angles (degrees) from quaternion.
         pub fn extractEulerAngles(self: Self) Vector3 {
             const yaw = math.atan2(
-                T,
                 2 * (self.y * self.z + self.w * self.x),
                 self.w * self.w - self.x * self.x - self.y * self.y + self.z * self.z,
             );
@@ -259,7 +258,6 @@ pub fn Quaternion(comptime T: type) type {
                 -2 * (self.x * self.z - self.w * self.y),
             );
             const roll = math.atan2(
-                T,
                 2 * (self.x * self.y + self.w * self.z),
                 self.w * self.w + self.x * self.x - self.y * self.y - self.z * self.z,
             );
