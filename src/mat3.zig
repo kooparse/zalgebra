@@ -176,12 +176,12 @@ pub fn Mat3x3(comptime T: type) type {
         pub fn extractEulerAngles(self: Self) Vector3 {
             const m = self.orthoNormalize();
 
-            const theta_x = math.atan2(T, m.data[1][2], m.data[2][2]);
+            const theta_x = math.atan2(m.data[1][2], m.data[2][2]);
             const c2 = @sqrt(math.pow(T, m.data[0][0], 2) + math.pow(T, m.data[0][1], 2));
-            const theta_y = math.atan2(T, -m.data[0][2], @sqrt(c2));
+            const theta_y = math.atan2(-m.data[0][2], @sqrt(c2));
             const s1 = @sin(theta_x);
             const c1 = @cos(theta_x);
-            const theta_z = math.atan2(T, s1 * m.data[2][0] - c1 * m.data[1][0], c1 * m.data[1][1] - s1 * m.data[2][1]);
+            const theta_z = math.atan2(s1 * m.data[2][0] - c1 * m.data[1][0], c1 * m.data[1][1] - s1 * m.data[2][1]);
 
             return Vector3.new(root.toDegrees(theta_x), root.toDegrees(theta_y), root.toDegrees(theta_z));
         }
