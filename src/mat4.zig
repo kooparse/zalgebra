@@ -401,16 +401,27 @@ pub fn Mat4x4(comptime T: type) type {
         /// The final order is T * R * S.
         /// Note: `rotation` could be `Vec3` (Euler angles) or a `quat`.
         pub fn recompose(translation: Vector3, rotation: anytype, scalar: Vector3) Self {
-            const t = Self.fromTranslate(translation);
-            const s = Self.fromScale(scalar);
-
-            const r = switch (@TypeOf(rotation)) {
+            var r = switch (@TypeOf(rotation)) {
                 Quaternion(T) => Quaternion(T).toMat4(rotation),
                 Vector3 => Self.fromEulerAngles(rotation),
                 else => @compileError("Recompose not implemented for " ++ @typeName(@TypeOf(rotation))),
             };
 
-            return t.mul(r.mul(s));
+            r.data[0][0] *= scalar.x();
+            r.data[0][1] *= scalar.x();
+            r.data[0][2] *= scalar.x();
+            r.data[1][0] *= scalar.y();
+            r.data[1][1] *= scalar.y();
+            r.data[1][2] *= scalar.y();
+            r.data[2][0] *= scalar.z();
+            r.data[2][1] *= scalar.z();
+            r.data[2][2] *= scalar.z();
+
+            r.data[3][0] = translation.x();
+            r.data[3][1] = translation.y();
+            r.data[3][2] = translation.z();
+
+            return r;
         }
 
         /// Return `translation`, `rotation` and `scale` components from given matrix.

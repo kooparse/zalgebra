@@ -2,6 +2,7 @@ const std = @import("std");
 const root = @import("main.zig");
 const meta = std.meta;
 const generic_vector = @import("generic_vector.zig");
+const mat3 = @import("mat3.zig");
 const mat4 = @import("mat4.zig");
 const math = std.math;
 const eps_value = math.floatEps(f32);
@@ -15,6 +16,7 @@ const GenericVector = generic_vector.GenericVector;
 
 const Vec3 = generic_vector.Vec3;
 const Vec4 = generic_vector.Vec4;
+const Mat3x3 = mat3.Mat3x3;
 const Mat4x4 = mat4.Mat4x4;
 
 pub const Quat = Quaternion(f32);
@@ -140,6 +142,36 @@ pub fn Quaternion(comptime T: type) type {
         /// Return the dot product between two quaternion.
         pub fn dot(left: Self, right: Self) T {
             return (left.x * right.x) + (left.y * right.y) + (left.z * right.z) + (left.w * right.w);
+        }
+
+        /// Convert given quaternion to rotation 3x3 matrix.
+        fn toMat3(self: Self) Mat3x3(T) {
+            var result: Mat3x3(T) = undefined;
+
+            const normalized = self.norm();
+            const xx = normalized.x * normalized.x;
+            const yy = normalized.y * normalized.y;
+            const zz = normalized.z * normalized.z;
+            const xy = normalized.x * normalized.y;
+            const xz = normalized.x * normalized.z;
+            const yz = normalized.y * normalized.z;
+            const wx = normalized.w * normalized.x;
+            const wy = normalized.w * normalized.y;
+            const wz = normalized.w * normalized.z;
+
+            result.data[0][0] = 1 - 2 * (yy + zz);
+            result.data[0][1] = 2 * (xy + wz);
+            result.data[0][2] = 2 * (xz - wy);
+
+            result.data[1][0] = 2 * (xy - wz);
+            result.data[1][1] = 1 - 2 * (xx + zz);
+            result.data[1][2] = 2 * (yz + wx);
+
+            result.data[2][0] = 2 * (xz + wy);
+            result.data[2][1] = 2 * (yz - wx);
+            result.data[2][2] = 1 - 2 * (xx + yy);
+
+            return result;
         }
 
         /// Convert given quaternion to rotation 4x4 matrix.
