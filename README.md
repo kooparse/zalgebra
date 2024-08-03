@@ -9,7 +9,7 @@ The goal is to become as complete and useful as the Unity one. I'm currently usi
 
 If you would like to contribute, don't hesitate! :)
 
-Note: **Zig 0.11.x is required.**
+Note: **Zig 0.13.x is required.**
 
 ## Examples
 
