@@ -24,7 +24,7 @@ pub const Quat_f64 = Quaternion(f64);
 
 /// A Quaternion for 3D rotations.
 pub fn Quaternion(comptime T: type) type {
-    if (@typeInfo(T) != .Float) {
+    if (@typeInfo(T) != .float) {
         @compileError("Quaternion not implemented for " ++ @typeName(T));
     }
 
@@ -378,7 +378,7 @@ pub fn Quaternion(comptime T: type) type {
         pub fn cast(self: Self, comptime dest_type: type) Quaternion(dest_type) {
             const dest_info = @typeInfo(dest_type);
 
-            if (dest_info != .Float) {
+            if (dest_info != .float) {
                 std.debug.panic("Error, dest type should be float.\n", .{});
             }
 

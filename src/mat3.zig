@@ -101,7 +101,7 @@ pub fn Mat3x3(comptime T: type) type {
 
         /// Construct a 3x3 matrix from given axis and angle (in degrees).
         pub fn fromRotation(angle_in_degrees: T, axis: Vector3) Self {
-            if (@typeInfo(T) != .Float) {
+            if (@typeInfo(T) != .float) {
                 @compileError("Mat3x3.fromRotation() not implemented for " ++ @typeName(T));
             }
 
@@ -133,7 +133,7 @@ pub fn Mat3x3(comptime T: type) type {
         }
 
         pub fn rotate(self: Self, angle_in_degrees: T, axis: Vector3) Self {
-            if (@typeInfo(T) != .Float) {
+            if (@typeInfo(T) != .float) {
                 @compileError("Mat3x3.rotate() not implemented for " ++ @typeName(T));
             }
 
@@ -144,7 +144,7 @@ pub fn Mat3x3(comptime T: type) type {
         /// Construct a rotation matrix from euler angles (X * Y * Z).
         /// Order matters because matrix multiplication are NOT commutative.
         pub fn fromEulerAngles(euler_angle: Vector3) Self {
-            if (@typeInfo(T) != .Float) {
+            if (@typeInfo(T) != .float) {
                 @compileError("Mat3x3.fromEulerAngles() not implemented for " ++ @typeName(T));
             }
 
@@ -157,7 +157,7 @@ pub fn Mat3x3(comptime T: type) type {
 
         /// Ortho normalize given matrix.
         pub fn orthoNormalize(self: Self) Self {
-            if (@typeInfo(T) != .Float) {
+            if (@typeInfo(T) != .float) {
                 @compileError("Mat3x3.orthoNormalize() not implemented for " ++ @typeName(T));
             }
 
@@ -186,7 +186,7 @@ pub fn Mat3x3(comptime T: type) type {
         /// Taken from Mike Day at Insomniac Games (and `glm` as the same function).
         /// For more details: https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf
         pub fn extractEulerAngles(self: Self) Vector3 {
-            if (@typeInfo(T) != .Float) {
+            if (@typeInfo(T) != .float) {
                 @compileError("Mat3x3.extractEulerAngles() not implemented for " ++ @typeName(T));
             }
 
@@ -303,7 +303,7 @@ pub fn Mat3x3(comptime T: type) type {
         pub fn cast(self: Self, comptime dest_type: type) Mat3x3(dest_type) {
             const dest_info = @typeInfo(dest_type);
 
-            if (dest_info != .Float) {
+            if (dest_info != .float) {
                 std.debug.panic("Error, dest type should be float.\n", .{});
             }
 

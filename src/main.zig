@@ -13,7 +13,7 @@ pub usingnamespace @import("quaternion.zig");
 pub fn toRadians(degrees: anytype) @TypeOf(degrees) {
     const T = @TypeOf(degrees);
 
-    if (@typeInfo(T) != .Float) {
+    if (@typeInfo(T) != .float) {
         @compileError("Radians not implemented for " ++ @typeName(T));
     }
 
@@ -24,7 +24,7 @@ pub fn toRadians(degrees: anytype) @TypeOf(degrees) {
 pub fn toDegrees(radians: anytype) @TypeOf(radians) {
     const T = @TypeOf(radians);
 
-    if (@typeInfo(T) != .Float) {
+    if (@typeInfo(T) != .float) {
         @compileError("Radians not implemented for " ++ @typeName(T));
     }
 
@@ -34,7 +34,7 @@ pub fn toDegrees(radians: anytype) @TypeOf(radians) {
 /// Linear interpolation between two floats.
 /// `t` is used to interpolate between `from` and `to`.
 pub fn lerp(comptime T: type, from: T, to: T, t: T) T {
-    if (@typeInfo(T) != .Float) {
+    if (@typeInfo(T) != .float) {
         @compileError("Lerp not implemented for " ++ @typeName(T));
     }
 
