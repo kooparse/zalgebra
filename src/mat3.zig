@@ -19,10 +19,6 @@ pub const Mat3_f64 = Mat3x3(f64);
 /// A column-major 3x3 matrix
 /// Note: Column-major means accessing data like m.data[COLUMN][ROW].
 pub fn Mat3x3(comptime T: type) type {
-    if (@typeInfo(T) != .Float) {
-        @compileError("Mat3x3 not implemented for " ++ @typeName(T));
-    }
-
     const Vector3 = GenericVector(3, T);
 
     return extern struct {
@@ -105,6 +101,10 @@ pub fn Mat3x3(comptime T: type) type {
 
         /// Construct a 3x3 matrix from given axis and angle (in degrees).
         pub fn fromRotation(angle_in_degrees: T, axis: Vector3) Self {
+            if (@typeInfo(T) != .Float) {
+                @compileError("Mat3x3.fromRotation() not implemented for " ++ @typeName(T));
+            }
+
             var result = Self.identity();
 
             const norm_axis = axis.norm();
@@ -133,6 +133,10 @@ pub fn Mat3x3(comptime T: type) type {
         }
 
         pub fn rotate(self: Self, angle_in_degrees: T, axis: Vector3) Self {
+            if (@typeInfo(T) != .Float) {
+                @compileError("Mat3x3.rotate() not implemented for " ++ @typeName(T));
+            }
+
             const rotation_mat = Self.fromRotation(angle_in_degrees, axis);
             return Self.mul(self, rotation_mat);
         }
@@ -140,6 +144,10 @@ pub fn Mat3x3(comptime T: type) type {
         /// Construct a rotation matrix from euler angles (X * Y * Z).
         /// Order matters because matrix multiplication are NOT commutative.
         pub fn fromEulerAngles(euler_angle: Vector3) Self {
+            if (@typeInfo(T) != .Float) {
+                @compileError("Mat3x3.fromEulerAngles() not implemented for " ++ @typeName(T));
+            }
+
             const x = Self.fromRotation(euler_angle.x(), Vector3.right());
             const y = Self.fromRotation(euler_angle.y(), Vector3.up());
             const z = Self.fromRotation(euler_angle.z(), Vector3.forward());
@@ -149,6 +157,10 @@ pub fn Mat3x3(comptime T: type) type {
 
         /// Ortho normalize given matrix.
         pub fn orthoNormalize(self: Self) Self {
+            if (@typeInfo(T) != .Float) {
+                @compileError("Mat3x3.orthoNormalize() not implemented for " ++ @typeName(T));
+            }
+
             const column_1 = Vector3.new(self.data[0][0], self.data[0][1], self.data[0][2]).norm();
             const column_2 = Vector3.new(self.data[1][0], self.data[1][1], self.data[1][2]).norm();
             const column_3 = Vector3.new(self.data[2][0], self.data[2][1], self.data[2][2]).norm();
@@ -174,6 +186,10 @@ pub fn Mat3x3(comptime T: type) type {
         /// Taken from Mike Day at Insomniac Games (and `glm` as the same function).
         /// For more details: https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf
         pub fn extractEulerAngles(self: Self) Vector3 {
+            if (@typeInfo(T) != .Float) {
+                @compileError("Mat3x3.extractEulerAngles() not implemented for " ++ @typeName(T));
+            }
+
             const m = self.orthoNormalize();
 
             const theta_x = math.atan2(m.data[1][2], m.data[2][2]);
