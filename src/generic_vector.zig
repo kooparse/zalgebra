@@ -22,10 +22,9 @@ pub const Vec4_usize = GenericVector(4, usize);
 
 /// A generic vector.
 pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
-    if (@typeInfo(T) != .Float and @typeInfo(T) != .Int) {
+    if (@typeInfo(T) != .float and @typeInfo(T) != .int) {
         @compileError("Vectors not implemented for " ++ @typeName(T));
     }
-
     if (dimensions < 2 or dimensions > 4) {
         @compileError("Dimensions must be 2, 3 or 4!");
     }
@@ -255,7 +254,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         pub fn cast(self: Self, comptime dest_type: type) GenericVector(dimensions, dest_type) {
             const dest_info = @typeInfo(dest_type);
 
-            if (dest_info != .Float and dest_info != .Int) {
+            if (dest_info != .float and dest_info != .int) {
                 panic("Error, dest type should be integer or float.\n", .{});
             }
 
