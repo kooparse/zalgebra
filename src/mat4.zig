@@ -23,7 +23,7 @@ pub const lookAt = Mat4.lookAt;
 /// A column-major 4x4 matrix
 /// Note: Column-major means accessing data like m.data[COLUMN][ROW].
 pub fn Mat4x4(comptime T: type) type {
-    if (@typeInfo(T) != .Float) {
+    if (@typeInfo(T) != .float) {
         @compileError("Mat4x4 not implemented for " ++ @typeName(T));
     }
 
@@ -478,7 +478,7 @@ pub fn Mat4x4(comptime T: type) type {
         pub fn cast(self: Self, comptime dest_type: type) Mat4x4(dest_type) {
             const dest_info = @typeInfo(dest_type);
 
-            if (dest_info != .Float) {
+            if (dest_info != .float) {
                 std.debug.panic("Error, dest type should be float.\n", .{});
             }
 
