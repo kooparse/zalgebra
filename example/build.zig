@@ -19,18 +19,16 @@ pub fn build(b: *std.Build) void {
         .name = "example",
         // In this case the main source file is merely a path, however, in more
         // complicated build scripts, this could be a generated file.
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
 
-    const zalgebra_dep = b.dependency("zalgebra", .{
+    const zalgebra = b.dependency("zalgebra", .{
         .target = target,
         .optimize = optimize,
     });
-
-    const zalgebra_module = zalgebra_dep.module("zalgebra");
-    exe.addModule("zalgebra", zalgebra_module);
+    exe.root_module.addImport("zalgebra", zalgebra.module("zalgebra"));
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -63,11 +61,11 @@ pub fn build(b: *std.Build) void {
     // Creates a step for unit testing. This only builds the test executable
     // but does not run it.
     const unit_tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
-    unit_tests.addModule("zalgebra", zalgebra_module);
+    unit_tests.root_module.addImport("zalgebra", zalgebra.module("zalgebra"));
 
     const run_unit_tests = b.addRunArtifact(unit_tests);
 

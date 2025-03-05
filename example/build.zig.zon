@@ -1,6 +1,8 @@
 .{
-    .name = "example",
+    .name = .example,
     .version = "0.0.1",
+    .fingerprint = 0x6eec9b9f65267b27, // Changing this has security and trust implications.
+    .paths = .{""},
     .dependencies = .{
         .zalgebra = .{
             .url = "https://github.com/kooparse/zalgebra/archive/229ee57d351c8d40f47100c06ace6325e4215571.tar.gz",
