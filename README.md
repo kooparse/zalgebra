@@ -9,7 +9,7 @@ The goal is to become as complete and useful as the Unity one. I'm currently usi
 
 If you would like to contribute, don't hesitate! :)
 
-Note: **The main branch is for the latest Zig release (0.13.x), use [latest](https://github.com/kooparse/zalgebra/tree/latest) for latest master changements**
+Note: **The main branch is for the latest Zig release (0.14.x), use [latest](https://github.com/kooparse/zalgebra/tree/latest) for latest master changements**
 
 ## Examples
 
