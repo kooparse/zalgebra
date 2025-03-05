@@ -1,7 +1,7 @@
 .{
     .name = .example,
     .version = "0.0.1",
-    .fingerprint = 0x6eec9b9f65267b27,
+    .fingerprint = 0x6eec9b9f65267b27, // Changing this has security and trust implications.
     .paths = .{""},
     .dependencies = .{
         .zalgebra = .{
