@@ -5,8 +5,8 @@
     .paths = .{""},
     .dependencies = .{
         .zalgebra = .{
-            .url = "https://github.com/kooparse/zalgebra/archive/229ee57d351c8d40f47100c06ace6325e4215571.tar.gz",
-            .hash = "1220509c1c3d47c37ec188a2d462d0328abbc212304ca8565c630d7f6e7deb40ad07",
+            .url = "https://github.com/kooparse/zalgebra/archive/ecd47c5070368052604064a8b50393c35457394a.tar.gz",
+            .hash = "zalgebra-0.0.0-aaiVSsJoAQDdwwbf0Umo7dN71EqXxA73MAioy1p9tGyz",
         },
     },
 }
