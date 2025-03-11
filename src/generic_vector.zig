@@ -362,16 +362,38 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return .{ .data = result };
         }
 
+        pub fn swizzle(self: Self, comptime comps: []const u8) SwizzleType(comps.len) {
+            if (comps.len == 1) {
+                return self.data[@intFromEnum(@field(Component, &.{comps[0]}))];
+            }
+
+            var result = GenericVector(comps.len, T).zero();
+            inline for (comps, 0..) |comp, i| {
+                result.data[i] = self.data[@intFromEnum(@field(Component, &.{comp}))];
+            }
+            return result;
+        }
+
+        fn SwizzleType(comps_len: usize) type {
+            return switch (comps_len) {
+                1 => T,
+                else => GenericVector(comps_len, T),
+            };
+        }
+
+        /// Deprecated; use `swizzle` instead
         pub inline fn swizzle2(self: Self, comptime vx: Component, comptime vy: Component) GenericVector(2, T) {
-            return GenericVector(2, T).new(self.data[@intFromEnum(vx)], self.data[@intFromEnum(vy)]);
+            return self.swizzle(@tagName(vx) ++ @tagName(vy));
         }
 
+        /// Deprecated; use `swizzle` instead
         pub inline fn swizzle3(self: Self, comptime vx: Component, comptime vy: Component, comptime vz: Component) GenericVector(3, T) {
-            return GenericVector(3, T).new(self.data[@intFromEnum(vx)], self.data[@intFromEnum(vy)], self.data[@intFromEnum(vz)]);
+            return self.swizzle(@tagName(vx) ++ @tagName(vy) ++ @tagName(vz));
         }
 
+        /// Deprecated; use `swizzle` instead
         pub inline fn swizzle4(self: Self, comptime vx: Component, comptime vy: Component, comptime vz: Component, comptime vw: Component) GenericVector(4, T) {
-            return GenericVector(4, T).new(self.data[@intFromEnum(vx)], self.data[@intFromEnum(vy)], self.data[@intFromEnum(vz)], self.data[@intFromEnum(vw)]);
+            return self.swizzle(@tagName(vx) ++ @tagName(vy) ++ @tagName(vz) ++ @tagName(vw));
         }
     };
 }
@@ -886,50 +908,24 @@ test "vector conversions 4 -> 2" {
 
 // Just touching every component
 // not testing every combination cause it's too many
-test "swizzle2" {
+test "swizzle" {
+    const v1 = Vec2.new(1, 2);
+    const x = v1.swizzle("x");
+    try expectEqual(1, x);
+
     const v2 = Vec2.new(1, 2);
-    const yx = v2.swizzle2(.y, .x);
+    const yx = v2.swizzle("yx");
     try expectEqual(Vec2.new(2, 1), yx);
 
     const v3 = Vec3.new(1, 2, 3);
-    const zy = v3.swizzle2(.z, .y);
-    const xx = v3.swizzle2(.x, .x);
+    const zy = v3.swizzle("zy");
+    const xx = v3.swizzle("xx");
     try expectEqual(Vec2.new(3, 2), zy);
     try expectEqual(Vec2.new(1, 1), xx);
 
     const v4 = Vec4.new(1, 2, 3, 4);
-    const wz = v4.swizzle2(.w, .z);
-    const xy = v4.swizzle2(.x, .y);
+    const wz = v4.swizzle("wz");
+    const xy = v4.swizzle("xy");
     try expectEqual(Vec2.new(4, 3), wz);
     try expectEqual(Vec2.new(1, 2), xy);
-}
-
-test "swizzle3" {
-    const v2 = Vec2.new(1, 2);
-    const yxy = v2.swizzle3(.y, .x, .y);
-    try expectEqual(Vec3.new(2, 1, 2), yxy);
-
-    const v3 = Vec3.new(1, 2, 3);
-    const zyx = v3.swizzle3(.z, .y, .x);
-    try expectEqual(Vec3.new(3, 2, 1), zyx);
-
-    const v4 = Vec4.new(1, 2, 3, 4);
-    const wzy = v4.swizzle3(.w, .z, .y);
-    const xxx = v4.swizzle3(.x, .x, .x);
-    try expectEqual(Vec3.new(4, 3, 2), wzy);
-    try expectEqual(Vec3.new(1, 1, 1), xxx);
-}
-
-test "swizzle4" {
-    const v2 = Vec2.new(1, 2);
-    const yxyx = v2.swizzle4(.y, .x, .y, .x);
-    try expectEqual(Vec4.new(2, 1, 2, 1), yxyx);
-
-    const v3 = Vec3.new(1, 2, 3);
-    const zyxz = v3.swizzle4(.z, .y, .x, .z);
-    try expectEqual(Vec4.new(3, 2, 1, 3), zyxz);
-
-    const v4 = Vec4.new(1, 2, 3, 4);
-    const wzyx = v4.swizzle4(.w, .z, .y, .x);
-    try expectEqual(Vec4.new(4, 3, 2, 1), wzyx);
 }
