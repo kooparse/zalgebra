@@ -380,6 +380,21 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                 else => GenericVector(comps_len, T),
             };
         }
+
+        /// Deprecated; use `swizzle` instead
+        pub inline fn swizzle2(self: Self, comptime vx: Component, comptime vy: Component) GenericVector(2, T) {
+            return self.swizzle(@tagName(vx) ++ @tagName(vy));
+        }
+
+        /// Deprecated; use `swizzle` instead
+        pub inline fn swizzle3(self: Self, comptime vx: Component, comptime vy: Component, comptime vz: Component) GenericVector(3, T) {
+            return self.swizzle(@tagName(vx) ++ @tagName(vy) ++ @tagName(vz));
+        }
+
+        /// Deprecated; use `swizzle` instead
+        pub inline fn swizzle4(self: Self, comptime vx: Component, comptime vy: Component, comptime vz: Component, comptime vw: Component) GenericVector(4, T) {
+            return self.swizzle(@tagName(vx) ++ @tagName(vy) ++ @tagName(vz) ++ @tagName(vw));
+        }
     };
 }
 
