@@ -440,37 +440,29 @@ pub fn Mat4x4(comptime T: type) type {
             };
         }
 
+        pub fn format(
+            self: Self,
+            comptime fmt: []const u8,
+            options: std.fmt.FormatOptions,
+            writer: anytype,
+        ) !void {
+            _ = fmt;
+            _ = options;
+
+            for(0..4) |y| {
+                writer.writeAll("(");
+                for (0..4) |x| {
+                    writer.print("{d}, ", .{self.data[x][y]});
+                }
+                writer.writeAll(")\n");
+            }
+        }
+
+        /// Deprecated; use `std.fmt.bufPrint` or similar.
+        ///
         /// Print the 4x4 to stderr.
         pub fn debugPrint(self: Self) void {
-            const print = std.debug.print;
-
-            print("({d}, {d}, {d}, {d})\n", .{
-                self.data[0][0],
-                self.data[1][0],
-                self.data[2][0],
-                self.data[3][0],
-            });
-
-            print("({d}, {d}, {d}, {d})\n", .{
-                self.data[0][1],
-                self.data[1][1],
-                self.data[2][1],
-                self.data[3][1],
-            });
-
-            print("({d}, {d}, {d}, {d})\n", .{
-                self.data[0][2],
-                self.data[1][2],
-                self.data[2][2],
-                self.data[3][2],
-            });
-
-            print("({d}, {d}, {d}, {d})\n", .{
-                self.data[0][3],
-                self.data[1][3],
-                self.data[2][3],
-                self.data[3][3],
-            });
+            std.debug.print("{}", .{self});
         }
 
         /// Cast a type to another type.

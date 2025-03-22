@@ -275,27 +275,29 @@ pub fn Mat3x3(comptime T: type) type {
             return inv_mat;
         }
 
+        pub fn format(
+            self: Self,
+            comptime fmt: []const u8,
+            options: std.fmt.FormatOptions,
+            writer: anytype,
+        ) !void {
+            _ = fmt;
+            _ = options;
+
+            for(0..3) |y| {
+                writer.writeAll("(");
+                for (0..3) |x| {
+                    writer.print("{d}, ", .{self.data[x][y]});
+                }
+                writer.writeAll(")\n");
+            }
+        }
+
+        /// Deprecated; use `std.fmt.bufPrint` or similar.
+        ///
         /// Print the 3x3 to stderr.
         pub fn debugPrint(self: Self) void {
-            const print = std.debug.print;
-
-            print("({d}, {d}, {d})\n", .{
-                self.data[0][0],
-                self.data[1][0],
-                self.data[2][0],
-            });
-
-            print("({d}, {d}, {d})\n", .{
-                self.data[0][1],
-                self.data[1][1],
-                self.data[2][1],
-            });
-
-            print("({d}, {d}, {d})\n", .{
-                self.data[0][2],
-                self.data[1][2],
-                self.data[2][2],
-            });
+            std.debug.print("{}", .{self});
         }
 
         /// Cast a type to another type.
