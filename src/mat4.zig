@@ -449,7 +449,7 @@ pub fn Mat4x4(comptime T: type) type {
             _ = fmt;
             _ = options;
 
-            for(0..4) |i| {
+            for (0..4) |i| {
                 writer.print("({d}, {d}, {d}, {d})\n", .{
                     self.data[0][i],
                     self.data[1][i],
