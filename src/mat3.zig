@@ -284,12 +284,12 @@ pub fn Mat3x3(comptime T: type) type {
             _ = fmt;
             _ = options;
 
-            for(0..3) |y| {
-                writer.writeAll("(");
-                for (0..3) |x| {
-                    writer.print("{d}, ", .{self.data[x][y]});
-                }
-                writer.writeAll(")\n");
+            for(0..3) |i| {
+                writer.print("({d}, {d}, {d})\n", .{
+                    self.data[0][i],
+                    self.data[1][i],
+                    self.data[2][i],
+                });
             }
         }
 
