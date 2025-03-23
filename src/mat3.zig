@@ -285,19 +285,12 @@ pub fn Mat3x3(comptime T: type) type {
             _ = options;
 
             for (0..3) |i| {
-                writer.print("({d:.2}, {d:.2}, {d:.2})\n", .{
+                try writer.print("({d:.2}, {d:.2}, {d:.2})\n", .{
                     self.data[0][i],
                     self.data[1][i],
                     self.data[2][i],
                 });
             }
-        }
-
-        /// Deprecated; use `std.fmt.bufPrint` or similar.
-        ///
-        /// Print the 3x3 to stderr.
-        pub fn debugPrint(self: Self) void {
-            std.debug.print("{}", .{self});
         }
 
         /// Cast a type to another type.

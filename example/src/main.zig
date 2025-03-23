@@ -9,7 +9,7 @@ pub fn main() void {
     const model = Mat4.fromTranslate(Vec3.new(0.2, 0.5, 0.0));
 
     const mvp = Mat4.mul(projection, view.mul(model));
-    mvp.debugPrint();
+    std.debug.print("{}", .{mvp});
 }
 
 test "simple test" {
