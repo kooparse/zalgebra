@@ -285,7 +285,7 @@ pub fn Mat3x3(comptime T: type) type {
             _ = options;
 
             for (0..3) |i| {
-                writer.print("({d}, {d}, {d})\n", .{
+                writer.print("({d:.2}, {d:.2}, {d:.2})\n", .{
                     self.data[0][i],
                     self.data[1][i],
                     self.data[2][i],
