@@ -81,9 +81,8 @@ pub fn Mat3x3(comptime T: type) type {
             return result;
         }
 
-        /// Return a pointer to the inner data of the matrix.
-        pub fn getData(self: *const Self) *const T {
-            return @ptrCast(&self.data);
+        pub fn getSlice(self: *const Self) *const [3][3]T {
+            return self.data[0..3];
         }
 
         /// Return true if two matrices are equals.

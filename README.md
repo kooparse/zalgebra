@@ -106,7 +106,7 @@ Note: All matrices are column-major.
 | identity             | Construct an identity matrix                                                          |
 | set                  | Set all matrix values to given value                                                  |
 | fromSlice            | Construct new matrix from given slice of data                                         |
-| getData              | Return a pointer to the inner data                                                    |
+| getSlice             | Return the inner data as a slice                                                      |
 | transpose            | Return the transpose matrix                                                           |
 | negate               | Scale all components by -1                                                            |
 | cast                 | Cast a type to another type                                                           |
