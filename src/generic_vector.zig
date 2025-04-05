@@ -290,6 +290,12 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return @sqrt(self.dot(self));
         }
 
+        /// Return the length (magnitude) squared of given vector.
+        /// x^2 + y^2 + z^2 ...
+        pub fn lengthSq(self: Self) T {
+            return self.dot(self);
+        }
+
         /// Return the distance between two points.
         /// √[(x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2 ...]
         pub fn distance(first_vector: Self, second_vector: Self) T {
