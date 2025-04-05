@@ -145,7 +145,7 @@ pub fn Quaternion(comptime T: type) type {
         }
 
         /// Convert given quaternion to rotation 3x3 matrix.
-        fn toMat3(self: Self) Mat3x3(T) {
+        pub fn toMat3(self: Self) Mat3x3(T) {
             var result: Mat3x3(T) = undefined;
 
             const normalized = self.norm();

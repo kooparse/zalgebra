@@ -329,6 +329,12 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return .{ .data = result };
         }
 
+        /// Component wise division betwen two given vector.
+        pub fn div(first_vector: Self, second_vector: Self) Self {
+            const result = first_vector.data / second_vector.data;
+            return .{ .data = result };
+        }
+
         /// Construct vector from the max components in two vectors
         pub fn max(first_vector: Self, second_vector: Self) Self {
             const result = @max(first_vector.data, second_vector.data);
