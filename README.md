@@ -84,11 +84,13 @@ pub fn main () void {
 | getAngle  | Return angle in degrees between two vectors (only for vec2 and vec3)       |
 | rotate    | Rotate vector by angle (in degrees)                                        |
 | length    | Return the magnitude of the current vector                                 |
+| lengthSq  | Return the magnitude squared of the current vector                         |
 | distance  | Return the distance between two points                                     |
 | norm      | Construct a new normalized vector based on the given one                   |
 | eql       | Return `true` if two vectors are equals                                    |
 | sub       | Construct new vector resulting from the substraction between two vectors   |
 | add       | Construct new vector resulting from the addition between two vectors       |
+| div       | Construct new vector resulting from the division between two vectors       |
 | mul       | Construct new vector resulting from the multiplication between two vectors |
 | scale     | Construct new vector after multiplying each components by a given scalar   |
 | cross     | Construct the cross product (as vector) from two vectors (only for vec3)   |
@@ -151,6 +153,7 @@ Note: All matrices are column-major.
 | mul               | Construct quaternion resulting from the multiplication of two given ones                       |
 | scale             | Construct new quaternion resulting from the multiplication of all components by a given scalar |
 | dot               | Return the dot product between two quaternions                                                 |
+| toMat3            | Convert given quat to rotation 3x3 matrix                                                      |
 | toMat4            | Convert given quat to rotation 4x4 matrix                                                      |
 | fromEulerAngles   | Construct quaternion from Euler angles                                                         |
 | fromAxis          | Construct quat from angle around specified axis                                                |
