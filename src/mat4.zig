@@ -242,18 +242,17 @@ pub fn Mat4x4(comptime T: type) type {
         /// Note: Field of view is given in degrees.
         /// Also for more details https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml.
         pub fn perspective(fovy_in_degrees: T, aspect_ratio: T, z_near: T, z_far: T) Self {
-            var result = Self.identity();
-
             const f = 1 / @tan(root.toRadians(fovy_in_degrees) * 0.5);
+            const nf = 1 / (z_near - z_far);
 
-            result.data[0][0] = f / aspect_ratio;
-            result.data[1][1] = f;
-            result.data[2][2] = (z_near + z_far) / (z_near - z_far);
-            result.data[2][3] = -1;
-            result.data[3][2] = 2 * z_far * z_near / (z_near - z_far);
-            result.data[3][3] = 0;
-
-            return result;
+            return .{
+                .data = .{
+                    .{ f / aspect_ratio, 0, 0, 0 },
+                    .{ 0, f, 0, 0 },
+                    .{ 0, 0, (z_near + z_far) * nf, -1 },
+                    .{ 0, 0, 2 * z_near * z_far * nf, 0 },
+                },
+            };
         }
 
         /// Construct a perspective 4x4 matrix with reverse Z and infinite far plane.
