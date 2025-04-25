@@ -113,12 +113,14 @@ pub fn Mat4x4(comptime T: type) type {
         /// Construct 4x4 translation matrix by multiplying identity matrix and
         /// given translation vector.
         pub fn fromTranslate(axis: Vector3) Self {
-            var result = Self.identity();
-            result.data[3][0] = axis.data[0];
-            result.data[3][1] = axis.data[1];
-            result.data[3][2] = axis.data[2];
-
-            return result;
+            return .{
+                .data = .{
+                    .{ 1, 0, 0, 0 },
+                    .{ 0, 1, 0, 0 },
+                    .{ 0, 0, 1, 0 },
+                    .{ axis.x(), axis.y(), axis.z(), 1 },
+                },
+            };
         }
 
         /// Make a translation between the given matrix and the given axis.
@@ -216,13 +218,14 @@ pub fn Mat4x4(comptime T: type) type {
         }
 
         pub fn fromScale(axis: Vector3) Self {
-            var result = Self.identity();
-
-            result.data[0][0] = axis.x();
-            result.data[1][1] = axis.y();
-            result.data[2][2] = axis.z();
-
-            return result;
+            return .{
+                .data = .{
+                    .{ axis.x(), 0, 0, 0 },
+                    .{ 0, axis.y(), 0, 0 },
+                    .{ 0, 0, axis.z(), 0 },
+                    .{ 0, 0, 0, 1 },
+                },
+            };
         }
 
         pub fn scale(self: Self, axis: Vector3) Self {
@@ -260,18 +263,16 @@ pub fn Mat4x4(comptime T: type) type {
         /// Also for more details https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml.
         /// For Reversed-Z details https://nlguillemot.wordpress.com/2016/12/07/reversed-z-in-opengl/
         pub fn perspectiveReversedZ(fovy_in_degrees: T, aspect_ratio: T, z_near: T) Self {
-            var result = Self.identity();
-
             const f = 1 / @tan(root.toRadians(fovy_in_degrees) * 0.5);
 
-            result.data[0][0] = f / aspect_ratio;
-            result.data[1][1] = f;
-            result.data[2][2] = 0;
-            result.data[2][3] = -1;
-            result.data[3][2] = z_near;
-            result.data[3][3] = 0;
-
-            return result;
+            return .{
+                .data = .{
+                    .{ f / aspect_ratio, 0, 0, 0 },
+                    .{ 0, f, 0, 0 },
+                    .{ 0, 0, 0, -1 },
+                    .{ 0, 0, z_near, 0 },
+                },
+            };
         }
 
         /// Construct an orthographic 4x4 matrix.
