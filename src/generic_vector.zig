@@ -102,18 +102,17 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
                 /// Construct the cross product (as vector) from two vectors.
                 pub fn cross(first_vector: Self, second_vector: Self) Self {
-                    const x1 = first_vector.x();
-                    const y1 = first_vector.y();
-                    const z1 = first_vector.z();
+                    // https://geometrian.com/resources/cross_product/
+                    const mask0 = [3]i32{ 1, 2, 0 };
+                    const mask1 = [3]i32{ 2, 0, 1 };
 
-                    const x2 = second_vector.x();
-                    const y2 = second_vector.y();
-                    const z2 = second_vector.z();
-
-                    const result_x = (y1 * z2) - (z1 * y2);
-                    const result_y = (z1 * x2) - (x1 * z2);
-                    const result_z = (x1 * y2) - (y1 * x2);
-                    return new(result_x, result_y, result_z);
+                    const tmp0 = @shuffle(T, first_vector.data, undefined, mask0);
+                    const tmp1 = @shuffle(T, second_vector.data, undefined, mask1);
+                    const tmp2 = tmp0 * second_vector.data;
+                    const tmp3 = tmp0 * tmp1;
+                    const tmp4 = @shuffle(T, tmp2, undefined, mask0);
+                    const result = tmp3 - tmp4;
+                    return .{ .data = result };
                 }
 
                 pub inline fn toVec2(self: Self) GenericVector(2, T) {
