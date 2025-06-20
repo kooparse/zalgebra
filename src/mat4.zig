@@ -275,6 +275,24 @@ pub fn Mat4x4(comptime T: type) type {
             };
         }
 
+        /// Construct a perspective 4x4 matrix for Vulkan clip space.
+        /// Note: Field of view is given in degrees.
+        /// For more details: https://www.vincentparizet.com/blog/posts/vulkan_perspective_matrix
+        pub fn perspectiveVulkan(fovy_in_degrees: f32, aspect_ratio: f32, z_near: f32, z_far: f32) Self {
+            const f = 1.0 / @tan(root.toRadians(fovy_in_degrees) * 0.5);
+            const A: f32 = z_near / (z_far - z_near);
+            const B: f32 = z_far * A;
+
+            return .{
+                .data = .{
+                    .{ f / aspect_ratio, 0, 0, 0 },
+                    .{ 0, -f, 0, 0 },
+                    .{ 0, 0, A, -1.0 },
+                    .{ 0, 0, B, 0 },
+                },
+            };
+        }
+
         /// Construct an orthographic 4x4 matrix.
         pub fn orthographic(left: T, right: T, bottom: T, top: T, z_near: T, z_far: T) Self {
             var result = Self.zero();
