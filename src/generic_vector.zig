@@ -43,8 +43,8 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             else => unreachable,
         };
 
-        pub usingnamespace switch (dimensions) {
-            2 => extern struct {
+        pub const DimensionImpl = switch (dimensions) {
+            2 => struct {
                 /// Construct new vector.
                 pub inline fn new(vx: T, vy: T) Self {
                     return .{ .data = [2]T{ vx, vy } };
@@ -76,7 +76,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     return Self.new(vec4.x(), vec4.y());
                 }
             },
-            3 => extern struct {
+            3 => struct {
                 /// Construct new vector.
                 pub inline fn new(vx: T, vy: T, vz: T) Self {
                     return .{ .data = [3]T{ vx, vy, vz } };
@@ -92,12 +92,12 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
                 /// Shorthand for (0, 0, 1).
                 pub fn forward() Self {
-                    return new(0, 0, 1);
+                    return Self.new(0, 0, 1);
                 }
 
                 /// Shorthand for (0, 0, -1).
                 pub fn back() Self {
-                    return forward().negate();
+                    return Self.forward().negate();
                 }
 
                 /// Construct the cross product (as vector) from two vectors.
@@ -113,7 +113,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     const result_x = (y1 * z2) - (z1 * y2);
                     const result_y = (z1 * x2) - (x1 * z2);
                     const result_z = (x1 * y2) - (y1 * x2);
-                    return new(result_x, result_y, result_z);
+                    return Self.new(result_x, result_y, result_z);
                 }
 
                 pub inline fn toVec2(self: Self) GenericVector(2, T) {
@@ -132,7 +132,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     return Self.new(vec4.x(), vec4.y(), vec4.z());
                 }
             },
-            4 => extern struct {
+            4 => struct {
                 /// Construct new vector.
                 pub inline fn new(vx: T, vy: T, vz: T, vw: T) Self {
                     return .{ .data = [4]T{ vx, vy, vz, vw } };
@@ -140,12 +140,12 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
                 /// Shorthand for (0, 0, 1, 0).
                 pub fn forward() Self {
-                    return new(0, 0, 1, 0);
+                    return Self.new(0, 0, 1, 0);
                 }
 
                 /// Shorthand for (0, 0, -1, 0).
                 pub fn back() Self {
-                    return forward().negate();
+                    return Self.forward().negate();
                 }
 
                 pub inline fn z(self: Self) T {
@@ -182,6 +182,8 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             },
             else => unreachable,
         };
+
+        pub usingnamespace DimensionImpl;
 
         pub inline fn x(self: Self) T {
             return self.data[0];
