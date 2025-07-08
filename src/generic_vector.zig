@@ -183,7 +183,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             else => unreachable,
         };
 
-        pub usingnamespace DimensionImpl;
+        pub const new = DimensionImpl.new;
 
         pub inline fn x(self: Self) T {
             return self.data[0];
@@ -193,6 +193,9 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return self.data[1];
         }
 
+        pub const z = DimensionImpl.z;
+        pub const w = DimensionImpl.w;
+
         pub inline fn xMut(self: *Self) *T {
             return &self.data[0];
         }
@@ -200,6 +203,9 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         pub inline fn yMut(self: *Self) *T {
             return &self.data[1];
         }
+
+        pub const zMut = DimensionImpl.zMut;
+        pub const wMut = DimensionImpl.wMut;
 
         /// Set all components to the same given value.
         pub fn set(val: T) Self {
@@ -247,6 +253,9 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return right().negate();
         }
 
+        pub const forward = DimensionImpl.forward;
+        pub const back = DimensionImpl.back;
+
         /// Negate the given vector.
         pub fn negate(self: Self) Self {
             return self.scale(-1);
@@ -274,6 +283,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             const result = slice[0..dimensions].*;
             return .{ .data = result };
         }
+
+        pub const fromVec2 = DimensionImpl.fromVec2;
+        pub const fromVec3 = DimensionImpl.fromVec3;
+        pub const fromVec4 = DimensionImpl.fromVec4;
+
+        pub const toVec2 = DimensionImpl.toVec2;
+        pub const toVec3 = DimensionImpl.toVec3;
+        pub const toVec4 = DimensionImpl.toVec4;
 
         /// Transform vector to array.
         pub fn toArray(self: Self) [dimensions]T {
@@ -375,6 +392,9 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             const result = from + (to - from) * @as(Data, @splat(t));
             return .{ .data = result };
         }
+
+        pub const rotate = DimensionImpl.rotate;
+        pub const cross = DimensionImpl.cross;
 
         pub fn swizzle(self: Self, comptime comps: []const u8) SwizzleType(comps.len) {
             if (comps.len == 1) {
