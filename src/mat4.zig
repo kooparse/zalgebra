@@ -4,12 +4,12 @@ const meta = std.meta;
 const mem = std.mem;
 const expectEqual = std.testing.expectEqual;
 const root = @import("main.zig");
-const generic_vector = @import("generic_vector.zig");
+const vector = @import("vector.zig");
 const quat = @import("quaternion.zig");
 
-const Vec3 = generic_vector.Vec3;
-const Vec3_f64 = generic_vector.Vec3_f64;
-const GenericVector = generic_vector.GenericVector;
+const Vec3 = vector.Vec3;
+const Vec3_f64 = vector.Vec3_f64;
+const GenericVector = vector.GenericVector;
 const Quaternion = quat.Quaternion;
 const Quat = quat.Quat;
 

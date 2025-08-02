@@ -1,3 +1,4 @@
+
 const std = @import("std");
 const root = @import("main.zig");
 const math = std.math;
@@ -43,158 +44,209 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             else => unreachable,
         };
 
-        pub usingnamespace switch (dimensions) {
-            2 => extern struct {
-                /// Construct new vector.
-                pub inline fn new(vx: T, vy: T) Self {
-                    return .{ .data = [2]T{ vx, vy } };
-                }
-
-                /// Rotate vector by angle (in degrees)
-                pub fn rotate(self: Self, angle_in_degrees: T) Self {
-                    const sin_theta = @sin(root.toRadians(angle_in_degrees));
-                    const cos_theta = @cos(root.toRadians(angle_in_degrees));
-                    return .{ .data = [2]T{
-                        cos_theta * self.x() - sin_theta * self.y(),
-                        sin_theta * self.x() + cos_theta * self.y(),
-                    } };
-                }
-
-                pub inline fn toVec3(self: Self, vz: T) GenericVector(3, T) {
-                    return GenericVector(3, T).fromVec2(self, vz);
-                }
-
-                pub inline fn toVec4(self: Self, vz: T, vw: T) GenericVector(4, T) {
-                    return GenericVector(4, T).fromVec2(self, vz, vw);
-                }
-
-                pub inline fn fromVec3(vec3: GenericVector(3, T)) Self {
-                    return Self.new(vec3.x(), vec3.y());
-                }
-
-                pub inline fn fromVec4(vec4: GenericVector(4, T)) Self {
-                    return Self.new(vec4.x(), vec4.y());
-                }
-            },
-            3 => extern struct {
-                /// Construct new vector.
-                pub inline fn new(vx: T, vy: T, vz: T) Self {
-                    return .{ .data = [3]T{ vx, vy, vz } };
-                }
-
-                pub inline fn z(self: Self) T {
-                    return self.data[2];
-                }
-
-                pub inline fn zMut(self: *Self) *T {
-                    return &self.data[2];
-                }
-
-                /// Shorthand for (0, 0, 1).
-                pub fn forward() Self {
-                    return new(0, 0, 1);
-                }
-
-                /// Shorthand for (0, 0, -1).
-                pub fn back() Self {
-                    return forward().negate();
-                }
-
-                /// Construct the cross product (as vector) from two vectors.
-                pub fn cross(first_vector: Self, second_vector: Self) Self {
-                    const x1 = first_vector.x();
-                    const y1 = first_vector.y();
-                    const z1 = first_vector.z();
-
-                    const x2 = second_vector.x();
-                    const y2 = second_vector.y();
-                    const z2 = second_vector.z();
-
-                    const result_x = (y1 * z2) - (z1 * y2);
-                    const result_y = (z1 * x2) - (x1 * z2);
-                    const result_z = (x1 * y2) - (y1 * x2);
-                    return new(result_x, result_y, result_z);
-                }
-
-                pub inline fn toVec2(self: Self) GenericVector(2, T) {
-                    return GenericVector(2, T).fromVec3(self);
-                }
-
-                pub inline fn toVec4(self: Self, vw: T) GenericVector(4, T) {
-                    return GenericVector(4, T).fromVec3(self, vw);
-                }
-
-                pub inline fn fromVec2(vec2: GenericVector(2, T), vz: T) Self {
-                    return Self.new(vec2.x(), vec2.y(), vz);
-                }
-
-                pub inline fn fromVec4(vec4: GenericVector(4, T)) Self {
-                    return Self.new(vec4.x(), vec4.y(), vec4.z());
-                }
-            },
-            4 => extern struct {
-                /// Construct new vector.
-                pub inline fn new(vx: T, vy: T, vz: T, vw: T) Self {
-                    return .{ .data = [4]T{ vx, vy, vz, vw } };
-                }
-
-                /// Shorthand for (0, 0, 1, 0).
-                pub fn forward() Self {
-                    return new(0, 0, 1, 0);
-                }
-
-                /// Shorthand for (0, 0, -1, 0).
-                pub fn back() Self {
-                    return forward().negate();
-                }
-
-                pub inline fn z(self: Self) T {
-                    return self.data[2];
-                }
-
-                pub inline fn w(self: Self) T {
-                    return self.data[3];
-                }
-
-                pub inline fn zMut(self: *Self) *T {
-                    return &self.data[2];
-                }
-
-                pub inline fn wMut(self: *Self) *T {
-                    return &self.data[3];
-                }
-
-                pub inline fn toVec2(self: Self) GenericVector(2, T) {
-                    return GenericVector(2, T).fromVec4(self);
-                }
-
-                pub inline fn toVec3(self: Self) GenericVector(3, T) {
-                    return GenericVector(3, T).fromVec4(self);
-                }
-
-                pub inline fn fromVec2(vec2: GenericVector(2, T), vz: T, vw: T) Self {
-                    return Self.new(vec2.x(), vec2.y(), vz, vw);
-                }
-
-                pub inline fn fromVec3(vec3: GenericVector(3, T), vw: T) Self {
-                    return Self.new(vec3.x(), vec3.y(), vec3.z(), vw);
-                }
-            },
+        // Specialized methods for specific dimensions
+        /// Construct a new vector with the given components.
+        pub const new = switch (dimensions) {
+            2 => new2,
+            3 => new3,
+            4 => new4,
             else => unreachable,
         };
 
+        fn new2(vx: T, vy: T) Self {
+            return .{ .data = [2]T{ vx, vy } };
+        }
+
+        fn new3(vx: T, vy: T, vz: T) Self {
+            return .{ .data = [3]T{ vx, vy, vz } };
+        }
+
+        fn new4(vx: T, vy: T, vz: T, vw: T) Self {
+            return .{ .data = [4]T{ vx, vy, vz, vw } };
+        }
+
+        /// Get the z component of the vector.
+        pub const z = if (dimensions >= 3) zImpl else @compileError("z() only available for Vec3 and Vec4");
+        /// Get the z component of the vector (mutable).
+        pub const zMut = if (dimensions >= 3) zMutImpl else @compileError("zMut() only available for Vec3 and Vec4");
+
+        fn zImpl(self: Self) T {
+            return self.data[2];
+        }
+
+        fn zMutImpl(self: *Self) *T {
+            return &self.data[2];
+        }
+
+        /// Get the w component of the vector.
+        pub const w = if (dimensions == 4) wImpl else @compileError("w() only available for Vec4");
+        /// Get the w component of the vector (mutable).
+        pub const wMut = if (dimensions == 4) wMutImpl else @compileError("wMut() only available for Vec4");
+
+        fn wImpl(self: Self) T {
+            return self.data[3];
+        }
+
+        fn wMutImpl(self: *Self) *T {
+            return &self.data[3];
+        }
+
+        /// Shorthand for (0, 0, 1) or (0, 0, 1, 0) depending on the vector type.
+        pub const forward = if (dimensions >= 3) forwardImpl else @compileError("forward() only available for Vec3 and Vec4");
+        /// Shorthand for (0, 0, -1) or (0, 0, -1, 0) depending on the vector type.
+        pub const back = if (dimensions >= 3) backImpl else @compileError("back() only available for Vec3 and Vec4");
+
+        fn forwardImpl() Self {
+            return switch (dimensions) {
+                3 => new(0, 0, 1),
+                4 => new(0, 0, 1, 0),
+                else => unreachable,
+            };
+        }
+
+        fn backImpl() Self {
+            return forward().negate();
+        }
+
+        /// Construct the cross product (as vector) from two vectors.
+        pub const cross = if (dimensions == 3) crossImpl else @compileError("cross() only available for Vec3");
+
+        fn crossImpl(first_vector: Self, second_vector: Self) Self {
+            const x1 = first_vector.x();
+            const y1 = first_vector.y();
+            const z1 = first_vector.z();
+
+            const x2 = second_vector.x();
+            const y2 = second_vector.y();
+            const z2 = second_vector.z();
+
+            const result_x = (y1 * z2) - (z1 * y2);
+            const result_y = (z1 * x2) - (x1 * z2);
+            const result_z = (x1 * y2) - (y1 * x2);
+            return new(result_x, result_y, result_z);
+        }
+
+        /// Rotate vector by angle (in degrees)
+        pub const rotate = if (dimensions == 2) rotateImpl else @compileError("rotate() only available for Vec2");
+
+        fn rotateImpl(self: Self, angle_in_degrees: T) Self {
+            const sin_theta = @sin(root.toRadians(angle_in_degrees));
+            const cos_theta = @cos(root.toRadians(angle_in_degrees));
+            return .{ .data = [2]T{
+                cos_theta * self.x() - sin_theta * self.y(),
+                sin_theta * self.x() + cos_theta * self.y(),
+            } };
+        }
+
+        // Conversion methods
+        pub const toVec2 = switch (dimensions) {
+            2 => @compileError("toVec2() not available for Vec2"),
+            3 => toVec2From3,
+            4 => toVec2From4,
+            else => unreachable,
+        };
+
+        pub const toVec3 = switch (dimensions) {
+            2 => toVec3From2,
+            3 => @compileError("toVec3() not available for Vec3"),
+            4 => toVec3From4,
+            else => unreachable,
+        };
+
+        pub const toVec4 = switch (dimensions) {
+            2 => toVec4From2,
+            3 => toVec4From3,
+            4 => @compileError("toVec4() not available for Vec4"),
+            else => unreachable,
+        };
+
+        fn toVec2From3(self: Self) GenericVector(2, T) {
+            return GenericVector(2, T).new(self.x(), self.y());
+        }
+
+        fn toVec2From4(self: Self) GenericVector(2, T) {
+            return GenericVector(2, T).new(self.x(), self.y());
+        }
+
+        fn toVec3From2(self: Self, vz: T) GenericVector(3, T) {
+            return GenericVector(3, T).new(self.x(), self.y(), vz);
+        }
+
+        fn toVec3From4(self: Self) GenericVector(3, T) {
+            return GenericVector(3, T).new(self.x(), self.y(), self.z());
+        }
+
+        fn toVec4From2(self: Self, vz: T, vw: T) GenericVector(4, T) {
+            return GenericVector(4, T).new(self.x(), self.y(), vz, vw);
+        }
+
+        fn toVec4From3(self: Self, vw: T) GenericVector(4, T) {
+            return GenericVector(4, T).new(self.x(), self.y(), self.z(), vw);
+        }
+
+        // FromVec methods
+        pub const fromVec2 = switch (dimensions) {
+            2 => @compileError("fromVec2() not available for Vec2"),
+            3 => fromVec2To3,
+            4 => fromVec2To4,
+            else => unreachable,
+        };
+
+        pub const fromVec3 = switch (dimensions) {
+            2 => fromVec3To2,
+            3 => @compileError("fromVec3() not available for Vec3"),
+            4 => fromVec3To4,
+            else => unreachable,
+        };
+
+        pub const fromVec4 = switch (dimensions) {
+            2 => fromVec4To2,
+            3 => fromVec4To3,
+            4 => @compileError("fromVec4() not available for Vec4"),
+            else => unreachable,
+        };
+
+        fn fromVec2To3(vec2: GenericVector(2, T), vz: T) Self {
+            return Self.new(vec2.x(), vec2.y(), vz);
+        }
+
+        fn fromVec2To4(vec2: GenericVector(2, T), vz: T, vw: T) Self {
+            return Self.new(vec2.x(), vec2.y(), vz, vw);
+        }
+
+        fn fromVec3To2(vec3: GenericVector(3, T)) Self {
+            return Self.new(vec3.x(), vec3.y());
+        }
+
+        fn fromVec3To4(vec3: GenericVector(3, T), vw: T) Self {
+            return Self.new(vec3.x(), vec3.y(), vec3.z(), vw);
+        }
+
+        fn fromVec4To2(vec4: GenericVector(4, T)) Self {
+            return Self.new(vec4.x(), vec4.y());
+        }
+
+        fn fromVec4To3(vec4: GenericVector(4, T)) Self {
+            return Self.new(vec4.x(), vec4.y(), vec4.z());
+        }
+
+        // Common methods for all dimensions
+        /// Get the x component of the vector.
         pub inline fn x(self: Self) T {
             return self.data[0];
         }
 
+        /// Get the y component of the vector.
         pub inline fn y(self: Self) T {
             return self.data[1];
         }
 
+        /// Get the x component of the vector (mutable).
         pub inline fn xMut(self: *Self) *T {
             return &self.data[0];
         }
 
+        /// Get the y component of the vector (mutable).
         pub inline fn yMut(self: *Self) *T {
             return &self.data[1];
         }
@@ -215,7 +267,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return set(1);
         }
 
-        /// Shorthand for (0, 1).
+        /// Shorthand for up vector.
         pub fn up() Self {
             return switch (dimensions) {
                 2 => Self.new(0, 1),
@@ -225,12 +277,12 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             };
         }
 
-        /// Shorthand for (0, -1).
+        /// Shorthand for down vector.
         pub fn down() Self {
             return up().negate();
         }
 
-        /// Shorthand for (1, 0).
+        /// Shorthand for right vector.
         pub fn right() Self {
             return switch (dimensions) {
                 2 => Self.new(1, 0),
@@ -240,7 +292,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             };
         }
 
-        /// Shorthand for (-1, 0).
+        /// Shorthand for left vector.
         pub fn left() Self {
             return right().negate();
         }
@@ -251,7 +303,6 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         /// Cast a type to another type.
-        /// It's like builtins: @intCast, @floatCast, @floatFromInt, @intFromFloat.
         pub fn cast(self: Self, comptime dest_type: type) GenericVector(dimensions, dest_type) {
             const dest_info = @typeInfo(dest_type);
 
@@ -285,19 +336,16 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         /// Return the length (magnitude) of given vector.
-        /// √[x^2 + y^2 + z^2 ...]
         pub fn length(self: Self) T {
             return @sqrt(self.dot(self));
         }
 
         /// Return the length (magnitude) squared of given vector.
-        /// x^2 + y^2 + z^2 ...
         pub fn lengthSq(self: Self) T {
             return self.dot(self);
         }
 
         /// Return the distance between two points.
-        /// √[(x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2 ...]
         pub fn distance(first_vector: Self, second_vector: Self) T {
             return length(first_vector.sub(second_vector));
         }
@@ -360,7 +408,6 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         /// Return the dot product between two given vector.
-        /// (x1 * x2) + (y1 * y2) + (z1 * z2) ...
         pub fn dot(first_vector: Self, second_vector: Self) T {
             return @reduce(.Add, first_vector.data * second_vector.data);
         }

@@ -1,7 +1,7 @@
 const std = @import("std");
 const root = @import("main.zig");
 const meta = std.meta;
-const generic_vector = @import("generic_vector.zig");
+const vector = @import("vector.zig");
 const mat3 = @import("mat3.zig");
 const mat4 = @import("mat4.zig");
 const math = std.math;
@@ -12,10 +12,10 @@ const expectEqual = std.testing.expectEqual;
 const expect = std.testing.expect;
 const assert = std.debug.assert;
 
-const GenericVector = generic_vector.GenericVector;
+const GenericVector = vector.GenericVector;
 
-const Vec3 = generic_vector.Vec3;
-const Vec4 = generic_vector.Vec4;
+const Vec3 = vector.Vec3;
+const Vec4 = vector.Vec4;
 const Mat3x3 = mat3.Mat3x3;
 const Mat4x4 = mat4.Mat4x4;
 

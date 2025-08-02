@@ -4,10 +4,37 @@ const std = @import("std");
 const expectEqual = std.testing.expectEqual;
 const math = std.math;
 
-pub usingnamespace @import("generic_vector.zig");
-pub usingnamespace @import("mat3.zig");
-pub usingnamespace @import("mat4.zig");
-pub usingnamespace @import("quaternion.zig");
+pub const vector = @import("vector.zig");
+pub const mat3 = @import("mat3.zig");
+pub const mat4 = @import("mat4.zig");
+pub const quaternion = @import("quaternion.zig");
+
+// For backwards compat, emulate the usingnamespace to gather all the pub types under one umbrella.
+/// Deprecated: Use `vector.Vec2` instead.
+pub const Vec2 = vector.Vec2;
+/// Deprecated: Use `vector.Vec2_f64` instead.
+pub const Vec2_f64 = vector.Vec2_f64;
+/// Deprecated: Use `vector.Vec2_i32` instead.
+pub const Vec2_i32 = vector.Vec2_i32;
+/// Deprecated: Use `vector.Vec2_usize` instead.
+pub const Vec2_usize = vector.Vec2_usize;
+/// Deprecated: Use `vector.Vec3` instead.
+pub const Vec3 = vector.Vec3;
+/// Deprecated: Use `vector.Vec3_f64` instead.
+pub const Vec3_f64 = vector.Vec3_f64;
+/// Deprecated: Use `vector.Vec3_i32` instead.
+pub const Vec3_i32 = vector.Vec3_i32;
+/// Deprecated: Use `vector.Vec3_usize` instead.
+pub const Vec3_usize = vector.Vec3_usize;
+/// Deprecated: Use `vector.Vec4` instead.
+pub const Vec4 = vector.Vec4;
+/// Deprecated: Use `vector.Vec4_f64` instead.
+pub const Vec4_f64 = vector.Vec4_f64;
+/// Deprecated: Use `vector.Vec4_i32` instead.
+pub const Vec4_i32 = vector.Vec4_i32;
+/// Deprecated: Use `vector.Vec4_usize` instead.
+pub const Vec4_usize = vector.Vec4_usize;
+pub const GenericVector = vector.GenericVector;
 
 /// Convert degrees to radians.
 pub fn toRadians(degrees: anytype) @TypeOf(degrees) {
