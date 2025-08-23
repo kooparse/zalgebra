@@ -4,10 +4,12 @@ const std = @import("std");
 const expectEqual = std.testing.expectEqual;
 const math = std.math;
 
-pub usingnamespace @import("generic_vector.zig");
-pub usingnamespace @import("mat3.zig");
-pub usingnamespace @import("mat4.zig");
-pub usingnamespace @import("quaternion.zig");
+comptime {
+    _ = @import("generic_vector.zig");
+    _ = @import("mat3.zig");
+    _ = @import("mat4.zig");
+    _ = @import("quaternion.zig");
+}
 
 /// Convert degrees to radians.
 pub fn toRadians(degrees: anytype) @TypeOf(degrees) {

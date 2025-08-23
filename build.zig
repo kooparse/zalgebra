@@ -16,16 +16,16 @@ pub fn build(b: *Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
 
-    _ = b.addModule("zalgebra", .{
+    const mod = b.addModule("zalgebra", .{
         .root_source_file = b.path("src/main.zig"),
+        .target = target,
+        .optimize = optimize,
     });
 
     // Creates a step for unit testing. This only builds the test executable
     // but does not run it.
     const main_tests = b.addTest(.{
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = mod,
     });
 
     const run_main_tests = b.addRunArtifact(main_tests);
