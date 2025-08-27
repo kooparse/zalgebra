@@ -109,3 +109,10 @@ test "zalgebra.lerp" {
     try expectEqual(lerp(f32, from, to, 0.5), 5);
     try expectEqual(lerp(f32, from, to, 1), 10);
 }
+
+test {
+    _ = generic_vector;
+    _ = mat3;
+    _ = mat4;
+    _ = quat;
+}
