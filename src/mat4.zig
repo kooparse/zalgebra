@@ -134,6 +134,21 @@ pub fn Mat4x4(comptime T: type) type {
             return Vector3.new(self.data[3][0], self.data[3][1], self.data[3][2]);
         }
 
+        /// Get the up vector from a given 4x4 matrix
+        pub fn getUp(self: Self) Vector3 {
+            return Vector3.new(self.data[0][1], self.data[1][1], self.data[2][1]);
+        }
+
+        /// Get the right vector from a given 4x4 matrix
+        pub fn getRight(self: Self) Vector3 {
+            return Vector3.new(self.data[0][0], self.data[1][0], self.data[2][0]);
+        }
+
+        /// Get the right vector from a given 4x4 matrix
+        pub fn getForward(self: Self) Vector3 {
+            return Vector3.new(self.data[0][2], self.data[1][2], self.data[2][2]);
+        }
+
         /// Construct a 4x4 matrix from given axis and angle (in degrees).
         pub fn fromRotation(angle_in_degrees: T, axis: Vector3) Self {
             var result = Self.identity();
