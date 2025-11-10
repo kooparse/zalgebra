@@ -94,6 +94,7 @@ pub fn main () void {
 | div        | Construct new vector resulting from the division between two vectors       |
 | mul        | Construct new vector resulting from the multiplication between two vectors |
 | scale      | Construct new vector after multiplying each components by a given scalar   |
+| swizzle    | Comptime vector component swizzle. Accepts component names, 0, or 1        |
 | cross      | Construct the cross product (as vector) from two vectors (only for vec3)   |
 | dot        | Return the dot product between two vectors                                 |
 | lerp       | Linear interpolation between two vectors                                   |
