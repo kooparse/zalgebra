@@ -404,7 +404,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
         /// Comptime vector component swizzle. Accepts component names, 0, or 1.
         pub fn swizzle(self: Self, comptime comps: []const u8) SwizzleType(comps.len) {
-            // SOmeone doing a single component swizzle with 0 or 1 is weird but... it's supported...
+            // Someone doing a single component swizzle with 0 or 1 is weird but... it's supported...
             if (comps.len == 1) {
                 return switch (comps[0]) {
                     '0' => 0,
