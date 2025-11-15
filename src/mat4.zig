@@ -110,6 +110,14 @@ pub fn Mat4x4(comptime T: type) type {
             return Vector4.new(x, y, z, w);
         }
 
+        pub fn mulByVec3(self: Self, v: Vector3) Vector3 {
+            const x = (self.data[0][0] * v.x()) + (self.data[1][0] * v.y()) + (self.data[2][0] * v.z()) + (self.data[3][0] * 1);
+            const y = (self.data[0][1] * v.x()) + (self.data[1][1] * v.y()) + (self.data[2][1] * v.z()) + (self.data[3][1] * 1);
+            const z = (self.data[0][2] * v.x()) + (self.data[1][2] * v.y()) + (self.data[2][2] * v.z()) + (self.data[3][2] * 1);
+
+            return Vector3.new(x, y, z);
+        }
+
         /// Construct 4x4 translation matrix by multiplying identity matrix and
         /// given translation vector.
         pub fn fromTranslate(axis: Vector3) Self {
