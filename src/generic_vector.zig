@@ -402,14 +402,24 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         pub const rotate = DimensionImpl.rotate;
         pub const cross = DimensionImpl.cross;
 
+        /// Comptime vector component swizzle. Accepts component names, 0, or 1.
         pub fn swizzle(self: Self, comptime comps: []const u8) SwizzleType(comps.len) {
+            // Someone doing a single component swizzle with 0 or 1 is weird but... it's supported...
             if (comps.len == 1) {
-                return self.data[@intFromEnum(@field(Component, &.{comps[0]}))];
+                return switch (comps[0]) {
+                    '0' => 0,
+                    '1' => 1,
+                    else => self.data[@intFromEnum(@field(Component, &.{comps[0]}))],
+                };
             }
 
             var result = GenericVector(comps.len, T).zero();
             inline for (comps, 0..) |comp, i| {
-                result.data[i] = self.data[@intFromEnum(@field(Component, &.{comp}))];
+                switch (comp) {
+                    '0' => result.data[i] = 0,
+                    '1' => result.data[i] = 1,
+                    else => result.data[i] = self.data[@intFromEnum(@field(Component, &.{comp}))],
+                }
             }
             return result;
         }
