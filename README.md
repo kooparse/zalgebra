@@ -9,7 +9,7 @@ The goal is to become as complete and useful as the Unity one. I'm currently usi
 
 If you would like to contribute, don't hesitate! :)
 
-Note: **The main branch is for the latest Zig release (0.14.x), use [latest](https://github.com/kooparse/zalgebra/tree/latest) for latest master changements**
+Note: **The main branch is for the latest Zig release (0.15.1).**
 
 ## Examples
 
@@ -60,42 +60,46 @@ pub fn main () void {
 
 ### Vectors
 
-| Methods   | Description                                                                |
-| --------- | -------------------------------------------------------------------------- |
-| new       | Construct a vector from 2 to 4 components                                  |
-| x         | Return first component                                                     |
-| y         | Return second component                                                    |
-| z         | Return third component (only for vec3, vec4)                               |
-| w         | Return fourth component (only for vec4)                                    |
-| at        | Return component from given index                                          |
-| set       | Set all components to the same given value                                 |
-| negate    | Scale all components by -1                                                 |
-| cast      | Cast a type to another type                                                |
-| fromSlice | Construct new vectors from slice                                           |
-| zero      | Shorthand for `(0, 0, 0)`                                                  |
-| one       | Shorthand for `(1, 1, 1)`                                                  |
-| up        | Shorthand for `(0, 1, 0)`                                                  |
-| down      | Shorthand for `(0, -1, 0)`                                                 |
-| right     | Shorthand for `(1, 0, 0)`                                                  |
-| left      | Shorthand for `(-1, 0, 0)`                                                 |
-| forward   | Shorthand for `(0, 0, 1)` (only for vec3 and vec4)                         |
-| back      | Shorthand for `(0, 0, -1)` (only for vec3 and vec4)                        |
-| toArray   | Return an array of same size.                                              |
-| getAngle  | Return angle in degrees between two vectors (only for vec2 and vec3)       |
-| rotate    | Rotate vector by angle (in degrees)                                        |
-| length    | Return the magnitude of the current vector                                 |
-| distance  | Return the distance between two points                                     |
-| norm      | Construct a new normalized vector based on the given one                   |
-| eql       | Return `true` if two vectors are equals                                    |
-| sub       | Construct new vector resulting from the substraction between two vectors   |
-| add       | Construct new vector resulting from the addition between two vectors       |
-| mul       | Construct new vector resulting from the multiplication between two vectors |
-| scale     | Construct new vector after multiplying each components by a given scalar   |
-| cross     | Construct the cross product (as vector) from two vectors (only for vec3)   |
-| dot       | Return the dot product between two vectors                                 |
-| lerp      | Linear interpolation between two vectors                                   |
-| min       | Construct vector from the min components between two vectors               |
-| max       | Construct vector from the max components between two vectors               |
+| Methods    | Description                                                                |
+| ---------- | -------------------------------------------------------------------------- |
+| new        | Construct a vector from 2 to 4 components                                  |
+| x          | Return first component                                                     |
+| y          | Return second component                                                    |
+| z          | Return third component (only for vec3, vec4)                               |
+| w          | Return fourth component (only for vec4)                                    |
+| at         | Return component from given index                                          |
+| set        | Set all components to the same given value                                 |
+| negate     | Scale all components by -1                                                 |
+| cast       | Cast a type to another type                                                |
+| fromSlice  | Construct new vectors from slice                                           |
+| zero       | Shorthand for `(0, 0, 0)`                                                  |
+| one        | Shorthand for `(1, 1, 1 )                                                  |
+| up         | Shorthand for `(0, 1, 0)`                                                  |
+| down       | Shorthand for `(0, -1, 0)`                                                 |
+| right      | Shorthand for `(1, 0, 0)`                                                  |
+| left       | Shorthand for `(-1, 0, 0)`                                                 |
+| forward    | Shorthand for `(0, 0, 1)` (only for vec3 and vec4)                         |
+| back       | Shorthand for `(0, 0, -1)` (only for vec3 and vec4)                        |
+| toArray    | Return an array of same size.                                              |
+| getAngle   | Return angle in degrees between two vectors (only for vec2 and vec3)       |
+| rotate     | Rotate vector by angle (in degrees)                                        |
+| length     | Return the magnitude of the current vector                                 |
+| lengthSq   | Return the magnitude squared of the current vector                         |
+| distance   | Return the distance between two points                                     |
+| distanceSq | Return the squared distance between two points                             |
+| norm       | Construct a new normalized vector based on the given one                   |
+| eql        | Return `true` if two vectors are equals                                    |
+| sub        | Construct new vector resulting from the substraction between two vectors   |
+| add        | Construct new vector resulting from the addition between two vectors       |
+| div        | Construct new vector resulting from the division between two vectors       |
+| mul        | Construct new vector resulting from the multiplication between two vectors |
+| scale      | Construct new vector after multiplying each components by a given scalar   |
+| swizzle    | Comptime vector component swizzle. Accepts component names, 0, or 1        |
+| cross      | Construct the cross product (as vector) from two vectors (only for vec3)   |
+| dot        | Return the dot product between two vectors                                 |
+| lerp       | Linear interpolation between two vectors                                   |
+| min        | Construct vector from the min components between two vectors               |
+| max        | Construct vector from the max components between two vectors               |
 
 ### Matrices
 
@@ -151,6 +155,7 @@ Note: All matrices are column-major.
 | mul               | Construct quaternion resulting from the multiplication of two given ones                       |
 | scale             | Construct new quaternion resulting from the multiplication of all components by a given scalar |
 | dot               | Return the dot product between two quaternions                                                 |
+| toMat3            | Convert given quat to rotation 3x3 matrix                                                      |
 | toMat4            | Convert given quat to rotation 4x4 matrix                                                      |
 | fromEulerAngles   | Construct quaternion from Euler angles                                                         |
 | fromAxis          | Construct quat from angle around specified axis                                                |

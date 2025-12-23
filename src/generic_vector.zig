@@ -43,8 +43,8 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             else => unreachable,
         };
 
-        pub usingnamespace switch (dimensions) {
-            2 => extern struct {
+        pub const DimensionImpl = switch (dimensions) {
+            2 => struct {
                 /// Construct new vector.
                 pub inline fn new(vx: T, vy: T) Self {
                     return .{ .data = [2]T{ vx, vy } };
@@ -76,7 +76,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     return Self.new(vec4.x(), vec4.y());
                 }
             },
-            3 => extern struct {
+            3 => struct {
                 /// Construct new vector.
                 pub inline fn new(vx: T, vy: T, vz: T) Self {
                     return .{ .data = [3]T{ vx, vy, vz } };
@@ -92,12 +92,12 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
                 /// Shorthand for (0, 0, 1).
                 pub fn forward() Self {
-                    return new(0, 0, 1);
+                    return Self.new(0, 0, 1);
                 }
 
                 /// Shorthand for (0, 0, -1).
                 pub fn back() Self {
-                    return forward().negate();
+                    return Self.forward().negate();
                 }
 
                 /// Construct the cross product (as vector) from two vectors.
@@ -113,7 +113,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     const result_x = (y1 * z2) - (z1 * y2);
                     const result_y = (z1 * x2) - (x1 * z2);
                     const result_z = (x1 * y2) - (y1 * x2);
-                    return new(result_x, result_y, result_z);
+                    return Self.new(result_x, result_y, result_z);
                 }
 
                 pub inline fn toVec2(self: Self) GenericVector(2, T) {
@@ -132,7 +132,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                     return Self.new(vec4.x(), vec4.y(), vec4.z());
                 }
             },
-            4 => extern struct {
+            4 => struct {
                 /// Construct new vector.
                 pub inline fn new(vx: T, vy: T, vz: T, vw: T) Self {
                     return .{ .data = [4]T{ vx, vy, vz, vw } };
@@ -140,12 +140,12 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
                 /// Shorthand for (0, 0, 1, 0).
                 pub fn forward() Self {
-                    return new(0, 0, 1, 0);
+                    return Self.new(0, 0, 1, 0);
                 }
 
                 /// Shorthand for (0, 0, -1, 0).
                 pub fn back() Self {
-                    return forward().negate();
+                    return Self.forward().negate();
                 }
 
                 pub inline fn z(self: Self) T {
@@ -183,6 +183,8 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             else => unreachable,
         };
 
+        pub const new = DimensionImpl.new;
+
         pub inline fn x(self: Self) T {
             return self.data[0];
         }
@@ -191,6 +193,9 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return self.data[1];
         }
 
+        pub const z = DimensionImpl.z;
+        pub const w = DimensionImpl.w;
+
         pub inline fn xMut(self: *Self) *T {
             return &self.data[0];
         }
@@ -198,6 +203,9 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         pub inline fn yMut(self: *Self) *T {
             return &self.data[1];
         }
+
+        pub const zMut = DimensionImpl.zMut;
+        pub const wMut = DimensionImpl.wMut;
 
         /// Set all components to the same given value.
         pub fn set(val: T) Self {
@@ -245,6 +253,9 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return right().negate();
         }
 
+        pub const forward = DimensionImpl.forward;
+        pub const back = DimensionImpl.back;
+
         /// Negate the given vector.
         pub fn negate(self: Self) Self {
             return self.scale(-1);
@@ -273,6 +284,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return .{ .data = result };
         }
 
+        pub const fromVec2 = DimensionImpl.fromVec2;
+        pub const fromVec3 = DimensionImpl.fromVec3;
+        pub const fromVec4 = DimensionImpl.fromVec4;
+
+        pub const toVec2 = DimensionImpl.toVec2;
+        pub const toVec3 = DimensionImpl.toVec3;
+        pub const toVec4 = DimensionImpl.toVec4;
+
         /// Transform vector to array.
         pub fn toArray(self: Self) [dimensions]T {
             return self.data;
@@ -300,6 +319,12 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         /// √[(x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2 ...]
         pub fn distance(first_vector: Self, second_vector: Self) T {
             return length(first_vector.sub(second_vector));
+        }
+
+        /// Return the distance squared between two points.
+        /// (x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2 ...
+        pub fn distanceSq(first_vector: Self, second_vector: Self) T {
+            return lengthSq(first_vector.sub(second_vector));
         }
 
         /// Construct new normalized vector from a given one.
@@ -374,14 +399,27 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
             return .{ .data = result };
         }
 
+        pub const rotate = DimensionImpl.rotate;
+        pub const cross = DimensionImpl.cross;
+
+        /// Comptime vector component swizzle. Accepts component names, 0, or 1.
         pub fn swizzle(self: Self, comptime comps: []const u8) SwizzleType(comps.len) {
+            // Someone doing a single component swizzle with 0 or 1 is weird but... it's supported...
             if (comps.len == 1) {
-                return self.data[@intFromEnum(@field(Component, &.{comps[0]}))];
+                return switch (comps[0]) {
+                    '0' => 0,
+                    '1' => 1,
+                    else => self.data[@intFromEnum(@field(Component, &.{comps[0]}))],
+                };
             }
 
             var result = GenericVector(comps.len, T).zero();
             inline for (comps, 0..) |comp, i| {
-                result.data[i] = self.data[@intFromEnum(@field(Component, &.{comp}))];
+                switch (comp) {
+                    '0' => result.data[i] = 0,
+                    '1' => result.data[i] = 1,
+                    else => result.data[i] = self.data[@intFromEnum(@field(Component, &.{comp}))],
+                }
             }
             return result;
         }
@@ -598,7 +636,7 @@ test "zalgebra.Vectors.length" {
     }
 }
 
-test "zalgebra.Vectors.distance" {
+test "zalgebra.Vectors.distance/Sq" {
     // Vec2
     {
         const a = Vec2.zero();
@@ -606,7 +644,9 @@ test "zalgebra.Vectors.distance" {
         const c = Vec2.new(0, 5);
 
         try expectEqual(a.distance(b), 1);
+        try expectEqual(a.distanceSq(b), 1);
         try expectEqual(a.distance(c), 5);
+        try expectEqual(a.distanceSq(c), 25);
     }
 
     // Vec3
@@ -616,7 +656,9 @@ test "zalgebra.Vectors.distance" {
         const c = Vec3.new(0, 5, 0);
 
         try expectEqual(a.distance(b), 1);
+        try expectEqual(a.distanceSq(b), 1);
         try expectEqual(a.distance(c), 5);
+        try expectEqual(a.distanceSq(c), 25);
     }
 
     // Vec4
@@ -626,7 +668,9 @@ test "zalgebra.Vectors.distance" {
         const c = Vec4.new(0, 5, 0, 0);
 
         try expectEqual(a.distance(b), 1);
+        try expectEqual(a.distanceSq(b), 1);
         try expectEqual(a.distance(c), 5);
+        try expectEqual(a.distanceSq(c), 25);
     }
 }
 
