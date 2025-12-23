@@ -152,7 +152,7 @@ pub fn Mat4x4(comptime T: type) type {
             return Vector3.new(self.data[0][0], self.data[1][0], self.data[2][0]);
         }
 
-        /// Get the right vector from a given 4x4 matrix
+        /// Get the forward vector from a given 4x4 matrix
         pub fn getForward(self: Self) Vector3 {
             return Vector3.new(self.data[0][2], self.data[1][2], self.data[2][2]);
         }
