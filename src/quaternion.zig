@@ -370,7 +370,7 @@ pub fn Quaternion(comptime T: type) type {
             const b = Vector3.new(q.x, q.y, q.z);
             const b2 = b.dot(b);
 
-            return v.scale(q.w * q.w - b2).add(b.scale(v.dot(b) * 2)).add(b.cross(v).scale(q.w * 2));
+            return v.scale(q.w * q.w - b2).add(b.scale(v.dot(b) * 2)).add(v.cross(b).scale(q.w * 2));
         }
 
         /// Cast a type to another type.
