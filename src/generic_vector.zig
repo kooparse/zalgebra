@@ -338,8 +338,13 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         /// Return true if two vectors are equals.
-        pub fn eql(first_vector: Self, second_vector: Self) bool {
-            return @reduce(.And, first_vector.data == second_vector.data);
+        pub fn eql(a: Self, b: Self) bool {
+            return switch (dimensions) {
+                2 => a.x() == b.x() and a.y() == b.y(),
+                3 => a.x() == b.x() and a.y() == b.y() and a.z() == b.z(),
+                4 => a.x() == b.x() and a.y() == b.y() and a.z() == b.z() and a.w() == b.w(),
+                else => unreachable,
+            };
         }
 
         /// Substraction between two given vector.
