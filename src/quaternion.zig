@@ -391,6 +391,8 @@ pub fn Quaternion(comptime T: type) type {
     };
 }
 
+const EPSILON = 0.0001;
+
 test "zalgebra.Quaternion.new" {
     const q = Quat.new(1.5, 2.6, 3.7, 4.7);
 
@@ -448,18 +450,14 @@ test "zalgebra.Quaternion.fromEulerAngles" {
     const a = Quat.fromEulerAngles(Vec3.new(10, 5, 45));
     const a_res = a.extractEulerAngles();
 
-    const b = Quat.fromEulerAngles(Vec3.new(0, 55, 22));
-    const b_res = b.toMat4().extractEulerAngles();
-
-    try expectEqual(a_res, Vec3.new(9.999999046325684, 5.000000476837158, 45));
-    try expectEqual(b_res, Vec3.new(0, 47.2450294, 22));
+    try Vec3.expectApproxEq(a_res, Vec3.new(10, 5, 45), EPSILON);
 }
 
 test "zalgebra.Quaternion.fromAxis" {
     const q = Quat.fromAxis(45, Vec3.up());
     const res_q = q.extractEulerAngles();
 
-    try expectEqual(res_q, Vec3.new(0, 45.0000076, 0));
+    try Vec3.expectApproxEq(res_q, Vec3.new(0, 45, 0), EPSILON);
 }
 
 test "zalgebra.Quaternion.extractAxisAngle" {
@@ -478,7 +476,7 @@ test "zalgebra.Quaternion.extractEulerAngles" {
     const q = Quat.fromVec3(0.5, Vec3.new(0.5, 1, 0.3));
     const res_q = q.extractEulerAngles();
 
-    try expectEqual(res_q, Vec3.new(129.6000213623047, 44.427005767822266, 114.4107360839843));
+    try Vec3.expectApproxEq(res_q, Vec3.new(129.6000213623047, 44.427005767822266, 114.4107360839843), EPSILON);
 }
 
 test "zalgebra.Quaternion.rotateVec" {

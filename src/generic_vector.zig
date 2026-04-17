@@ -272,7 +272,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
             var result: [dimensions]dest_type = undefined;
 
-            for (result, 0..) |_, i| {
+            inline for (result, 0..) |_, i| {
                 result[i] = math.lossyCast(dest_type, self.data[i]);
             }
             return .{ .data = result };
@@ -449,6 +449,14 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         /// Deprecated; use `swizzle` instead
         pub inline fn swizzle4(self: Self, comptime vx: Component, comptime vy: Component, comptime vz: Component, comptime vw: Component) GenericVector(4, T) {
             return self.swizzle(@tagName(vx) ++ @tagName(vy) ++ @tagName(vz) ++ @tagName(vw));
+        }
+
+        pub fn expectApproxEq(a: Self, b: Self, tolerance: T) !void {
+            const diff = a.data - b.data;
+            const abs_diff = @abs(diff);
+            const result = @reduce(.And, abs_diff <= @as(Data, @splat(tolerance)));
+
+            return expectEqual(true, result);
         }
     };
 }
