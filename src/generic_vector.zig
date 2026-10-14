@@ -30,11 +30,11 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         @compileError("Dimensions must be 2, 3 or 4!");
     }
 
-    return struct {
+    return extern struct {
         const Self = @This();
-        const Data = @Vector(dimensions, T);
+        pub const Data = @Vector(dimensions, T);
 
-        data: Data,
+        data: [dimensions]T,
 
         pub const Component = switch (dimensions) {
             2 => enum { x, y },
@@ -349,56 +349,64 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
 
         /// Substraction between two given vector.
         pub fn sub(first_vector: Self, second_vector: Self) Self {
-            const result = first_vector.data - second_vector.data;
-            return .{ .data = result };
+            const a: Data = first_vector.data;
+            const b: Data = second_vector.data;
+            return .{ .data = a - b };
         }
 
         /// Addition betwen two given vector.
         pub fn add(first_vector: Self, second_vector: Self) Self {
-            const result = first_vector.data + second_vector.data;
-            return .{ .data = result };
+            const a: Data = first_vector.data;
+            const b: Data = second_vector.data;
+            return .{ .data = a + b };
         }
 
         /// Component wise multiplication betwen two given vector.
         pub fn mul(first_vector: Self, second_vector: Self) Self {
-            const result = first_vector.data * second_vector.data;
-            return .{ .data = result };
+            const a: Data = first_vector.data;
+            const b: Data = second_vector.data;
+            return .{ .data = a * b };
         }
 
         /// Component wise division betwen two given vector.
         pub fn div(first_vector: Self, second_vector: Self) Self {
-            const result = first_vector.data / second_vector.data;
-            return .{ .data = result };
+            const a: Data = first_vector.data;
+            const b: Data = second_vector.data;
+            return .{ .data = a / b };
         }
 
         /// Construct vector from the max components in two vectors
         pub fn max(first_vector: Self, second_vector: Self) Self {
-            const result = @max(first_vector.data, second_vector.data);
-            return .{ .data = result };
+            const a: Data = first_vector.data;
+            const b: Data = second_vector.data;
+            return .{ .data = @max(a, b) };
         }
 
         /// Construct vector from the min components in two vectors
         pub fn min(first_vector: Self, second_vector: Self) Self {
-            const result = @min(first_vector.data, second_vector.data);
-            return .{ .data = result };
+            const a: Data = first_vector.data;
+            const b: Data = second_vector.data;
+            return .{ .data = @min(a, b) };
         }
 
         /// Construct new vector after multiplying each components by a given scalar
         pub fn scale(self: Self, scalar: T) Self {
-            const result = self.data * @as(Data, @splat(scalar));
+            const result = @as(Data, self.data) * @as(Data, @splat(scalar));
             return .{ .data = result };
         }
 
         /// Return the dot product between two given vector.
         /// (x1 * x2) + (y1 * y2) + (z1 * z2) ...
         pub fn dot(first_vector: Self, second_vector: Self) T {
-            return @reduce(.Add, first_vector.data * second_vector.data);
+            const a: Data = first_vector.data;
+            const b: Data = second_vector.data;
+            return @reduce(.Add, a * b);
         }
 
         /// Linear interpolation between two vectors
         pub fn lerp(first_vector: Self, second_vector: Self, t: T) Self {
-            const from = first_vector.data;
-            const to = second_vector.data;
+            const from: Data = first_vector.data;
+            const to: Data = second_vector.data;
 
             const result = from + (to - from) * @as(Data, @splat(t));
             return .{ .data = result };
@@ -452,7 +460,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         pub fn expectApproxEq(a: Self, b: Self, tolerance: T) !void {
-            const diff = a.data - b.data;
+            const diff = @as(Data, a.data) - @as(Data, b.data);
             const abs_diff = @abs(diff);
             const result = @reduce(.And, abs_diff <= @as(Data, @splat(tolerance)));
 
