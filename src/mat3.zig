@@ -44,7 +44,7 @@ pub fn Mat3x3(comptime T: type) type {
 
         /// Set all mat3 values to given value.
         pub fn set(value: T) Self {
-            const data: [9]T = .{value} ** 9;
+            const data: [9]T = @splat(value);
             return Self.fromSlice(&data);
         }
 

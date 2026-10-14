@@ -54,7 +54,7 @@ pub fn Mat4x4(comptime T: type) type {
 
         /// Set all mat4 values to given value.
         pub fn set(value: T) Self {
-            const data: [16]T = .{value} ** 16;
+            const data: [16]T = @splat(value);
             return Self.fromSlice(&data);
         }
 
